@@ -10,19 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/information_retrieval_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/butter-go.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ambassador.go" beforeDir="false" afterPath="$PROJECT_DIR$/ambassador.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/wiki.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/wiki.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/multicast.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,6 +103,10 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="implement naive bfs information retrieval" />
+    <option name="LAST_COMMIT_MESSAGE" value="implement naive bfs information retrieval" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
