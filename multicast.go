@@ -14,7 +14,7 @@ const (
 
 var myPingAddr string
 
-func PingLAN(quit chan bool, node *Node) {
+func PingLAN(node *Node) {
 	fmt.Println("in PingLAN")
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
@@ -24,14 +24,23 @@ func PingLAN(quit chan bool, node *Node) {
 	myPingAddr = c.LocalAddr().String()
 	fmt.Println("PingLAN address is: ", myPingAddr)
 	myListenAddr := node.ip + ":" + node.port
+	//for {
+	//	select {
+	//	case <-quit:
+	//		return
+	//	default:
+	//		//c.Write([]byte("/listening_at " + myListenAddr))
+	//		fmt.Fprint(c, "/listening_at "+myListenAddr)
+	//		time.Sleep(1 * time.Second)
+	//	}
+	//}
 	for {
-		select {
-		case <-quit:
-			return
-		default:
-			//c.Write([]byte("/listening_at " + myListenAddr))
-			fmt.Fprint(c, "/listening_at "+myListenAddr)
-			time.Sleep(1 * time.Second)
+		fmt.Fprint(c, "/listening_at "+myListenAddr)
+		time.Sleep(1 * time.Second)
+
+		// If I know a peer, I do not need to continue pinging the LAN
+		if len(node.knownHosts) > 0 {
+			break
 		}
 	}
 }
@@ -44,6 +53,7 @@ func ListenForMulticasts(node *Node, h func(*net.UDPAddr, int, []byte, *Node)) {
 		log.Fatal(err)
 	}
 	l, err := net.ListenMulticastUDP("udp", nil, addr)
+	defer l.Close()
 	l.SetReadBuffer(maxDatagramSize)
 	for {
 		b := make([]byte, maxDatagramSize)
@@ -52,20 +62,21 @@ func ListenForMulticasts(node *Node, h func(*net.UDPAddr, int, []byte, *Node)) {
 			log.Fatal("ReadFromUDP failed:", err)
 		}
 		// do not listen to my own LAN ping
-		fmt.Println("ReadFromUDP: ", src)
-		fmt.Println("ReadFromUDP: ", node.knownHosts)
+		//fmt.Println("ReadFromUDP: ", src)
+		//fmt.Println("ReadFromUDP: ", node.knownHosts)
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
 			h(src, n, b, node)
+			fmt.Println("Known peers: ", node.knownHosts)
 			// Stop find pinging and multicast listening
 			//startUpSequenceFlag <- false
-			l.Close()
-			break
+			//l.Close()
+			//break
 		}
-		if len(node.knownHosts) != 0 {
-			// Stop find pinging and multicast listening
-			l.Close()
-			break
-		}
+		//if len(node.knownHosts) != 0 {
+		//	// Stop find pinging and multicast listening
+		//	l.Close()
+		//	break
+		//}
 	}
 }

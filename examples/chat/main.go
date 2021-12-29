@@ -26,14 +26,11 @@ func clientBehaviour(node *butter.Node) {
 		var msg string
 		fmt.Scanln(&msg)
 
-		//knownHosts := node.GetKnownHosts()
-		//
-		//for i := 0; i < knownHosts.len(); i++ {
-		//	_, err := node.Send(knownHosts[i], msg)
-		//	if err != nil {
-		//		fmt.Println("Error sending message to ", knownHosts[i])
-		//	}
-		//}
+		knownHosts := butter.GetKnownHosts(node)
+
+		for i := 0; i < len(knownHosts); i++ {
+			butter.Send(knownHosts[i], msg)
+		}
 	}
 }
 
@@ -45,3 +42,5 @@ func main() {
 	node := butter.NewNode(0)
 	butter.StartNode(&node, clientBehaviour, serverBehaviour)
 }
+
+// TODO: Fix the bug in the code, so that the chat works between several nodes

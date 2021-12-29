@@ -1,12 +1,13 @@
 package butter
 
 import (
+	"encoding/json"
 	"fmt"
+	uuid "github.com/nu7hatch/gouuid"
 	"log"
 	"net"
 	"os"
 	"strconv"
-	"strings"
 	"sync"
 )
 
@@ -57,9 +58,8 @@ func StartNode(node *Node, clientBehaviour func(*Node), serverBehaviour func(*No
 	// - call out for other nodes (multicast)
 	// - generate thread-pool + start listening for connections and respond to them with the prescribed listening behaviour
 	// - run client behaviour as prescribed
-	// TODO: Make broadcasts interact with tcpListener (maybe change the broadcast address?)
 	go findPeer(node)
-	//go clientBehaviour(node)
+	go clientBehaviour(node)
 	tcpListen(node, serverBehaviour)
 }
 
@@ -135,13 +135,14 @@ func foundNodeHandler(src *net.UDPAddr, n int, b []byte, node *Node) {
 // If I get a multicast that isn't myself then add it to the known hosts and stop pinging and listening
 func findPeer(node *Node) {
 	// Set the start-up sequence flag to true as the node is starting up and hence trying to find peers
-	quit := make(chan bool, 0)
+	//quit := make(chan bool, 0)
 
 	fmt.Println("in findPeer")
 
-	go PingLAN(quit, node)
-	ListenForMulticasts(node, foundNodeHandler)
-	quit <- true
+	go ListenForMulticasts(node, foundNodeHandler) // TODO: This should actually always be listening for nodes that want to join the network
+	PingLAN(node)                                  // This should stop once it has found a peer
+
+	//quit <- true
 	fmt.Println("I should have made a friend ", len(node.knownHosts))
 }
 
@@ -165,13 +166,99 @@ func routeHandler(packet string, node *Node) bool {
 	return false
 }
 
-func parsePacket(packet string) (string, string) {
-	// get the uri by splitting the packet at the first space
-	uri := strings.Split(packet, " ")[0]
-	uriLength := len(uri)
-	startOfPayload := uriLength + 1
-	// get the payload by getting everything after the first space
-	payload := packet[startOfPayload:]
+func GetKnownHosts(node *Node) []string {
+	node.lock.Lock()
+	defer node.lock.Unlock()
+	return node.knownHosts
+}
 
-	return uri, payload
+func Send(remoteHost string, message string) {
+	// Start a tcp client connection and send them my ip and port
+	c, err := net.Dial("tcp", remoteHost)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Fprint(c, message)
+	reply := make([]byte, 1024)
+	c.Read(reply)
+	fmt.Println("Reply:", string(reply))
+	c.Close()
+}
+
+// NaiveRetrieve High level entrypoint for searching for a specific piece of information on the network
+// look if I have the information else look at the most likely known host to get to that information
+// one query per piece of information (one-to-one) hence the query has to be unique i.e i.d.
+func NaiveRetrieve(node *Node, query string) string {
+	// do I have this information, if so return it
+	// else BFS (pass the query on to all known hosts (partial view)
+	node.lock.Lock()
+	defer node.lock.Unlock()
+	if val, ok := node.storage[query]; ok {
+		return val.data
+	} else {
+		return bfs(node, query)
+	}
+}
+
+func bfs(node *Node, query string) string {
+	// Initialise an empty queue
+	queue := make([]string, 0)
+	// Add all my known hosts to the queue
+	for _, host := range node.knownHosts {
+		queue = append(queue, host)
+	}
+	for len(queue) > 0 {
+		// Pop the first element from the queue
+		host := queue[0]
+		queue = queue[1:]
+		// Start a connection to the host
+		c, err := net.Dial("tcp", host)
+		if err != nil {
+			fmt.Println(err)
+			return "Error connecting to host"
+		}
+		c.Close()
+		// Ask host if he has data
+		fmt.Fprint(c, "/remote-retrieve "+query)
+		// Receive response
+		reply := make([]byte, 1024)
+		c.Read(reply)
+		uri, payload := parsePacket(string(reply))
+		// If the returned packet is success + the data then return it
+		// else add the known hosts of the remote node to the end of the queue
+		if uri == "/success" {
+			return payload
+		} else {
+			fmt.Fprint(c, "/get-remote-known-hosts"+query)
+			c.Read(reply)
+			// convert json list of known hosts into a slice of strings
+			remoteHosts := make([]string, 0)
+			err = json.Unmarshal(reply, &remoteHosts)
+			if err != nil {
+				fmt.Println(err)
+				return "Error decoding json"
+			}
+			// add the remote hosts to the end of the queue
+			queue = append(queue, remoteHosts...)
+		}
+		return "Information is not on the network"
+	}
+	return "This should not happen"
+}
+
+// NaiveStore stores information on the network naively by simply placing it on the local node. It generate a UUIS for
+// the information and creates an information block and return information uuid
+func NaiveStore(node *Node, keywords []string, information string) string {
+	node.lock.Lock()
+	// Generate UUID
+	u, _ := uuid.NewV4()
+	node.storage[u.String()] = Block{
+		keywords: keywords,
+		part:     0,
+		parts:    0,
+		data:     information,
+	}
+	node.lock.Unlock()
+	return u.String()
 }

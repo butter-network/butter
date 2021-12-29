@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/butter-go.iml" filepath="$PROJECT_DIR$/.idea/butter-go.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/butter.iml" filepath="$PROJECT_DIR$/.idea/butter.iml" />
     </modules>
   </component>
 </project>
