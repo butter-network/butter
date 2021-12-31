@@ -16,6 +16,7 @@ type Block struct {
 	// i.e. part 1 of 5 parts
 	part  int
 	parts int
+	geo   string // This will be used to distribute replicated data geographically to reduce latency and avoid replicated data sharing infrastructure (more robust)
 	data  string
 }
 
@@ -106,9 +107,13 @@ func handleRequest(conn net.Conn, node *Node, serverBehaviour func(*Node, string
 	//conn.Write([]byte("Message received."))
 	//// Close the connection when you're done with it.
 	//conn.Close()
-	if !routeHandler(string(buf), node) {
-		// if none of the pre-defined routes match, then carry out the user defined behaviour
-		serverBehaviour(node, string(buf))
+	// if start with a "/" then regular server behaviour else  handle specific route
+	if string(buf[0]) != "/" {
+		response := serverBehaviour(node, string(buf))
+		conn.Write([]byte(response))
+	} else {
+		response := routeHandler(string(buf), node)
+		conn.Write([]byte(response))
 	}
 }
 
@@ -146,7 +151,7 @@ func findPeer(node *Node) {
 	fmt.Println("I should have made a friend ", len(node.knownHosts))
 }
 
-func routeHandler(packet string, node *Node) bool {
+func routeHandler(packet string, node *Node) string {
 	uri, payload := parsePacket(packet)
 	switch uri {
 	case "/listening_at":
@@ -155,15 +160,15 @@ func routeHandler(packet string, node *Node) bool {
 		node.knownHosts = append(node.knownHosts, remoteHostAddress)
 		introduceMyself(node, remoteHostAddress)
 		node.lock.Unlock()
-		return true
+		return "/success"
 	case "/introduction": // TODO: stop ping and udp listening from here
 		remoteHostAddress := payload
 		node.lock.Lock()
 		node.knownHosts = append(node.knownHosts, remoteHostAddress)
 		node.lock.Unlock()
-		return true
+		return "/success"
 	}
-	return false
+	return "/invalid-route"
 }
 
 func GetKnownHosts(node *Node) []string {

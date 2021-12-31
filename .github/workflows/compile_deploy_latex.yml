@@ -1,0 +1,46 @@
+# Github workflow to compile latex project documentation and deploy the html
+# version to an orphan branch.
+
+name: compile_deploy_latex
+on: [push]
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    env:
+      # Edit here with the names of your latex file and directory (can use ".")
+      DIR: ./docs
+      FILE: main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+      - name: LaTeX compile
+        working-directory: ${{ env.DIR }}
+        run: pandoc ${{ env.FILE }}.tex -o index.html
+      - name: move
+        run: mkdir -p github_artifacts && mv ${{ env.DIR }}/index.html ./github_artifacts/
+      - name: Upload pdf as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: index.html
+          path: ./github_artifacts
+  deploy:
+    # Edit here if compiling multiple papers
+    needs: [compile]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: github_artifacts
+      - name: move
+        run: mkdir -p github_deploy && mv github_artifacts/*/* github_deploy
+      - name: deploy on orphan branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./github_deploy
+          publish_branch: published_docs
+          force_orphan: true

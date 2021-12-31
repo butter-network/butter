@@ -10,7 +10,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/compile_deploy_latex.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/networkLayers.tex" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/platformLayers.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,6 +75,11 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+    </key>
+  </component>
   <component name="RunManager" selected="Go Build.go build wiki">
     <configuration name="go build chat" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="butter" />
@@ -106,7 +117,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="implement naive bfs information retrieval" />
-    <option name="LAST_COMMIT_MESSAGE" value="implement naive bfs information retrieval" />
+    <MESSAGE value="workspace changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="workspace changes" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

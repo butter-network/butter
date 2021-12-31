@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Butter: An efficient decentralised platform}
+\author{Alexandre Shinebourne}
+\date{December 2021}
+
+\begin{document}
+
+\maketitle
+
+% Use stuff from punciple of distributed systems textbook - use it to make an overview of distributed systems section - re-iterate the summary from the introduction and architecture part
+%talk about the bytter platform taxonomy
+% Overview of the academic field of distributed systems
+% Survey of the decentralised platforms/project/products
+low level p2p libraries: libp2p, DAT project, maidsafe network...?
+high level products: IPFS, FileCoin, Ethereum, Beaker browser..., BitTorrent
+
+\section{Introduction}
+\section{Design}
+There is a distinction between getting information when you known exactly what you are looking for (searching for something by a unique name/id) vs searching for something more generally i.e. search engine (both use search algorithms)
+\subsection{The platform vocabulary}
+This is an aggregation of all the common terminology that may be required when discussing decentralised systems.
+\begin{itemize}
+    \item A 'server' becomes a 'listener'
+    \item A 'client' becomes a 'caller'
+    \item A node is an entity on the network that can both call and listen (expressed as a vertec)
+    \item A peer is a node connected to other nodes on the network (expressed as a vertex with at least one connection)
+    \item Peers are two or more connected nodes
+    \item Each peer has a list of known peers
+    \item A first-degree peer is one that a peer has in his list (expreesed as as edge)
+\end{itemize}
+\subsection{An informal analogy}
+This is used to improve reasoning and creative thinking about decentralised systems.
+\begin{itemize}
+    \item A person can be thout of as a node (a unit of communication that can both listen and communicate information)
+    \item A friend...
+\end{itemize}
+\end{document}
+
+
+% Unstructured peer to peer architecture
+% searching in an unstruvtured overlay network
+
+%Motivation
+%This project was started as an effort to make a truly distributed system (or at least as close as possible) as "I" was
+%not comfortable with the other offerings... I want to make a platform by design that reassures that data will be
+%maintained and devoid of control. I want users to feel that they have no dependability. There has to be no universally
+%known host within the data-layer (there are a few universally known host that are used simply during the startup
+%procedure to allow NAT traversal.
+%
+%The resulting systems is an Unstructured p2p is arguably true p2p…
+%
+%Defined as having sorta random known peer list per node (we'll see that here this is not the case)
+%
+%The network also has to be efficient so not storing to many peers and not too much redundant data without risking data loss
+%
+%When dealing with persistent data on the network i.e. data blocks we need to be able to find them in a way that is totally decentralised - overlay network (nothing for it other than a more sophisticated bfs)
+
+%// before I start the data layer of the p2p network TCP, I need to go through the start up
+%// procedure to make at least one connection to the network
+
+% Not only do I want to have a diverse set of known hosts (peers) in terms of uptime (hosts that I can rely on and hosts than can rely on me) but I also want to have a set of known hosts with a diverse set of knowledge/information to increase my probability of quickly finding information
+
+% Choosing a language proved really defaut toyed with Rust, Go, Java, Javascript, Swift - but chose rust
+% It is well suited high perfoance, low footprint
+
+% Bceause Rust is hard the learning resources are really good - rust book, rust by example and realy active rust community
