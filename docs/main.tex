@@ -1,41 +1,75 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
+
+% Document format: https://warwick.ac.uk/fac/sci/dcs/teaching/material/cs310/components/final/format/
 
 \title{Butter: An efficient decentralised platform}
 \author{Alexandre Shinebourne}
 \date{December 2021}
 
+% Keywords command
+\providecommand{\keywords}[1]
+{
+    \small
+    \textbf{\textit{Keywords: }} #1
+}
+
 \begin{document}
 
-\maketitle
+    \maketitle
+
+    \begin{abstract}
+        Butter is a decentralized platform for building pure (unstructured) peer-to-peer systems.
+    \end{abstract}
+
+    \keywords{Distributed}{Decentralised}{Systems}{Networks}{Peer-to-peer}{P2P}{Information retrieval}{IR}{Unstructured}
+
+    \tableofcontents
 
 % Use stuff from punciple of distributed systems textbook - use it to make an overview of distributed systems section - re-iterate the summary from the introduction and architecture part
 %talk about the bytter platform taxonomy
 % Overview of the academic field of distributed systems
 % Survey of the decentralised platforms/project/products
-low level p2p libraries: libp2p, DAT project, maidsafe network...?
-high level products: IPFS, FileCoin, Ethereum, Beaker browser..., BitTorrent
+%low level p2p libraries: libp2p, DAT project, maidsafe network...?
+%high level products: IPFS, FileCoin, Ethereum, Beaker browser..., BitTorrent
 
-\section{Introduction}
-\section{Design}
-There is a distinction between getting information when you known exactly what you are looking for (searching for something by a unique name/id) vs searching for something more generally i.e. search engine (both use search algorithms)
-\subsection{The platform vocabulary}
-This is an aggregation of all the common terminology that may be required when discussing decentralised systems.
-\begin{itemize}
-    \item A 'server' becomes a 'listener'
-    \item A 'client' becomes a 'caller'
-    \item A node is an entity on the network that can both call and listen (expressed as a vertec)
-    \item A peer is a node connected to other nodes on the network (expressed as a vertex with at least one connection)
-    \item Peers are two or more connected nodes
-    \item Each peer has a list of known peers
-    \item A first-degree peer is one that a peer has in his list (expreesed as as edge)
-\end{itemize}
-\subsection{An informal analogy}
-This is used to improve reasoning and creative thinking about decentralised systems.
-\begin{itemize}
-    \item A person can be thout of as a node (a unit of communication that can both listen and communicate information)
-    \item A friend...
-\end{itemize}
+
+    \section{Introduction}
+    \section{Motivations}
+    \section{Background}
+%    Overview of the history of distributed systems
+    \section{Design}
+    There is a distinction between getting information when you known exactly what you are looking for (searching for something by a unique name/id) vs searching for something more generally i.e. search engine (both use search algorithms)
+
+    \subsection{The platform vocabulary}
+    This is an aggregation of all the common terminology that may be required when discussing decentralised systems.
+    \begin{itemize}
+        \item A 'server' becomes a 'listener'
+        \item A 'client' becomes a 'caller'
+        \item A node is an entity on the network that can both call and listen (expressed as a vertec)
+        \item A peer is a node connected to other nodes on the network (expressed as a vertex with at least one connection)
+        \item Peers are two or more connected nodes
+        \item Each peer has a list of known peers
+        \item A first-degree peer is one that a peer has in his list (expreesed as as edge)
+    \end{itemize}
+
+    \subsection{An informal analogy}
+    This is used to improve reasoning and creative thinking about decentralised systems.
+    \begin{itemize}
+        \item A person can be thout of as a node (a unit of communication that can both listen and communicate information)
+        \item A friend
+    \end{itemize}
+
+    \section{Testing}
+    \section{Results}
+    \section{Evaluation}
+    % \section{Methodology} - like how the project was managed and carries out?
+    \section{Future work}
+    \section{Legal, social and ethical discussion}
+%    How does the technology affect society?
+    \section{Self-reflection}
+    \section{Acknowledgements}
+    \section{Conclusion}
 \end{document}
 
 
