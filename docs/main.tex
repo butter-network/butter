@@ -18,6 +18,8 @@
 
 \maketitle
 
+% TODO: I need a clear definition of distributed and decentralised system (taken from the Tanenbaum book
+
 \begin{abstract}
     Butter is a decentralized platform for building pure (unstructured) peer-to-peer systems.
 \end{abstract}
@@ -26,21 +28,21 @@
 
 \tableofcontents
 
-% Use stuff from punciple of distributed systems textbook - use it to make an overview of distributed systems section - re-iterate the summary from the introduction and architecture part
-%talk about the bytter platform taxonomy
-% Overview of the academic field of distributed systems
-% Survey of the decentralised platforms/project/products
-%low level p2p libraries: libp2p, DAT project, maidsafe network...?
-%high level products: IPFS, FileCoin, Ethereum, Beaker browser..., BitTorrent
-
-
 \section{Introduction}
-\section{Motivations}
-\section{Background}
-% Overview of the history of distributed systems
-\section{Design}
-There is a distinction between getting information when you known exactly what you are looking for (searching for something by a unique name/id) vs searching for something more generally i.e. search engine (both use search algorithms)
+% Use stuff from principle of distributed systems textbook - use it to make an overview of distributed systems section - re-iterate the summary from the introduction and architecture part
 
+\section{Motivations}
+
+\section{Background}
+% Important terminology
+% Overview of the history of distributed systems
+% Overview of the academic field of distributed systems
+% What are the problems to solve when building a distributed system?
+% Different distributed architectures
+% There are three big non-trivial problems that we are going to focus on:
+% - Information retrieval in distributed systems (focus on IR in pure unstructured networks)
+% - Information distribution in distributed systems (focus on pure unstructured networks)
+% - Known host selection in distributed systems (focus on pure unstructured networks)
 \subsection{The platform vocabulary}
 This is an aggregation of all the common terminology that may be required when discussing decentralised systems.
 \begin{itemize}
@@ -53,19 +55,40 @@ This is an aggregation of all the common terminology that may be required when d
     \item A first-degree peer is one that a peer has in his list (expreesed as as edge)
 \end{itemize}
 
-\subsection{An informal analogy}
+\section{Survey of current and past decentralised platform project}
+% Survey of the decentralised platforms/project/products
+%low level p2p libraries - developer centric libraries: libp2p, DAT project, maidsafe network...?
+%high level products - user-centric: IPFS, FileCoin, Ethereum, Beaker browser..., BitTorrent
+
+\section{Design}
+% talk about the butter platform taxonomy
+\subsection{An informal analogy for the network}
 This is used to improve reasoning and creative thinking about decentralised systems.
 \begin{itemize}
     \item A person can be thout of as a node (a unit of communication that can both listen and communicate information)
     \item A friend
 \end{itemize}
+\subsection{Peer discovery}
+\subsection{NAT traversal}
+\subsection{Information retrieval in a pure unstructured network}
+% Use the analogy of finding a book in a library with no apparent organisation scheme
+% talk about being restricted to local knowledge and a partial view of the network (known hosts)
+% even enforcing an alphabetical scheme to help make retrieval faster would require centralisation as we would need a node to allocate letters of the alphabet to each node entering the network
+% There is a distinction between getting information when you known exactly what you are looking for (searching for something by a unique name/id) vs searching for something more generally i.e. search engine (both use search algorithms)
+\subsection{Information distribution in a pure unstructured network}
+\subsection{Known host selection in a pure unstructured network}
 
 \section{Testing}
+
 \section{Results}
+
 \section{Evaluation}
+
 \section{Project management methodology} % - like how the project was managed and carries out?
 Poor choice of language to start with. At the beginning stages of the project the main focus should have been on designing the underlying algorithms for the purely unstructured peer-to-peer network. By starting in Rust, prototyping was slow and reasoning was more difficult as syntax an memory management got in the way of the design work. After switching to Go (which was done a little late in the projects life-cycle) the rate of progress increased massively.
+
 \section{Future work}
+
 \section{Legal, social and ethical discussion}
 % How does the technology affect society?
 On a personal note, I find a centralised internet a worrying place. There is a fragility to it and opportunities for abuse (maybe sometimes not conciously). This is why I feel so strongly about building on decentralised systems. Here individuals are protected not by rules or regulations (that may not always be enforced) but rather by the inherent design of the system. It is self-maintaining and open in its very nature. There is also a robustness to decentralised systems as we are avoiding single points of failure be it from a technology standpoint or a high level company/service standpoint
@@ -84,6 +107,8 @@ On a personal note, I find a centralised internet a worrying place. There is a f
 %maintained and devoid of control. I want users to feel that they have no dependability. There has to be no universally
 %known host within the data-layer (there are a few universally known host that are used simply during the startup
 %procedure to allow NAT traversal.
+
+%  Want to get as close as possible to a pure distributed system
 %
 %The resulting systems is an Unstructured p2p is arguably true p2p…
 %
@@ -102,3 +127,9 @@ On a personal note, I find a centralised internet a worrying place. There is a f
 % It is well suited high perfoance, low footprint
 
 % Bceause Rust is hard the learning resources are really good - rust book, rust by example and realy active rust community
+
+%The project's unique design approach is to think about events (meeting a new peer, interacting with a peer, conversing with a peer, spreading information) on the network in a social way, drawing inspiration from modelling human interaction in a social context. The information on the network should emulate the way humans naturally meet, communicate and dissipate information. A social gathering (e.g. a party or a casual meeting of friends) is arguably a good model of decentralised communication and hence can be drawn upon as inspiration.
+
+% abstracting away most of the decentralised behaviour
+
+% in the design section on information retrievel - maybe talk about the finding a book in a library analogy
