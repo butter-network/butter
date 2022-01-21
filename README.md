@@ -58,6 +58,15 @@ Take a look at more examples in the [examples/](./examples) directory.
 - See the project board
 - Raise an issue or pull request
 
+**Explaining the project structure**:
+Making a peer to peer system can be broken down into 5 main components
+1. Defining the node behaviour and maintaining the network by managing known hosts (per node) (`node/`)
+2. Discovery (`discover/`)
+3. NAT traversal (`traverse/`)
+4. (Persistent) information storage (`store/`)
+5. (Persistent) information retrieval (`retrieve/`)
+These are reflected in the project package structure
+
 ### Testing
 
 When testing on a development machine, it may become necessary to test the behaviour across several IP addresses, this can be achieved by running nodes from different containers.

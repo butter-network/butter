@@ -15,15 +15,15 @@ const (
 var myPingAddr string
 
 func PingLAN(node *Node) {
-	fmt.Println("in PingLAN")
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
 	}
 	c, err := net.DialUDP("udp", nil, addr)
 	myPingAddr = c.LocalAddr().String()
-	fmt.Println("PingLAN address is: ", myPingAddr)
-	myListenAddr := node.ip + ":" + node.port
+	fmt.Println("Pinging out for peers at ", myPingAddr)
+	//myListenAddr := node.ip + ":" + node.port
+	//myListenAddr := node.socketAddr.ToString()
 	//for {
 	//	select {
 	//	case <-quit:
@@ -35,11 +35,15 @@ func PingLAN(node *Node) {
 	//	}
 	//}
 	for {
-		fmt.Fprint(c, "/listening_at "+myListenAddr)
+		fmt.Println("I'm pinging...")
+		uri := []byte("/listening_at ")
+		socketAddress, _ := node.socketAddr.ToJson()
+		c.Write(append(uri, socketAddress...))
 		time.Sleep(1 * time.Second)
 
 		// If I know a peer, I do not need to continue pinging the LAN
 		if len(node.knownHosts) > 0 {
+			fmt.Println("I know a peer, so I am done pinging the LAN")
 			break
 		}
 	}

@@ -10,10 +10,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="update readme">
+      <change afterPath="$PROJECT_DIR$/docs/commands.tex" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/imgs/Screenshot from 2022-01-17 17-13-57.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/refs.bib" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/store/store.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ambassador.go" beforeDir="false" afterPath="$PROJECT_DIR$/traverse/ambassador.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/multicast.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils.go" afterDir="false" />
     </list>
@@ -52,6 +64,9 @@
       </list>
     </option>
   </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/node.go" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -80,15 +95,17 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.User-Defined File Types" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/traverse" />
+      <recent name="$PROJECT_DIR$/docs/imgs" />
       <recent name="$PROJECT_DIR$/docs" />
     </key>
   </component>
-  <component name="RunManager" selected="LaTeX.Docs">
-    <configuration name="go build chat" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Build.Go build wiki">
+    <configuration name="Go build chat" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="butter" />
       <working_directory value="$PROJECT_DIR$/examples/chat" />
       <kind value="PACKAGE" />
@@ -97,7 +114,7 @@
       <filePath value="$PROJECT_DIR$/examples/chat/main.go" />
       <method v="2" />
     </configuration>
-    <configuration name="go build wiki" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <configuration name="Go build wiki" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="butter" />
       <working_directory value="$PROJECT_DIR$/examples/wiki" />
       <kind value="PACKAGE" />
@@ -128,8 +145,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go Build.go build chat" />
-      <item itemvalue="Go Build.go build wiki" />
+      <item itemvalue="Go Build.Go build chat" />
+      <item itemvalue="Go Build.Go build wiki" />
       <item itemvalue="LaTeX.Docs" />
     </list>
     <recent_temporary>

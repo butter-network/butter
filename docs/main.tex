@@ -1,5 +1,8 @@
 \documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+
+\include{commands}
 
 % Document format: https://warwick.ac.uk/fac/sci/dcs/teaching/material/cs310/components/final/format/
 
@@ -7,18 +10,13 @@
 \author{Alexandre Shinebourne}
 \date{December 2021}
 
-% Keywords command
-\providecommand{\keywords}[1]
-{
-    \small
-    \textbf{\textit{Keywords: }} #1
-}
+
 
 \begin{document}
 
 \maketitle
 
-% TODO: I need a clear definition of distributed and decentralised system (taken from the Tanenbaum book
+% TODO: I need a clear definition of distributed vs decentralised system (taken from the Tanenbaum book
 
 \begin{abstract}
     Butter is a decentralized platform for building pure (unstructured) peer-to-peer systems.
@@ -43,7 +41,33 @@
 % - Information retrieval in distributed systems (focus on IR in pure unstructured networks)
 % - Information distribution in distributed systems (focus on pure unstructured networks)
 % - Known host selection in distributed systems (focus on pure unstructured networks)
-\subsection{The platform vocabulary}
+\subsection{Establishing a common language}\label{subsec:establishing-a-common-language}
+The definition for distributed system is given to use by Tannenbaum and Van Steen in "Distributed systems Principles and Paradigms". They also make allusion to the general poor quality of definitions and lack of concensus so we use their loose characterization: "A distributed system is a collection of independent computers that appear to its user as a single coherent system."
+There are two important aspects to this definition, first that a distributed systems consist of components that are autonomous and secondly that the user (person or program) view the system as a single coherent system (overlay network). The autonomous layer of the distributed system requires collaboration and establising that collaboration is the crux of designing any form of distributed system.
+
+There are a few notable characteristics of distributed systems, given the defition
+- "teh difference between the various computers and the way in which communicate are mostly hidden from the user"
+- the user is not aware of the underlying architecture/organisation of the system
+- "the user and application and applications can interact with a distributed system in a continous and uniform way, regardless of when and where the interactions take place
+This is what makes distributed systems so powerful and such a good design for critical applications available over the internet - as a "distributed system should normally be contiously available" it should be detached from the underlying use/data it handles.
+
+In order to support all manner of computers and networks while offering a single coherent interface for the system, distributed systems are typically organised into logical layers - with a high-level user and application layer, a low level operating system and basic commuinication layer - the distributed behaviour lies in-bitween hence is often reffered to as the distributed behaviour middleware.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/Screenshot from 2022-01-17 17-13-57.png}
+    \caption{Example of a distributed system with three logical layers}
+    \label{fig:example-distributed-system-layers}
+\end{figure}
+
+The figure\ref{fig:example-distributed-system-layers}, taken from the Tanenbaum Steen book, shows four network connected computers, the distributed behaviour middleware (provided as a consistent interface between the operating systems and applications) and the top level application layer. Where application B is shared across computers 2 and 3.
+
+stributed systen architectures - decentralised architecture: structured and unstructured peer-to-peer architectures
+
+
+
+This whole section is taken from the Tanenbaum Steen book\cite{tanenbaumSteen}. % If your entire paragraph is paraphrase of info you got from one of your sources, just put the citation at the very end
+
 This is an aggregation of all the common terminology that may be required when discussing decentralised systems.
 \begin{itemize}
     \item A 'server' becomes a 'listener'
@@ -62,12 +86,8 @@ This is an aggregation of all the common terminology that may be required when d
 
 \section{Design}
 % talk about the butter platform taxonomy
-\subsection{An informal analogy for the network}
-This is used to improve reasoning and creative thinking about decentralised systems.
-\begin{itemize}
-    \item A person can be thout of as a node (a unit of communication that can both listen and communicate information)
-    \item A friend
-\end{itemize}
+Problem centric design to buidding a sitributed system with as decentralised unstructured peer-to-peer architecyure
+There are some problems specific to pure unstructure peer-to-peer architecture - where choosing known hosts, information retrieval and fault-tolerant persistent data storage become non-trivial problems.
 \subsection{Peer discovery}
 \subsection{NAT traversal}
 \subsection{Information retrieval in a pure unstructured network}
@@ -95,6 +115,8 @@ On a personal note, I find a centralised internet a worrying place. There is a f
 \section{Self-reflection}
 \section{Acknowledgements}
 \section{Conclusion}
+\bibliographystyle{plain}
+\bibliography{refs} % Entries are in the refs.bib file
 \end{document}
 
 
@@ -133,3 +155,10 @@ On a personal note, I find a centralised internet a worrying place. There is a f
 % abstracting away most of the decentralised behaviour
 
 % in the design section on information retrievel - maybe talk about the finding a book in a library analogy
+
+% metatlity is everyrime you make a request infer as much data you can from it about the netwrok to reduce the need of surplus requests
+
+%// block geo tag will be used to distribute replicated data geographically to reduce latency and avoid replicated data
+%//sharing infrastructure (more robust)
+
+% Explain what an overlay network is? Am I gona use an overlay network for information retrieval? No, I don't think so
