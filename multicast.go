@@ -36,7 +36,7 @@ func PingLAN(node *Node) {
 	//}
 	for {
 		fmt.Println("I'm pinging...")
-		uri := []byte("/listening_at ")
+		uri := []byte{101}
 		socketAddress, _ := node.socketAddr.ToJson()
 		c.Write(append(uri, socketAddress...))
 		time.Sleep(1 * time.Second)

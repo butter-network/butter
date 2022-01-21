@@ -17,11 +17,12 @@ package utils
 //	return uri, payload
 //}
 
-func ParsePacket(packet []byte) (string, []byte) {
-	for i, v := range packet {
-		if v == 32 {
-			return string(packet[:i]), packet[i+1:]
-		}
-	}
-	return "", []byte{1}
+func ParsePacket(packet []byte) (byte, []byte) {
+	//for i, v := range packet {
+	//	if v == 32 {
+	//		return string(packet[:i]), packet[i+1:]
+	//	}
+	//}
+	//return "", []byte{1}
+	return packet[0], packet[1:]
 }

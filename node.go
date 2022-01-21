@@ -11,9 +11,14 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"sync"
 )
 
+const (
+	// Listener communication byte codes
+	appCode   byte = 100 // received a request to interact with the app server behaviour
+	pingCode  byte = 101 // received a ping request from a node in startup mode
+	helloCode byte = 102 // received a hello request from a node in response to a ping
+)
 const BlockSize = 4096
 
 // A Block has a size of 4096 bytes with a uuid of size 16 bytes, 5 keywords of max size 50 bytes, 2 part numbers of
@@ -29,16 +34,18 @@ type Block struct {
 }
 
 type Node struct {
-	socketAddr utils.SocketAddr
-	knownHosts []utils.SocketAddr
-	storage    map[uuid.UUID]Block
-	uptime     float64
-	lock       sync.Mutex
+	socketAddr      utils.SocketAddr
+	knownHosts      []utils.SocketAddr
+	storage         map[uuid.UUID]Block
+	uptime          float64
+	serverBehaviour func(*Node, string) string
+	clientBehaviour func(*Node)
+	//lock            sync.Mutex
 }
 
 // NewNode based on the local IP address of the computer, an OS allocated or specified port number and the desired
 // memory usage. The max memory is specified in megabytes.
-func NewNode(port uint16, maxMemory uint64) (Node, error) {
+func NewNode(port uint16, maxMemory uint64, serverBehaviour func(*Node, string) string, clientBehaviour func(*Node)) (Node, error) {
 	var node Node
 
 	// Convert from mb to bytes
@@ -64,28 +71,30 @@ func NewNode(port uint16, maxMemory uint64) (Node, error) {
 	maxStorageBlocks := (maxMemoryInBytes - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
 	node = Node{
-		socketAddr: utils.SocketAddr{Ip: localIpString, Port: port},
-		knownHosts: make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
-		storage:    make(map[uuid.UUID]Block, maxStorageBlocks),
-		uptime:     0,
+		socketAddr:      utils.SocketAddr{Ip: localIpString, Port: port},
+		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
+		storage:         make(map[uuid.UUID]Block, maxStorageBlocks),
+		uptime:          0,
+		serverBehaviour: serverBehaviour,
+		clientBehaviour: clientBehaviour,
 	}
 
 	return node, nil
 }
 
-func (node *Node) StartNode(clientBehaviour func(*Node), serverBehaviour func(*Node, string) string) {
+func (node *Node) StartNode() {
 	// at the same time:
 	// - call out for other nodes (multicast)
 	// - generate thread-pool + start listening for connections and respond to them with the prescribed listening behaviour
 	// - run client behaviour as prescribed
 	go node.findPeer()
-	go clientBehaviour(node)
-	node.tcpListen(serverBehaviour)
+	go node.clientBehaviour(node)
+	node.tcpListen()
 }
 
-func (node *Node) tcpListen(serverBehaviour func(*Node, string) string) {
+func (node *Node) tcpListen() {
 	// Create listener socket
-	node.lock.Lock()
+	//node.lock.Lock()
 	l, err := net.Listen("tcp", node.socketAddr.ToString())
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
@@ -98,7 +107,7 @@ func (node *Node) tcpListen(serverBehaviour func(*Node, string) string) {
 	_, port, _ := net.SplitHostPort(l.Addr().String())
 	portInt64, err := strconv.ParseUint(port, 10, 16)
 	node.socketAddr.Port = uint16(portInt64)
-	node.lock.Unlock()
+	//node.lock.Unlock()
 
 	fmt.Println("Node is listening at ", l.Addr())
 
@@ -109,14 +118,19 @@ func (node *Node) tcpListen(serverBehaviour func(*Node, string) string) {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
 		}
+		fmt.Println("Received connection")
 		// Handle connections in a new goroutine.
-		go node.handleRequest(conn, serverBehaviour)
+		go node.handleRequest(conn)
 	}
 }
 
-func (node *Node) handleRequest(conn net.Conn, serverBehaviour func(*Node, string) string) {
+func (node *Node) handleRequest(conn net.Conn) {
 	// Make a buffer to hold incoming data.
-	buf, _ := ioutil.ReadAll(conn)
+	fmt.Println("handling the request")
+	buf, _ := ioutil.ReadAll(conn) // BUG: why is that blocking?
+	//var buf []byte
+	//conn.Read(buf)
+	fmt.Println("Received data: ", string(buf))
 
 	// React appropriately to the incoming request
 	// Check if the request matches any of the reserved routes roots (for internal working of the distributed system
@@ -124,35 +138,34 @@ func (node *Node) handleRequest(conn net.Conn, serverBehaviour func(*Node, strin
 	node.routeHandler(buf)
 }
 
+// make routeHanlder always return something - always have confirmation
 func (node *Node) routeHandler(packet []byte) string {
 	// BUG: When it received that payload eiter the fmt.Fprint is messing with the payload or my parsePacket function
 	// I can be fairly sure that bug is being cause by fmt.Fprint (in the introduceMyself function)
-	//fmt.Println("routeHandler", len(packet))
-	fmt.Println(string(packet))
 	uri, payload := utils.ParsePacket(packet)
-	fmt.Println(uri)
-	fmt.Println(len(string(uri)))
-	fmt.Println(string(payload))
+	//fmt.Println("Received request to ", uri)
 	switch uri {
-	case "/listening_at":
+	case appCode:
+		fmt.Println(node.serverBehaviour(node, string(payload)))
+	//	TODO: Convert the uri human friendly strings to 1 byte code numbers - so they will always be the first byte in the packet way more efficient!!
+	case pingCode:
 		remoteHostAddress, _ := utils.FromJson(payload)
 		//fmt.Println(remoteHostAddress.ToString())
-		node.lock.Lock()
+		//node.lock.Lock()
 		node.addNewKnownHost(remoteHostAddress)
 		node.introduceMyself(remoteHostAddress)
-		node.lock.Unlock()
+		//node.lock.Unlock()
 		return "/success"
-	case "/introduction": // TODO: stop ping and udp listening from here
+	case helloCode: // TODO: stop ping and udp listening from here
 		fmt.Println("cool now we know each other")
 		remoteHostAddress, _ := utils.FromJson(payload) // BINGO! the bug comes from here - the payload is 1010 in length for some reason
-		node.lock.Lock()
+		//node.lock.Lock()
 		//fmt.Println(len(remoteHostAddress))
 		//fmt.Println(remoteHostAddress)
 		node.addNewKnownHost(remoteHostAddress)
-		node.lock.Unlock()
+		//node.lock.Unlock()
 		return "/success"
 	}
-	// TODO: If no roots match, do the server behaviour
 	return "/invalid-route"
 }
 
@@ -163,9 +176,8 @@ func (node *Node) introduceMyself(remoteHost utils.SocketAddr) {
 		fmt.Println(err)
 		return
 	}
-	uri := []byte("/introduction ")
 	nodeSocketAddress, _ := node.socketAddr.ToJson()
-	c.Write(append(uri, nodeSocketAddress...))
+	c.Write(append([]byte{helloCode}, nodeSocketAddress...))
 	c.Close()
 }
 
@@ -193,25 +205,27 @@ func (node *Node) addNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
 }
 
 func (node *Node) GetKnownHosts() []utils.SocketAddr {
-	node.lock.Lock()
-	defer node.lock.Unlock()
+	//node.lock.Lock()
+	//defer node.lock.Unlock()
 	return node.knownHosts
 }
 
-func Send(remoteHost utils.SocketAddr, message string) {
+func Send(remoteHost utils.SocketAddr, message string) ([]byte, error) {
 	// Start a tcp client connection and send them my ip and port
 	//fmt.Println("Sending to ", len(remoteHost)) // BUG: this is weird the length of the remote host string is 1010?
 	//rHost := "192.168.1.25:32943"
 	//fmt.Println(len(rHost))
 	c, err := net.Dial("tcp", remoteHost.ToString()) // For some reason this is not working?
 	if err != nil {
-		//fmt.Println("I'm here")
 		fmt.Println(err)
-		return
+		return nil, errors.New("could not connect to remote host")
 	}
-	fmt.Fprint(c, message)
-	reply := make([]byte, 1024)
-	c.Read(reply)
-	fmt.Println("Reply:", string(reply))
+	messageInBytes := []byte(message)
+	c.Write(append([]byte{appCode}, messageInBytes...))
+	//c.Write([]byte("/app " + message)) // append "/app" to all app level requests (so if the library user adds his own roots they would be app/get-books or app/count-orders
 	c.Close()
+	//fmt.Fprint(c, message)
+	//response, _ := ioutil.ReadAll(c)
+	//fmt.Printf(string(response))
+	return ioutil.ReadAll(c) // TODO: fix this design This is blocking now
 }

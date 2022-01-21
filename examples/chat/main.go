@@ -32,7 +32,11 @@ func clientBehaviour(node *butter.Node) {
 
 		for i := 0; i < len(knownHosts); i++ {
 			//fmt.Println(len(knownHosts[i]))
-			butter.Send(knownHosts[i], msg)
+			response, err := butter.Send(knownHosts[i], msg)
+			if err != nil {
+				return
+			}
+			fmt.Println(response)
 		}
 	}
 }
@@ -45,12 +49,12 @@ func main() {
 	// Create a new node (define a port or set it to 0 to let the OS assign a port)
 	// Define an upper limit of memory usage for the node on the system (recommended setting it to 2048mb (2GB)) or set to 0
 	//to use all available memory
-	node, err := butter.NewNode(0, 2048)
+	node, err := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	node.StartNode(clientBehaviour, serverBehaviour)
+	node.StartNode()
 }
 
 // TODO: Fix the bug in the code, so that the chat works between several nodes

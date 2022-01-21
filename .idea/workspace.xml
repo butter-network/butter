@@ -9,25 +9,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="update readme">
-      <change afterPath="$PROJECT_DIR$/docs/commands.tex" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/imgs/Screenshot from 2022-01-17 17-13-57.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/refs.bib" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/store/store.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="changed to byte codes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ambassador.go" beforeDir="false" afterPath="$PROJECT_DIR$/traverse/ambassador.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/multicast.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,7 +174,9 @@
     <MESSAGE value="Implementing latex compile page workflow" />
     <MESSAGE value="added sections from suggested format" />
     <MESSAGE value="update readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="update readme" />
+    <MESSAGE value="re-working project structure" />
+    <MESSAGE value="changed to byte codes" />
+    <option name="LAST_COMMIT_MESSAGE" value="changed to byte codes" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
