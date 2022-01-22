@@ -10,11 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="changed to byte codes">
+      <change afterPath="$PROJECT_DIR$/examples/ohce/go.mod" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/multicast.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +78,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/examples/ohce" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -85,6 +86,9 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/examples/ohce" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/docs/imgs" />

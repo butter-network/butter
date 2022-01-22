@@ -5,6 +5,9 @@ import (
 	"github.com/a-shine/butter"
 )
 
+// This is a very simple example of a butter program: a reverse echo. A node sends a user specified message to each of
+// it's known hosts, the hosts reply with the message reversed.
+
 // function, which takes a string as
 // argument and return the reverse of string.
 func reverse(s string) string {
@@ -20,6 +23,12 @@ func reverse(s string) string {
 	return string(rns)
 }
 
+func serverBehaviour(node *butter.Node, incomingMsg []byte) []byte {
+	incomingMsgString := string(incomingMsg)
+	reversedMsg := reverse(incomingMsgString)
+	return []byte(reversedMsg)
+}
+
 func clientBehaviour(node *butter.Node) {
 	for {
 		fmt.Println("Type message:")
@@ -28,23 +37,14 @@ func clientBehaviour(node *butter.Node) {
 
 		knownHosts := node.GetKnownHosts()
 
-		fmt.Println(knownHosts)
-
 		for i := 0; i < len(knownHosts); i++ {
-			response, err := butter.Send(knownHosts[i], msg)
+			res, err := butter.Send(knownHosts[i], msg)
 			if err != nil {
-				return
+				fmt.Println("unable to send message to", knownHosts[i])
 			}
-			if string(response) != "/success" {
-				fmt.Println("There was a problem from the server")
-			}
+			fmt.Println(knownHosts[i], " responded with: ", res)
 		}
 	}
-}
-
-func serverBehaviour(node *butter.Node, incomingMsg string) string {
-	fmt.Println("Received from ?: ", incomingMsg)
-	return "/success"
 }
 
 func main() {
@@ -58,5 +58,3 @@ func main() {
 	}
 	node.StartNode()
 }
-
-// TODO: Fix the bug in the code, so that the chat works between several nodes

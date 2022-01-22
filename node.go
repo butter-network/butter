@@ -35,8 +35,8 @@ type Block struct {
 
 type Node struct {
 	socketAddr      utils.SocketAddr
-	knownHosts      []utils.SocketAddr
-	storage         map[uuid.UUID]Block
+	knownHosts      []utils.SocketAddr  // find a way of locking this
+	storage         map[uuid.UUID]Block // find away of locking this
 	uptime          float64
 	serverBehaviour func(*Node, string) string
 	clientBehaviour func(*Node)
