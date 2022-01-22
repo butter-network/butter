@@ -3,60 +3,43 @@ package main
 import (
 	"fmt"
 	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/utils"
 )
 
-// function, which takes a string as
-// argument and return the reverse of string.
-func reverse(s string) string {
-	rns := []rune(s) // convert to rune
-	for i, j := 0, len(rns)-1; i < j; i, j = i+1, j-1 {
+// This example demonstrate how the library abstracts away much of the distributed networking so that teh app designer
+// can focus on building functionality. In addition, it demonstrates the use of app level url routing.
 
-		// swap the letters of the string,
-		// like first with last and so on.
-		rns[i], rns[j] = rns[j], rns[i]
-	}
-
-	// return the reversed string.
-	return string(rns)
+// The serverBehaviour abstracts away all the distributed networking, so the app designer is only ever dealing with the
+// app level packets
+func serverBehaviour(node *butter.Node, remoteNodeAddr utils.SocketAddr, packet []byte) []byte {
+	message := string(packet)
+	fmt.Println(remoteNodeAddr.ToString()+" says: ", message)
+	return []byte("/message-received")
 }
 
+// clientBehaviour creates an interface where a user can send a message to all his known hosts and get confirmation if
+// they have received it.
 func clientBehaviour(node *butter.Node) {
 	for {
 		fmt.Println("Type message:")
 		var msg string
-		fmt.Scanln(&msg) // blocks until user input
+		fmt.Scanln(&msg)
 
 		knownHosts := node.GetKnownHosts()
-
-		fmt.Println(knownHosts)
 
 		for i := 0; i < len(knownHosts); i++ {
 			response, err := butter.Send(knownHosts[i], msg)
 			if err != nil {
 				return
 			}
-			if string(response) != "/success" {
-				fmt.Println("There was a problem from the server")
+			if string(response) == "/message-received" {
+				fmt.Println(knownHosts[i].ToString() + " go the message successfully!")
 			}
 		}
 	}
 }
 
-func serverBehaviour(node *butter.Node, incomingMsg string) string {
-	fmt.Println("Received from ?: ", incomingMsg)
-	return "/success"
-}
-
 func main() {
-	// Create a new node (define a port or set it to 0 to let the OS assign a port)
-	// Define an upper limit of memory usage for the node on the system (recommended setting it to 2048mb (2GB)) or set to 0
-	//to use all available memory
-	node, err := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	node, _ := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour)
 	node.StartNode()
 }
-
-// TODO: Fix the bug in the code, so that the chat works between several nodes

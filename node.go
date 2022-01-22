@@ -38,14 +38,14 @@ type Node struct {
 	knownHosts      []utils.SocketAddr  // find a way of locking this
 	storage         map[uuid.UUID]Block // find away of locking this
 	uptime          float64
-	serverBehaviour func(*Node, string) string
+	serverBehaviour func(*Node, utils.SocketAddr, []byte) []byte
 	clientBehaviour func(*Node)
 	//lock            sync.Mutex
 }
 
 // NewNode based on the local IP address of the computer, an OS allocated or specified port number and the desired
 // memory usage. The max memory is specified in megabytes.
-func NewNode(port uint16, maxMemory uint64, serverBehaviour func(*Node, string) string, clientBehaviour func(*Node)) (Node, error) {
+func NewNode(port uint16, maxMemory uint64, serverBehaviour func(*Node, utils.SocketAddr, []byte) []byte, clientBehaviour func(*Node)) (Node, error) {
 	var node Node
 
 	// Convert from mb to bytes
@@ -135,18 +135,22 @@ func (node *Node) handleRequest(conn net.Conn) {
 	// React appropriately to the incoming request
 	// Check if the request matches any of the reserved routes roots (for internal working of the distributed system
 	// else request handled by user defined server behaviour (which can have its own roots too)
-	node.routeHandler(buf)
+	remoteAddr := conn.RemoteAddr().(*net.TCPAddr).IP
+	remotePort := conn.RemoteAddr().(*net.TCPAddr).Port
+	remoteSocketAddr := utils.SocketAddr{Ip: remoteAddr, Port: uint16(remotePort)}
+	//fmt.Println("Remote address: ", remoteSocketAddr)
+	node.routeHandler(buf, remoteSocketAddr)
 }
 
 // make routeHanlder always return something - always have confirmation
-func (node *Node) routeHandler(packet []byte) string {
+func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) string {
 	// BUG: When it received that payload eiter the fmt.Fprint is messing with the payload or my parsePacket function
 	// I can be fairly sure that bug is being cause by fmt.Fprint (in the introduceMyself function)
 	uri, payload := utils.ParsePacket(packet)
 	//fmt.Println("Received request to ", uri)
 	switch uri {
 	case appCode:
-		fmt.Println(node.serverBehaviour(node, string(payload)))
+		fmt.Println(node.serverBehaviour(node, remoteAddr, payload))
 	//	TODO: Convert the uri human friendly strings to 1 byte code numbers - so they will always be the first byte in the packet way more efficient!!
 	case pingCode:
 		remoteHostAddress, _ := utils.FromJson(payload)
@@ -186,7 +190,11 @@ func foundNodeHandler(src *net.UDPAddr, n int, b []byte, node *Node) {
 	//packet := string(b[:n])
 	packet := b[:n]
 	//fmt.Println(packet)
-	node.routeHandler(packet)
+	remoteAddr := utils.SocketAddr{
+		Ip:   src.IP,
+		Port: uint16(src.Port),
+	}
+	node.routeHandler(packet, remoteAddr)
 }
 
 // findPeer solves the cold start problem (many computers running but un-aware of each other)

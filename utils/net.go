@@ -19,6 +19,13 @@ func (s *SocketAddr) ToString() string {
 	return fmt.Sprintf("%s:%d", s.Ip.String(), s.Port)
 }
 
+func fromString(s string) SocketAddr {
+	addr := SocketAddr{}
+	addr.Ip = net.ParseIP(s)
+	//addr.Port = net.ParsePort(s)
+	return addr
+}
+
 func (s *SocketAddr) ToJson() ([]byte, error) {
 	e, err := json.Marshal(s)
 	return e, err
