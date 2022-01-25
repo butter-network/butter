@@ -1,7 +1,8 @@
-package butter
+package discover
 
 import (
 	"fmt"
+	"github.com/a-shine/butter"
 	"log"
 	"net"
 	"time"
@@ -14,7 +15,7 @@ const (
 
 var myPingAddr string
 
-func PingLAN(node *Node) {
+func PingLAN(node *butter.Node) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -37,12 +38,13 @@ func PingLAN(node *Node) {
 	for {
 		fmt.Println("I'm pinging...")
 		uri := []byte{101}
-		socketAddress, _ := node.socketAddr.ToJson()
+		socketAddr := node.SocketAddr()
+		socketAddress, _ := socketAddr.ToJson()
 		c.Write(append(uri, socketAddress...))
 		time.Sleep(1 * time.Second)
 
 		// If I know a peer, I do not need to continue pinging the LAN
-		if len(node.knownHosts) > 0 {
+		if len(node.KnownHosts()) > 0 {
 			fmt.Println("I know a peer, so I am done pinging the LAN")
 			break
 		}
@@ -51,7 +53,7 @@ func PingLAN(node *Node) {
 
 // How to not listen to my own pings?
 
-func ListenForMulticasts(node *Node, h func(*net.UDPAddr, int, []byte, *Node)) {
+func ListenForMulticasts(node *butter.Node, h func(*net.UDPAddr, int, []byte, *butter.Node)) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -71,7 +73,7 @@ func ListenForMulticasts(node *Node, h func(*net.UDPAddr, int, []byte, *Node)) {
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
 			h(src, n, b, node)
-			fmt.Println("Known peers: ", node.knownHosts)
+			fmt.Println("Known peers: ", node.KnownHosts())
 			// Stop find pinging and multicast listening
 			//startUpSequenceFlag <- false
 			//l.Close()

@@ -2,6 +2,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 
+%\usepackage{subfiles} % Best loaded last in the preamble
+\usepackage[subpreambles=true]{standalone}
+\usepackage{import}
+
 \include{commands}
 
 % Document format: https://warwick.ac.uk/fac/sci/dcs/teaching/material/cs310/components/final/format/
@@ -89,6 +93,16 @@ This is an aggregation of all the common terminology that may be required when d
 % talk about the butter platform taxonomy
 Problem centric design to buidding a sitributed system with as decentralised unstructured peer-to-peer architecyure
 There are some problems specific to pure unstructure peer-to-peer architecture - where choosing known hosts, information retrieval and fault-tolerant persistent data storage become non-trivial problems.
+
+\begin{figure}
+    \centering
+    \import{./}{platformLayers.tex}
+    \caption{Butter platform taxonomy}
+    \label{fig:butter-platform-taxonomy}
+\end{figure}
+
+Figure \ref{fig:butter-platform-taxonomy} neatly shows how teh platform lies in the wider network stack. The top layer is a user defined application and the developer interacts with a butter node - this abstracts away all teh underlying behaviour that handles the distributed aspects of the system. 
+
 \subsection{Peer discovery}
 \subsection{NAT traversal}
 \subsection{Information retrieval in a pure unstructured network}

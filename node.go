@@ -3,6 +3,7 @@ package butter
 import (
 	"errors"
 	"fmt"
+	"github.com/a-shine/butter/discover"
 	"github.com/a-shine/butter/utils"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
@@ -21,6 +22,7 @@ const (
 	helloCode byte = 102 // received a hello request from a node in response to a ping
 	success   byte = 200 // received a success response from a node
 	failure   byte = 99  // received a failure response from a node
+	GroupCode byte = 20  // received a request to get the groups of a node
 )
 const BlockSize = 4096
 
@@ -212,8 +214,8 @@ func foundNodeHandler(src *net.UDPAddr, n int, b []byte, node *Node) {
 // findPeer solves the cold start problem (many computers running but un-aware of each other)
 func (node *Node) findPeer() {
 	//If I get a multicast that isn't myself then add it to the known hosts and stop pinging and listening
-	go ListenForMulticasts(node, foundNodeHandler) // This should always be listening out for new nodes that might want to join the network
-	PingLAN(node)                                  // This should stop once it has found a peer
+	go discover.ListenForMulticasts(node, foundNodeHandler) // This should always be listening out for new nodes that might want to join the network
+	discover.PingLAN(node)                                  // This should stop once it has found a peer
 }
 
 func (node *Node) addNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
@@ -224,7 +226,7 @@ func (node *Node) addNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
 	return false, errors.New("known hosts array is full")
 }
 
-func (node *Node) GetKnownHosts() []utils.SocketAddr {
+func (node *Node) KnownHosts() []utils.SocketAddr {
 	//node.lock.Lock()
 	//defer node.lock.Unlock()
 	return node.knownHosts
@@ -235,4 +237,28 @@ func ifErrorFail(err error) {
 		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
 		os.Exit(1)
 	}
+}
+
+func (node *Node) createConnections(remoteHost utils.SocketAddr) net.Conn {
+	tcpAddr, err := net.ResolveTCPAddr("tcp", remoteHost.ToString())
+	ifErrorFail(err)
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	ifErrorFail(err)
+	return conn
+}
+
+func (node *Node) Request(remoteHost utils.SocketAddr, route []byte, payload []byte) []byte {
+	conn := node.createConnections(remoteHost)
+	defer conn.Close()
+
+	response := make([]byte, 0)
+
+	conn.Write(append(route, payload...))
+	conn.Read(response)
+
+	return response
+}
+
+func (node *Node) SocketAddr() utils.SocketAddr {
+	return node.socketAddr
 }

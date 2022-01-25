@@ -33,7 +33,7 @@ func clientBehaviour(node *butter.Node) {
 		var msg string
 		fmt.Scanln(&msg) // Blocks until user input
 
-		knownHosts := node.GetKnownHosts()
+		knownHosts := node.KnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
 			res, err := send(knownHosts[i], msg)

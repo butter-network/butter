@@ -59,7 +59,7 @@ func clientBehaviour(node *butter.Node) {
 		var msg string
 		fmt.Scanln(&msg)
 
-		knownHosts := node.GetKnownHosts()
+		knownHosts := node.KnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
 			send(knownHosts[i], []byte(msg))

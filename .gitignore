@@ -14,9 +14,11 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# Ignore latex cached file
 *.aux
 *.log
 *.pdf
+*.sta
 *.gz
 *.toc
 *.fdb_latexmk

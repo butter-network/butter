@@ -9,13 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="modified serverBehaviour parameters">
-      <change afterPath="$PROJECT_DIR$/store/pcg.go" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="some stuff is working">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/platformLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayers.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/multicast.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/pcg.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/pcg.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,12 +95,13 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/discover" />
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/docs/imgs" />
       <recent name="$PROJECT_DIR$/docs" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.Go build wiki">
+  <component name="RunManager" selected="LaTeX.Docs">
     <configuration name="Go build chat" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="butter" />
       <working_directory value="$PROJECT_DIR$/examples/chat" />
@@ -182,7 +188,8 @@
     <MESSAGE value="changed to byte codes" />
     <MESSAGE value="created new better example demonstrations" />
     <MESSAGE value="modified serverBehaviour parameters" />
-    <option name="LAST_COMMIT_MESSAGE" value="modified serverBehaviour parameters" />
+    <MESSAGE value="some stuff is working" />
+    <option name="LAST_COMMIT_MESSAGE" value="some stuff is working" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
