@@ -4,10 +4,44 @@ import (
 	"fmt"
 	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/utils"
+	"net"
 )
 
 // This example demonstrate how the library abstracts away much of the distributed networking so that teh app designer
 // can focus on building functionality. In addition, it demonstrates the use of app level url routing.
+
+func send(remoteHost utils.SocketAddr, payload []byte) {
+	c, err := net.Dial("tcp", remoteHost.ToString())
+	if err != nil {
+		fmt.Println(err)
+		//return nil, errors.New("could not connect to remote host")
+	}
+
+	// Append the payload to the appCode to create the packet to send
+	//var eof byte = 26
+	packet := append([]byte{butter.AppCode}, payload...) // appCode is for app level requests
+	response := make([]byte, 0)
+	//packet = append(packet, io.EOF)
+	c.Write(packet)
+	c.Read(response)
+	c.Close()
+	fmt.Println("res: " + string(response))
+	//response, err := ioutil.ReadAll(c)
+	//fmt.Fprint(c, string(packet))
+
+	if err != nil {
+		fmt.Println(err)
+		//return nil, errors.New("could not read response from remote host")
+	}
+	//if response == "/message-received" {
+	//	c.Close()
+	//}
+
+	//fmt.Fprint(c, message)
+	//response, _ := ioutil.ReadAll(c)
+	//fmt.Printf(string(response))
+	//return response, nil // TODO: fix this design This is blocking now
+}
 
 // The serverBehaviour abstracts away all the distributed networking, so the app designer is only ever dealing with the
 // app level packets
@@ -28,13 +62,7 @@ func clientBehaviour(node *butter.Node) {
 		knownHosts := node.GetKnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
-			response, err := butter.Send(knownHosts[i], msg)
-			if err != nil {
-				return
-			}
-			if string(response) == "/message-received" {
-				fmt.Println(knownHosts[i].ToString() + " go the message successfully!")
-			}
+			send(knownHosts[i], []byte(msg))
 		}
 	}
 }

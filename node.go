@@ -6,6 +6,7 @@ import (
 	"github.com/a-shine/butter/utils"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -15,9 +16,11 @@ import (
 
 const (
 	// Listener communication byte codes
-	appCode   byte = 100 // received a request to interact with the app server behaviour
+	AppCode   byte = 100 // received a request to interact with the app server behaviour
 	pingCode  byte = 101 // received a ping request from a node in startup mode
 	helloCode byte = 102 // received a hello request from a node in response to a ping
+	success   byte = 200 // received a success response from a node
+	failure   byte = 99  // received a failure response from a node
 )
 const BlockSize = 4096
 
@@ -125,9 +128,15 @@ func (node *Node) tcpListen() {
 }
 
 func (node *Node) handleRequest(conn net.Conn) {
+	defer conn.Close()
+
 	// Make a buffer to hold incoming data.
 	fmt.Println("handling the request")
-	buf, _ := ioutil.ReadAll(conn) // BUG: why is that blocking?
+	buf, err := ioutil.ReadAll(conn) // BUG: why is that blocking?
+	if err == io.EOF {
+		fmt.Println("Error reading:", err.Error())
+		//os.Exit(1)
+	}
 	//var buf []byte
 	//conn.Read(buf)
 	fmt.Println("Received data: ", string(buf))
@@ -139,18 +148,21 @@ func (node *Node) handleRequest(conn net.Conn) {
 	remotePort := conn.RemoteAddr().(*net.TCPAddr).Port
 	remoteSocketAddr := utils.SocketAddr{Ip: remoteAddr, Port: uint16(remotePort)}
 	//fmt.Println("Remote address: ", remoteSocketAddr)
-	node.routeHandler(buf, remoteSocketAddr)
+	res := node.routeHandler(buf, remoteSocketAddr)
+	fmt.Println("Response: ", res)
+	conn.Write(res)
 }
 
 // make routeHanlder always return something - always have confirmation
-func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) string {
+func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) []byte {
 	// BUG: When it received that payload eiter the fmt.Fprint is messing with the payload or my parsePacket function
 	// I can be fairly sure that bug is being cause by fmt.Fprint (in the introduceMyself function)
 	uri, payload := utils.ParsePacket(packet)
 	//fmt.Println("Received request to ", uri)
 	switch uri {
-	case appCode:
-		fmt.Println(node.serverBehaviour(node, remoteAddr, payload))
+	case AppCode:
+		node.serverBehaviour(node, remoteAddr, payload)
+		return []byte{success}
 	//	TODO: Convert the uri human friendly strings to 1 byte code numbers - so they will always be the first byte in the packet way more efficient!!
 	case pingCode:
 		remoteHostAddress, _ := utils.FromJson(payload)
@@ -159,7 +171,7 @@ func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) strin
 		node.addNewKnownHost(remoteHostAddress)
 		node.introduceMyself(remoteHostAddress)
 		//node.lock.Unlock()
-		return "/success"
+		return []byte{success}
 	case helloCode: // TODO: stop ping and udp listening from here
 		fmt.Println("cool now we know each other")
 		remoteHostAddress, _ := utils.FromJson(payload) // BINGO! the bug comes from here - the payload is 1010 in length for some reason
@@ -168,9 +180,9 @@ func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) strin
 		//fmt.Println(remoteHostAddress)
 		node.addNewKnownHost(remoteHostAddress)
 		//node.lock.Unlock()
-		return "/success"
+		return []byte{success}
 	}
-	return "/invalid-route"
+	return []byte{failure}
 }
 
 func (node *Node) introduceMyself(remoteHost utils.SocketAddr) {
@@ -218,22 +230,9 @@ func (node *Node) GetKnownHosts() []utils.SocketAddr {
 	return node.knownHosts
 }
 
-func Send(remoteHost utils.SocketAddr, message string) ([]byte, error) {
-	// Start a tcp client connection and send them my ip and port
-	//fmt.Println("Sending to ", len(remoteHost)) // BUG: this is weird the length of the remote host string is 1010?
-	//rHost := "192.168.1.25:32943"
-	//fmt.Println(len(rHost))
-	c, err := net.Dial("tcp", remoteHost.ToString()) // For some reason this is not working?
+func ifErrorFail(err error) {
 	if err != nil {
-		fmt.Println(err)
-		return nil, errors.New("could not connect to remote host")
+		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
+		os.Exit(1)
 	}
-	messageInBytes := []byte(message)
-	c.Write(append([]byte{appCode}, messageInBytes...))
-	//c.Write([]byte("/app " + message)) // append "/app" to all app level requests (so if the library user adds his own roots they would be app/get-books or app/count-orders
-	c.Close()
-	//fmt.Fprint(c, message)
-	//response, _ := ioutil.ReadAll(c)
-	//fmt.Printf(string(response))
-	return ioutil.ReadAll(c) // TODO: fix this design This is blocking now
 }

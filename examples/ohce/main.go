@@ -36,7 +36,7 @@ func clientBehaviour(node *butter.Node) {
 		knownHosts := node.GetKnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
-			res, err := butter.Send(knownHosts[i], msg)
+			res, err := send(knownHosts[i], msg)
 			if err != nil {
 				fmt.Println("unable to send message to", knownHosts[i])
 			}

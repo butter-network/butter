@@ -9,12 +9,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="created new better example demonstrations">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="modified serverBehaviour parameters">
+      <change afterPath="$PROJECT_DIR$/store/pcg.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,7 +181,8 @@
     <MESSAGE value="re-working project structure" />
     <MESSAGE value="changed to byte codes" />
     <MESSAGE value="created new better example demonstrations" />
-    <option name="LAST_COMMIT_MESSAGE" value="created new better example demonstrations" />
+    <MESSAGE value="modified serverBehaviour parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="modified serverBehaviour parameters" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
