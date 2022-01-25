@@ -6,6 +6,11 @@ import (
 	"github.com/a-shine/butter/utils"
 )
 
+func send(node *butter.Node, remoteHost utils.SocketAddr, msg string) {
+	node.Request(remoteHost, butter.AppCode, []byte(msg))
+
+}
+
 // This is a very simple example of a butter program: a reverse echo. A node sends a user specified message to each of
 // it's known hosts, the hosts reply with the message reversed.
 
@@ -45,14 +50,24 @@ func clientBehaviour(node *butter.Node) {
 	}
 }
 
+func retrieveArticle(uuid string) {
+	retrieve(node, uuid)
+}
+
+func addArticle(article string) {
+	store(node, article)
+}
+
 func main() {
 	// Create a new node by:
 	// - Specifying a port or setting it to 0 to let the OS assign a port
 	// - Defining an upper limit for the memory usage of the node on the system (recommended setting it to 2048mb)
 	// - Specifying a serverBehaviour function to be called when an app level packet is received
 	// - Specifying a clientBehaviour function to describe the interface for the user to interact with the decentralised application
-	node, _ := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour)
+	node, _ := butter.Initialise(0, 2048, serverBehaviour, clientBehaviour) // non-blocking
+	disover(*node)
+	traverse(*node) // this is not required but if you want the node to traverse nat this is required (traverse update teh node socket address to be a public IP
 
 	// Start the node
-	node.StartNode()
+	//p2p.StartNode()
 }

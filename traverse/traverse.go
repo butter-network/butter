@@ -2,7 +2,6 @@ package traverse
 
 import (
 	"fmt"
-	"github.com/a-shine/butter"
 	"net"
 	"os"
 	"strconv"
@@ -20,7 +19,7 @@ type Ambassador struct {
 func startAmbassador(port int16) {
 	ambassador := Ambassador{}
 
-	localIp := butter.GetOutboundIP().String()
+	localIp := GetOutboundIP().String()
 
 	// Create listener socket
 	l, err := net.Listen("tcp", localIp+":"+strconv.Itoa(int(port)))
@@ -53,7 +52,7 @@ func handleAmbassadorialRequest(conn net.Conn, ambassador *Ambassador) {
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 	}
-	uri, payload := butter.parsePacket(string(buf))
+	uri, payload := parsePacket(string(buf))
 	ambassador.lock.Lock()
 	switch uri {
 	case "/get-host":

@@ -13,6 +13,12 @@ const (
 	maxDatagramSize = 8192
 )
 
+func Discover(node *butter.Node) {
+	go ListenForMulticasts(node)
+	PingLAN(node)
+
+}
+
 var myPingAddr string
 
 func PingLAN(node *butter.Node) {

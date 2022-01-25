@@ -45,6 +45,8 @@ type Node struct {
 	uptime          float64
 	serverBehaviour func(*Node, utils.SocketAddr, []byte) []byte
 	clientBehaviour func(*Node)
+	routes          map[string]func(*Node, utils.SocketAddr, []byte) []byte
+
 	//lock            sync.Mutex
 }
 
@@ -261,4 +263,8 @@ func (node *Node) Request(remoteHost utils.SocketAddr, route []byte, payload []b
 
 func (node *Node) SocketAddr() utils.SocketAddr {
 	return node.socketAddr
+}
+
+func (node *Node) registerRoute(route []byte, handler func([]byte, utils.SocketAddr)) {
+	node.routes[route] = handler
 }
