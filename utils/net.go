@@ -1,41 +1,13 @@
 package utils
 
 import (
-	"encoding/json"
-	"fmt"
+	"bufio"
+	"bytes"
 	"log"
 	"net"
 )
 
-const SocketAddressSize = 6 // in bytes
-
-// SocketAddr has a size 4 bytes (IP) + 2 bytes (port) = 6 bytes
-type SocketAddr struct {
-	Ip   net.IP
-	Port uint16
-}
-
-func (s *SocketAddr) ToString() string {
-	return fmt.Sprintf("%s:%d", s.Ip.String(), s.Port)
-}
-
-func fromString(s string) SocketAddr {
-	addr := SocketAddr{}
-	addr.Ip = net.ParseIP(s)
-	//addr.Port = net.ParsePort(s)
-	return addr
-}
-
-func (s *SocketAddr) ToJson() ([]byte, error) {
-	e, err := json.Marshal(s)
-	return e, err
-}
-
-func FromJson(addressInJson []byte) (SocketAddr, error) {
-	socketAddress := SocketAddr{}
-	err := json.Unmarshal(addressInJson, &socketAddress)
-	return socketAddress, err
-}
+const EOF byte = 26
 
 // GetOutboundIP gets the preferred outbound ip of this machine
 func GetOutboundIP() net.IP {
@@ -48,4 +20,70 @@ func GetOutboundIP() net.IP {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
+}
+
+func createConnections(remoteHost SocketAddr) (net.Conn, error) {
+	tcpAddr, err := net.ResolveTCPAddr("tcp", remoteHost.ToString())
+	if err != nil {
+		return nil, err
+	}
+
+	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
+func Read(conn net.Conn) ([]byte, error) {
+	reader := bufio.NewReader(conn)
+	var buffer bytes.Buffer
+	for {
+		b, err := reader.ReadByte()
+		if err != nil {
+			return nil, err
+		}
+		if b == EOF {
+			break
+		}
+		buffer.WriteByte(b)
+	}
+	return buffer.Bytes(), nil
+}
+
+func Write(conn net.Conn, packet []byte) error {
+	writer := bufio.NewWriter(conn)
+	_, err := writer.Write(packet)
+	if err != nil {
+		return err
+	}
+	err = writer.Flush()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func Request(remoteHost SocketAddr, route []byte, payload []byte) ([]byte, error) {
+	conn, err := createConnections(remoteHost)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	packet := append(route, payload...)
+	packet = append(packet, EOF)
+
+	err = Write(conn, packet)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := Read(conn)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

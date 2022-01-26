@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/discover"
 	"github.com/a-shine/butter/utils"
 )
 
-func send(node *butter.Node, remoteHost utils.SocketAddr, msg string) {
-	node.Request(remoteHost, butter.AppCode, []byte(msg))
+func send(remoteHost utils.SocketAddr, msg string) (string, error) {
+	response, err := utils.Request(remoteHost, []byte("/reverse-message"), []byte(msg))
+	if err != nil {
+		return "", err
+	}
+	return string(response), nil
 
 }
 
@@ -25,7 +30,7 @@ func reverse(s string) string {
 }
 
 // The serverBehavior for this application is to reverse the packets it receives and send them back to the sender
-func serverBehaviour(node *butter.Node, remoteNodeAddr utils.SocketAddr, packet []byte) []byte {
+func serverBehaviour(node *butter.Node, packet []byte) []byte {
 	message := string(packet)
 	reversedMsg := reverse(message)
 	return []byte(reversedMsg)
@@ -50,24 +55,16 @@ func clientBehaviour(node *butter.Node) {
 	}
 }
 
-func retrieveArticle(uuid string) {
-	retrieve(node, uuid)
-}
-
-func addArticle(article string) {
-	store(node, article)
-}
-
 func main() {
 	// Create a new node by:
 	// - Specifying a port or setting it to 0 to let the OS assign a port
 	// - Defining an upper limit for the memory usage of the node on the system (recommended setting it to 2048mb)
 	// - Specifying a serverBehaviour function to be called when an app level packet is received
 	// - Specifying a clientBehaviour function to describe the interface for the user to interact with the decentralised application
-	node, _ := butter.Initialise(0, 2048, serverBehaviour, clientBehaviour) // non-blocking
-	disover(*node)
-	traverse(*node) // this is not required but if you want the node to traverse nat this is required (traverse update teh node socket address to be a public IP
+	node, _ := butter.NewNode(0, 2048, clientBehaviour) // non-blocking
+	discover.Discover(&node)
+	//traverse.Traverse(&node) // this is not required but if you want the node to traverse nat this is required (traverse update teh node socket address to be a public IP
+	node.RegisterRoute("/reverse-message", serverBehaviour)
+	node.StartNode()
 
-	// Start the node
-	//p2p.StartNode()
 }

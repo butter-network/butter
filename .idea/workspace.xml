@@ -9,15 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="save befor testing new architecture">
-      <change afterPath="$PROJECT_DIR$/examples/blog/blog.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/blog/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/examples/blog/go.sum" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="onw way of doing things">
+      <change afterPath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover/multicast.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/platformLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayers.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/traverse/ambassador.go" beforeDir="false" afterPath="$PROJECT_DIR$/traverse/traverse.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +88,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/examples" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/docs" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -94,6 +97,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
       <recent name="$PROJECT_DIR$/examples" />
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
