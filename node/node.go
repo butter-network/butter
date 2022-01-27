@@ -1,4 +1,4 @@
-package butter
+package node
 
 import (
 	"errors"
@@ -11,15 +11,6 @@ import (
 	"strconv"
 )
 
-const (
-	// Listener communication byte codes
-	AppCode   byte = 100 // received a request to interact with the app server behaviour
-	pingCode  byte = 101 // received a ping request from a node in startup mode
-	helloCode byte = 102 // received a hello request from a node in response to a ping
-	success   byte = 200 // received a success response from a node
-	failure   byte = 99  // received a failure response from a node
-	GroupCode byte = 20  // received a request to get the groups of a node
-)
 const BlockSize = 4096
 
 // A Block has a size of 4096 bytes with a uuid of size 16 bytes, 5 keywords of max size 50 bytes, 2 part numbers of
@@ -39,10 +30,8 @@ type Node struct {
 	knownHosts      []utils.SocketAddr  // find a way of locking this
 	storage         map[uuid.UUID]Block // find away of locking this
 	uptime          float64
-	clientBehaviour func(*Node)
+	ClientBehaviour func(*Node)
 	routes          map[string]func(*Node, []byte) []byte
-
-	//lock            sync.Mutex
 }
 
 // NewNode based on the local IP address of the computer, an OS allocated or specified port number and the desired
@@ -77,23 +66,14 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node)) (Node, 
 		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
 		storage:         make(map[uuid.UUID]Block, maxStorageBlocks),
 		uptime:          0,
-		clientBehaviour: clientBehaviour,
+		ClientBehaviour: clientBehaviour,
 		routes:          make(map[string]func(*Node, []byte) []byte),
 	}
 
 	return node, nil
 }
 
-func (node *Node) StartNode() {
-	// at the same time:
-	// - call out for other nodes (multicast)
-	// - generate thread-pool + start listening for connections and respond to them with the prescribed listening behaviour
-	// - run client behaviour as prescribed
-	go node.clientBehaviour(node)
-	node.tcpListen()
-}
-
-func (node *Node) tcpListen() {
+func (node *Node) Listen() {
 	// Create listener socket
 	//node.lock.Lock()
 	l, err := net.Listen("tcp", node.socketAddr.ToString())
@@ -126,72 +106,15 @@ func (node *Node) tcpListen() {
 	}
 }
 
-//func (node *Node) handleRequest(conn net.Conn) {
-//	defer conn.Close()
-//
-//	// Make a buffer to hold incoming data.
-//	fmt.Println("handling the request")
-//	buf, err := ioutil.ReadAll(conn) // BUG: why is that blocking?
-//	if err == io.EOF {
-//		fmt.Println("Error reading:", err.Error())
-//		//os.Exit(1)
-//	}
-//	//var buf []byte
-//	//conn.Read(buf)
-//	fmt.Println("Received data: ", string(buf))
-//
-//	// React appropriately to the incoming request
-//	// Check if the request matches any of the reserved routes roots (for internal working of the distributed system
-//	// else request handled by user defined server behaviour (which can have its own roots too)
-//	remoteAddr := conn.RemoteAddr().(*net.TCPAddr).IP
-//	remotePort := conn.RemoteAddr().(*net.TCPAddr).Port
-//	remoteSocketAddr := utils.SocketAddr{Ip: remoteAddr, Port: uint16(remotePort)}
-//	//fmt.Println("Remote address: ", remoteSocketAddr)
-//	res := node.routeHandler(buf, remoteSocketAddr)
-//	fmt.Println("Response: ", res)
-//	conn.Write(res)
-//}
-
 func (node *Node) newHandleRequest(conn net.Conn) {
 	packet, err := utils.Read(conn)
 	if err != nil {
 		return
 	}
 	response := node.NewRouteHandler(packet) // handle invalid route error but do not panic - just ignore
+	fmt.Println("Response: ", response)
 	utils.Write(conn, response)
 }
-
-// make routeHanlder always return something - always have confirmation
-//func (node *Node) routeHandler(packet []byte, remoteAddr utils.SocketAddr) []byte {
-//	// BUG: When it received that payload eiter the fmt.Fprint is messing with the payload or my parsePacket function
-//	// I can be fairly sure that bug is being cause by fmt.Fprint (in the introduceMyself function)
-//	uri, payload := utils.ParsePacket(packet)
-//	//fmt.Println("Received request to ", uri)
-//	switch uri {
-//	case AppCode:
-//		//node.serverBehaviour(node, remoteAddr, payload)
-//		return []byte{success}
-//	//	TODO: Convert the uri human friendly strings to 1 byte code numbers - so they will always be the first byte in the packet way more efficient!!
-//	case pingCode:
-//		remoteHostAddress, _ := utils.AddrFromJson(payload)
-//		//fmt.Println(remoteHostAddress.ToString())
-//		//node.lock.Lock()
-//		node.AddNewKnownHost(remoteHostAddress)
-//		node.introduceMyself(remoteHostAddress)
-//		//node.lock.Unlock()
-//		return []byte{success}
-//	case helloCode: // TODO: stop ping and udp listening from here
-//		fmt.Println("cool now we know each other")
-//		remoteHostAddress, _ := utils.AddrFromJson(payload) // BINGO! the bug comes from here - the payload is 1010 in length for some reason
-//		//node.lock.Lock()
-//		//fmt.Println(len(remoteHostAddress))
-//		//fmt.Println(remoteHostAddress)
-//		node.AddNewKnownHost(remoteHostAddress)
-//		//node.lock.Unlock()
-//		return []byte{success}
-//	}
-//	return []byte{failure}
-//}
 
 func (node *Node) NewRouteHandler(packet []byte) []byte { //TODO return invalid route error
 	fmt.Println(string(packet))
@@ -201,25 +124,6 @@ func (node *Node) NewRouteHandler(packet []byte) []byte { //TODO return invalid 
 	response := node.routes[string(route)](node, payload)
 	return response
 }
-
-func (node *Node) introduceMyself(remoteHost utils.SocketAddr) {
-	// Start a tcp client connection and send them my ip and port
-	c, err := net.Dial("tcp", remoteHost.ToString())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	nodeSocketAddress, _ := node.socketAddr.ToJson()
-	c.Write(append([]byte{helloCode}, nodeSocketAddress...))
-	c.Close()
-}
-
-// findPeer solves the cold start problem (many computers running but un-aware of each other)
-//func (node *Node) findPeer() {
-//	//If I get a multicast that isn't myself then add it to the known hosts and stop pinging and listening
-//	go discover.ListenForMulticasts(node, foundNodeHandler) // This should always be listening out for new nodes that might want to join the network
-//	discover.PingLAN(node)                                  // This should stop once it has found a peer
-//}
 
 func (node *Node) AddNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
 	if len(node.knownHosts) < cap(node.knownHosts) {

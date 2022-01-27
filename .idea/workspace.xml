@@ -9,18 +9,21 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="onw way of doing things">
-      <change afterPath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="still not solved the read/wite blocking bug">
+      <change afterPath="$PROJECT_DIR$/docs/distributedSystemsTaxonomy.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/platformLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayers.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/blog/blog.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/blog/blog.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/wiki/wiki.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/wiki.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/pcg.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/pcg.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +66,7 @@
     </option>
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/node.go" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/node/node.go" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -102,14 +105,39 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/node" />
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/discover" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/docs/imgs" />
-      <recent name="$PROJECT_DIR$/docs" />
     </key>
   </component>
-  <component name="RunManager" selected="LaTeX.Docs">
+  <component name="RunManager" selected="BibTeX.Build bibliohraphy">
+    <configuration name="Build bibliohraphy" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify-bibtex>
+        <compiler>BIBTEX</compiler>
+        <compiler-path />
+        <compiler-arguments />
+        <envs>
+          <env name="BIBINPUTS" value="$PROJECT_DIR$/docs" />
+          <env name="BSTINPUTS" value="$PROJECT_DIR$/docs:" />
+        </envs>
+        <main-file>$PROJECT_DIR$/docs/main.tex</main-file>
+        <aux-dir />
+      </texify-bibtex>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify-bibtex>
+        <compiler />
+        <compiler-path />
+        <compiler-arguments />
+        <envs />
+        <main-file />
+        <aux-dir />
+      </texify-bibtex>
+      <method v="2" />
+    </configuration>
     <configuration name="Go build chat" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="butter" />
       <working_directory value="$PROJECT_DIR$/examples/chat" />
@@ -128,7 +156,7 @@
       <filePath value="$PROJECT_DIR$/examples/wiki/wiki.go" />
       <method v="2" />
     </configuration>
-    <configuration name="Docs" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory" temporary="true">
+    <configuration name="Build documentation" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory" temporary="true">
       <texify>
         <compiler>PDFLATEX</compiler>
         <compiler-path />
@@ -138,25 +166,26 @@
         <compiler-arguments />
         <envs />
         <main-file>$PROJECT_DIR$/docs/main.tex</main-file>
-        <output-path>$PROJECT_DIR$/docs</output-path>
+        <output-path>$PROJECT_DIR$/out</output-path>
         <auxil-path>{projectDir}/auxil</auxil-path>
         <compile-twice>false</compile-twice>
         <output-format>PDF</output-format>
         <latex-distribution>TEXLIVE</latex-distribution>
         <has-been-run>true</has-been-run>
-        <bib-run-config>[]</bib-run-config>
+        <bib-run-config>[BibTeX.Build bibliohraphy]</bib-run-config>
         <makeindex-run-config>[]</makeindex-run-config>
       </texify>
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="BibTeX.Build bibliohraphy" />
       <item itemvalue="Go Build.Go build chat" />
       <item itemvalue="Go Build.Go build wiki" />
-      <item itemvalue="LaTeX.Docs" />
+      <item itemvalue="LaTeX.Build documentation" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="LaTeX.Docs" />
+        <item itemvalue="LaTeX.Build documentation" />
         <item itemvalue="LaTeX.Docs" />
         <item itemvalue="LaTeX.Docs" />
       </list>
@@ -200,7 +229,9 @@
     <MESSAGE value="modified serverBehaviour parameters" />
     <MESSAGE value="some stuff is working" />
     <MESSAGE value="save befor testing new architecture" />
-    <option name="LAST_COMMIT_MESSAGE" value="save befor testing new architecture" />
+    <MESSAGE value="almost working" />
+    <MESSAGE value="still not solved the read/wite blocking bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="still not solved the read/wite blocking bug" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

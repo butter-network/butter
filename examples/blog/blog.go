@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/discover"
+	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/retrieve"
 	"github.com/a-shine/butter/store"
 	"github.com/a-shine/butter/utils"
@@ -37,17 +37,17 @@ func read(node *Node, uuid [16]byte) string {
 //	return articles
 //}
 
-func clientBehaviour(node *butter.Node) {
+func clientBehaviour(node *node.Node) {
 	// publish an article
 	// read an article
 }
 
-func serverBehaviour(node *butter.Node, remoteHost utils.SocketAddr, appPacket []byte) []byte {
+func serverBehaviour(node *node.Node, remoteHost utils.SocketAddr, appPacket []byte) []byte {
 	return []byte("hello world!")
 }
 
 func main() {
-	node, _ := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour) // non-blocking
+	node, _ := node.NewNode(0, 2048, serverBehaviour, clientBehaviour) // non-blocking
 	discover.Discover(*node)
 	//traverse.Traverse(*node) // this is not required but if you want the node to traverse nat this is required (traverse update teh node socket address to be a public IP)
 	node.Start()

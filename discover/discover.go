@@ -2,7 +2,7 @@ package discover
 
 import (
 	"fmt"
-	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 	"log"
 	"net"
@@ -18,17 +18,23 @@ const (
 
 // All routes have node and payload as parameters and return a response.
 
-func pingReceived(node *butter.Node, addr []byte) []byte {
+func pingReceived(node *node.Node, addr []byte) []byte {
 	log.Printf("ping received from %s", addr)
 	remoteAddr, _ := utils.AddrFromJson(addr)
 	node.AddNewKnownHost(remoteAddr)
 	socketAddr := node.SocketAddr()
 	nodeAddr, _ := socketAddr.ToJson()
 	uri := []byte("pong/")
-	return append(uri, nodeAddr...)
+	request, err := utils.Request(remoteAddr, uri, nodeAddr)
+	if err != nil {
+		log.Printf("ping request failed: %s", err)
+		return []byte("")
+	}
+	fmt.Println("asking for pong: ", request)
+	return []byte("ok")
 }
 
-func pongReceived(node *butter.Node, addr []byte) []byte {
+func pongReceived(node *node.Node, addr []byte) []byte {
 	log.Printf("pong received from %s", addr)
 	remoteAddr, err := utils.AddrFromJson(addr)
 	if err != nil {
@@ -39,7 +45,7 @@ func pongReceived(node *butter.Node, addr []byte) []byte {
 	return []byte("/successful-introduction/")
 }
 
-func Discover(node *butter.Node) {
+func Discover(node *node.Node) {
 	node.RegisterRoute(pingRoute, pingReceived)
 	node.RegisterRoute(pongRoute, pongReceived)
 
@@ -50,7 +56,7 @@ func Discover(node *butter.Node) {
 
 var myPingAddr string
 
-func PingLAN(node *butter.Node) {
+func PingLAN(node *node.Node) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -73,14 +79,12 @@ func PingLAN(node *butter.Node) {
 	}
 }
 
-func foundNode(src *net.UDPAddr, n int, b []byte, node *butter.Node) {
+func foundNode(src *net.UDPAddr, n int, b []byte, node *node.Node) {
 	packet := b[:n]
 	node.NewRouteHandler(packet)
 }
 
-// How to not listen to my own pings?
-
-func ListenForMulticasts(node *butter.Node) {
+func ListenForMulticasts(node *node.Node) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -94,17 +98,11 @@ func ListenForMulticasts(node *butter.Node) {
 		if err != nil {
 			log.Fatal("ReadFromUDP failed:", err)
 		}
-		// do not listen to my own LAN ping
-		//fmt.Println("ReadFromUDP: ", src)
-		//fmt.Println("ReadFromUDP: ", node.knownHosts)
+
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
 			foundNode(src, n, b, node)
 			fmt.Println("Known peers: ", node.KnownHosts())
-			// Stop find pinging and multicast listening
-			//startUpSequenceFlag <- false
-			//l.Close()
-			//break
 		}
 	}
 }

@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/node"
 )
 
-func clientBehaviour(node *butter.Node) {
+func clientBehaviour(node *node.Node) {
 	for {
 		var interactionType string
 		fmt.Print("Would you like to add(1) or search(2) information on the network: ")
@@ -49,11 +50,11 @@ func clientBehaviour(node *butter.Node) {
 	}
 }
 
-func serverBehaviour(node *butter.Node, incomingMsg string) string {
+func serverBehaviour(node *node.Node, incomingMsg string) string {
 	return ""
 }
 
 func main() {
-	node := butter.NewNode(0)
+	node := node.NewNode(0)
 	butter.StartNode(&node, clientBehaviour, serverBehaviour)
 }

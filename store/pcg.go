@@ -3,6 +3,7 @@ package store
 import (
 	"encoding/json"
 	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 )
 
@@ -45,14 +46,14 @@ type Block struct {
 	data     [3840]byte
 }
 
-func getGroupParticipantCount(node *butter.Node, groupPayload GroupPayload) int {
-	uri := butter.GroupCode + GetGroupParticipantCount
+func getGroupParticipantCount(node *node.Node, groupPayload GroupPayload) int {
+	uri := node.GroupCode + GetGroupParticipantCount
 	response := node.Request(groupPayload.leader, []byte{uri}, nil)
 	return int(response[0])
 }
 
 // This function has a big overhead - cause basically you are looking at all the data of your known hosts
-func findGroups(node *butter.Node) []Group {
+func findGroups(node *node.Node) []Group {
 	knownHosts := node.KnownHosts()
 	groupsSet := make(map[[16]byte]utils.SocketAddr) // map the group uuid to the leader
 	groupOrderedSet := make([]byte, 0)
@@ -83,7 +84,7 @@ func findGroups(node *butter.Node) []Group {
 
 // using as much redundancy as we can, and when we want to add something to the network we eat into that redundant data storage
 // however there is an atomic group number (has to be at least 3 to allow for verification TMR redundancy model)
-func join(node *butter.Node) {
+func join(node *node.Node) {
 	//groups := findGroups(node)
 	// for each group
 	// - if group is found

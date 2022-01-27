@@ -2,9 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 
-%\usepackage{subfiles} % Best loaded last in the preamble
-\usepackage[subpreambles=true]{standalone}
-\usepackage{import}
+\usepackage[most]{tcolorbox}
+\usepackage{lmodern}
+\usepackage{lipsum}
+
+\usepackage{tikz-qtree}
+\usepackage{tikz}
+
+
+\usepackage{subfiles} % Best loaded last in the preamble
 
 \include{commands}
 
@@ -20,13 +26,14 @@
 
 \maketitle
 
-% TODO: I need a clear definition of distributed vs decentralised system (taken from the Tanenbaum book
+% Can I talk in the first person
+% TODO: I need a clear definition of distributed vs decentralised system (taken from the Tanenbaum book)
 
 \begin{abstract}
     Butter is a decentralized platform for building pure (unstructured) peer-to-peer systems.
 \end{abstract}
 
-\keywords{Distributed}{Decentralised}{Systems}{Networks}{Peer-to-peer}{P2P}{Information retrieval}{IR}{Unstructured}
+\textbf{Keywords:} Networks, Decentralised, Unstructured peer-to-peer, Information retrieval, Persistent data
 
 \tableofcontents
 
@@ -36,6 +43,17 @@
 \section{Motivations}
 
 \section{Background}
+\begin{figure}
+    \centering
+    \subfile{distributedSystemsTaxonomy.tex}
+    \caption{Distributed systems taxonomy}
+    \label{fig:dis-taxonomy}
+\end{figure}
+
+This taxonomy clears up a lot of the confusion for me centralised systems e.g. a conventional web app with database, data processing backend and frontend is a distributed system but it is centralised as if the database becomes unavailable the app ceases to deliver any data. A centralised distributed system architecture is powerful because it decauples function into its logical components but create precarious systems with inherent interdependability.
+Figure \ref{fig:dis-taxonomy} is not exaustive for example Distributed hash tables are not the sole means of designing overlay networks (wrappers around the network that allow the user to interface with it) but serves to give a general overview of distributed systems.
+
+
 % Important terminology
 % Overview of the history of distributed systems
 % Overview of the academic field of distributed systems
@@ -96,14 +114,14 @@ There are some problems specific to pure unstructure peer-to-peer architecture -
 
 \begin{figure}
     \centering
-    \import{./}{platformLayers.tex}
+    \subfile{platformLayers.tex}
     \caption{Butter platform taxonomy}
     \label{fig:butter-platform-taxonomy}
 \end{figure}
 
 \begin{figure}
     \centering
-    \import{./}{platformLayersAbstracted.tex}
+    \subfile{platformLayersAbstracted.tex}
     \caption{Butter platform taxonomy abstracted}
     \label{fig:butter-platform-taxonomy-abstracted}
 \end{figure}

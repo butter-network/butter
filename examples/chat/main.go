@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/a-shine/butter"
+	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 	"net"
 )
@@ -19,7 +19,7 @@ func send(remoteHost utils.SocketAddr, payload []byte) {
 
 	// Append the payload to the appCode to create the packet to send
 	//var eof byte = 26
-	packet := append([]byte{butter.AppCode}, payload...) // appCode is for app level requests
+	packet := append([]byte{node.AppCode}, payload...) // appCode is for app level requests
 	response := make([]byte, 0)
 	//packet = append(packet, io.EOF)
 	c.Write(packet)
@@ -45,7 +45,7 @@ func send(remoteHost utils.SocketAddr, payload []byte) {
 
 // The serverBehaviour abstracts away all the distributed networking, so the app designer is only ever dealing with the
 // app level packets
-func serverBehaviour(node *butter.Node, remoteNodeAddr utils.SocketAddr, packet []byte) []byte {
+func serverBehaviour(node *node.Node, remoteNodeAddr utils.SocketAddr, packet []byte) []byte {
 	message := string(packet)
 	fmt.Println(remoteNodeAddr.ToString()+" says: ", message)
 	return []byte("/message-received")
@@ -53,7 +53,7 @@ func serverBehaviour(node *butter.Node, remoteNodeAddr utils.SocketAddr, packet 
 
 // clientBehaviour creates an interface where a user can send a message to all his known hosts and get confirmation if
 // they have received it.
-func clientBehaviour(node *butter.Node) {
+func clientBehaviour(node *node.Node) {
 	for {
 		fmt.Println("Type message:")
 		var msg string
@@ -68,6 +68,6 @@ func clientBehaviour(node *butter.Node) {
 }
 
 func main() {
-	node, _ := butter.NewNode(0, 2048, serverBehaviour, clientBehaviour)
+	node, _ := node.NewNode(0, 2048, serverBehaviour, clientBehaviour)
 	node.StartNode()
 }

@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"log"
 	"net"
 )
@@ -41,20 +42,24 @@ func Read(conn net.Conn) ([]byte, error) {
 	var buffer bytes.Buffer
 	for {
 		b, err := reader.ReadByte()
+		fmt.Printf("%d,", b)
 		if err != nil {
 			return nil, err
 		}
 		if b == EOF {
+			fmt.Println(" - I'm here!!!")
 			break
 		}
 		buffer.WriteByte(b)
 	}
+	fmt.Println("done reading") // BUG: Not getting to here sometimes
 	return buffer.Bytes(), nil
 }
 
 func Write(conn net.Conn, packet []byte) error {
 	writer := bufio.NewWriter(conn)
-	_, err := writer.Write(packet)
+	appended := append(packet, EOF)
+	_, err := writer.Write(appended)
 	if err != nil {
 		return err
 	}
@@ -62,6 +67,7 @@ func Write(conn net.Conn, packet []byte) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("done writing")
 	return nil
 }
 
