@@ -9,21 +9,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="still not solved the read/wite blocking bug">
-      <change afterPath="$PROJECT_DIR$/docs/distributedSystemsTaxonomy.tex" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="appending EOF character to network write function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/platformLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayers.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/blog/blog.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/blog/blog.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/wiki.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/wiki.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/pcg.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/pcg.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,6 +60,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectId" id="22uvIA067pWgN1ZvBbM5FVDQjh9" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -96,6 +88,7 @@
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
@@ -123,7 +116,7 @@
           <env name="BSTINPUTS" value="$PROJECT_DIR$/docs:" />
         </envs>
         <main-file>$PROJECT_DIR$/docs/main.tex</main-file>
-        <aux-dir />
+        <aux-dir>$USER_HOME$</aux-dir>
       </texify-bibtex>
       <method v="2" />
     </configuration>
@@ -133,8 +126,8 @@
         <compiler-path />
         <compiler-arguments />
         <envs />
-        <main-file />
-        <aux-dir />
+        <main-file>$USER_HOME$</main-file>
+        <aux-dir>$USER_HOME$</aux-dir>
       </texify-bibtex>
       <method v="2" />
     </configuration>
@@ -177,6 +170,27 @@
       </texify>
       <method v="2" />
     </configuration>
+    <configuration default="true" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
+      <texify>
+        <compiler>PDFLATEX</compiler>
+        <compiler-path />
+        <sumatra-path />
+        <pdf-viewer>EVINCE</pdf-viewer>
+        <viewer-command />
+        <compiler-arguments />
+        <envs />
+        <main-file />
+        <output-path>{projectDir}/out</output-path>
+        <auxil-path>{projectDir}/auxil</auxil-path>
+        <compile-twice>false</compile-twice>
+        <output-format>PDF</output-format>
+        <latex-distribution>TEXLIVE</latex-distribution>
+        <has-been-run>false</has-been-run>
+        <bib-run-config>[]</bib-run-config>
+        <makeindex-run-config>[]</makeindex-run-config>
+      </texify>
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="BibTeX.Build bibliohraphy" />
       <item itemvalue="Go Build.Go build chat" />
@@ -186,8 +200,6 @@
     <recent_temporary>
       <list>
         <item itemvalue="LaTeX.Build documentation" />
-        <item itemvalue="LaTeX.Docs" />
-        <item itemvalue="LaTeX.Docs" />
       </list>
     </recent_temporary>
   </component>
@@ -231,7 +243,8 @@
     <MESSAGE value="save befor testing new architecture" />
     <MESSAGE value="almost working" />
     <MESSAGE value="still not solved the read/wite blocking bug" />
-    <option name="LAST_COMMIT_MESSAGE" value="still not solved the read/wite blocking bug" />
+    <MESSAGE value="appending EOF character to network write function" />
+    <option name="LAST_COMMIT_MESSAGE" value="appending EOF character to network write function" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
