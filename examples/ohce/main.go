@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
+	"os"
 )
 
 // This is a very simple example of a butter program: a reverse echo. A node sends a user specified message to each of
@@ -38,20 +40,18 @@ func serverBehaviour(node *node.Node, packet []byte) []byte {
 // The clientBehavior for this application is to send a string to all the nodes known hosts for them to reverse it
 func clientBehaviour(node *node.Node) {
 	for {
-		fmt.Println("Type message:")
-		var msg string
-		fmt.Scanln(&msg) // Blocks until user input
+		fmt.Print("Type message:")
+		in := bufio.NewReader(os.Stdin)
+		line, _ := in.ReadString('\n')
 
 		knownHosts := node.KnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
-			fmt.Println("Sending message to:", knownHosts[i])
-			res, err := send(knownHosts[i], msg)
-			fmt.Println("Received:", res)
+			res, err := send(knownHosts[i], line)
 			if err != nil {
 				fmt.Println("unable to send message to", knownHosts[i])
 			}
-			fmt.Println(knownHosts[i], " responded with: ", res)
+			fmt.Println(knownHosts[i].ToString(), "responded with: ", res)
 		}
 	}
 }

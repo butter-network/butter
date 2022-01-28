@@ -159,3 +159,8 @@ func (node *Node) UpdateIP(ip string) {
 	keepPort := node.SocketAddr().Port
 	node.listener, _ = net.Listen("tcp", ip+":"+string(keepPort))
 }
+
+func manageKnownHosts(node *Node) {
+	//learn about known hosts every time I deal with a request
+	//make a known hosts list evaluator function
+}

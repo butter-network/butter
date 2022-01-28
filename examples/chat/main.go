@@ -2,72 +2,60 @@ package main
 
 import (
 	"fmt"
+	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
-	"net"
 )
 
-// This example demonstrate how the library abstracts away much of the distributed networking so that teh app designer
-// can focus on building functionality. In addition, it demonstrates the use of app level url routing.
+// This is a very simple example of a butter program: a reverse echo. A node sends a user specified message to each of
+// it's known hosts, the hosts reply with the message reversed.
 
-func send(remoteHost utils.SocketAddr, payload []byte) {
-	c, err := net.Dial("tcp", remoteHost.ToString())
+func send(remoteHost utils.SocketAddr, msg string) (string, error) {
+	response, err := utils.Request(remoteHost, []byte("message/"), []byte(msg))
 	if err != nil {
-		fmt.Println(err)
-		//return nil, errors.New("could not connect to remote host")
+		return "", err
 	}
-
-	// Append the payload to the appCode to create the packet to send
-	//var eof byte = 26
-	packet := append([]byte{node.AppCode}, payload...) // appCode is for app level requests
-	response := make([]byte, 0)
-	//packet = append(packet, io.EOF)
-	c.Write(packet)
-	c.Read(response)
-	c.Close()
-	fmt.Println("res: " + string(response))
-	//response, err := ioutil.ReadAll(c)
-	//fmt.Fprint(c, string(packet))
-
-	if err != nil {
-		fmt.Println(err)
-		//return nil, errors.New("could not read response from remote host")
-	}
-	//if response == "/message-received" {
-	//	c.Close()
-	//}
-
-	//fmt.Fprint(c, message)
-	//response, _ := ioutil.ReadAll(c)
-	//fmt.Printf(string(response))
-	//return response, nil // TODO: fix this design This is blocking now
+	return string(response), nil
 }
 
-// The serverBehaviour abstracts away all the distributed networking, so the app designer is only ever dealing with the
-// app level packets
-func serverBehaviour(node *node.Node, remoteNodeAddr utils.SocketAddr, packet []byte) []byte {
+// The serverBehavior for this application is to reverse the packets it receives and send them back to the sender
+func serverBehaviour(node *node.Node, packet []byte) []byte {
 	message := string(packet)
-	fmt.Println(remoteNodeAddr.ToString()+" says: ", message)
-	return []byte("/message-received")
+	fmt.Println("Message received: ", message)
+	return []byte("success")
 }
 
-// clientBehaviour creates an interface where a user can send a message to all his known hosts and get confirmation if
-// they have received it.
+// The clientBehavior for this application is to send a string to all the nodes known hosts for them to reverse it
 func clientBehaviour(node *node.Node) {
 	for {
 		fmt.Println("Type message:")
 		var msg string
-		fmt.Scanln(&msg)
+		fmt.Scanln(&msg) // Blocks until user input
 
 		knownHosts := node.KnownHosts()
 
 		for i := 0; i < len(knownHosts); i++ {
-			send(knownHosts[i], []byte(msg))
+			fmt.Println("Sending message to:", knownHosts[i])
+			res, err := send(knownHosts[i], msg)
+			fmt.Println("Received:", res)
+			if err != nil {
+				fmt.Println("unable to send message to", knownHosts[i])
+			}
+			fmt.Println(knownHosts[i], " responded with: ", res)
 		}
 	}
 }
 
 func main() {
-	node, _ := node.NewNode(0, 2048, serverBehaviour, clientBehaviour)
-	node.StartNode()
+	// Create a new node by:
+	// - Specifying a port or setting it to 0 to let the OS assign a port
+	// - Defining an upper limit for the memory usage of the node on the system (recommended setting it to 2048mb)
+	// - Specifying a clientBehaviour function to describe the interface for the user to interact with the decentralised application
+	node, _ := node.NewNode(0, 2048, clientBehaviour)
+
+	// Specifying a serverBehaviour function to be called when an app level packet is received
+	node.RegisterRoute("message/", serverBehaviour)
+
+	// Spawn your node into the butter network
+	butter.Spawn(&node, false) // blocking
 }
