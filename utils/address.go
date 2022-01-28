@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 )
 
 const SocketAddressSize int = 6 // bytes
@@ -31,5 +33,27 @@ func AddrFromJson(addressInJson []byte) (SocketAddr, error) {
 		err := errors.New("unable to convert the json address to a socket address")
 		return socketAddress, err
 	}
+	return socketAddress, nil
+}
+
+func AddrFromString(address string) (SocketAddr, error) {
+	socketAddress := SocketAddr{}
+	addressParts := strings.Split(address, ":")
+	if len(addressParts) != 2 {
+		err := errors.New("invalid address format")
+		return socketAddress, err
+	}
+	ip := net.ParseIP(addressParts[0])
+	if ip == nil {
+		err := errors.New("invalid ip address")
+		return socketAddress, err
+	}
+	port, err := strconv.Atoi(addressParts[1])
+	if err != nil {
+		err := errors.New("invalid port")
+		return socketAddress, err
+	}
+	socketAddress.Ip = ip
+	socketAddress.Port = uint16(port)
 	return socketAddress, nil
 }

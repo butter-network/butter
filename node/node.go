@@ -8,7 +8,6 @@ import (
 	"github.com/pbnjay/memory"
 	"net"
 	"os"
-	"strconv"
 )
 
 const BlockSize = 4096
@@ -26,7 +25,7 @@ type Block struct {
 }
 
 type Node struct {
-	socketAddr      utils.SocketAddr
+	listener        net.Listener
 	knownHosts      []utils.SocketAddr  // find a way of locking this
 	storage         map[uuid.UUID]Block // find away of locking this
 	uptime          float64
@@ -61,8 +60,18 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node)) (Node, 
 	// Determine the upper limit of data block
 	maxStorageBlocks := (maxMemoryInBytes - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
+	var socketAddr utils.SocketAddr
+	socketAddr.Ip = localIpString
+	socketAddr.Port = port
+
+	listener, err := net.Listen("tcp", socketAddr.ToString())
+	if err != nil {
+		fmt.Println("Error listening:", err.Error())
+		os.Exit(1)
+	}
+
 	node = Node{
-		socketAddr:      utils.SocketAddr{Ip: localIpString, Port: port},
+		listener:        listener,
 		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
 		storage:         make(map[uuid.UUID]Block, maxStorageBlocks),
 		uptime:          0,
@@ -74,27 +83,11 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node)) (Node, 
 }
 
 func (node *Node) Listen() {
-	// Create listener socket
-	//node.lock.Lock()
-	l, err := net.Listen("tcp", node.socketAddr.ToString())
-	if err != nil {
-		fmt.Println("Error listening:", err.Error())
-		os.Exit(1)
-	}
-	// Close the listener when the application closes. (https://gobyexample.com/defer)
-	defer l.Close()
-
-	// Reassign the node's port to the actual port number of the TCP listener once it is created
-	_, port, _ := net.SplitHostPort(l.Addr().String())
-	portInt64, err := strconv.ParseUint(port, 10, 16)
-	node.socketAddr.Port = uint16(portInt64)
-	//node.lock.Unlock()
-
-	fmt.Println("Node is listening at ", l.Addr())
+	fmt.Println("Node is listening at ", node.listener.Addr())
 
 	for {
 		// Listen for an incoming connection.
-		conn, err := l.Accept()
+		conn, err := node.listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
@@ -140,7 +133,8 @@ func (node *Node) KnownHosts() []utils.SocketAddr {
 }
 
 func (node *Node) SocketAddr() utils.SocketAddr {
-	return node.socketAddr
+	socketAddr, _ := utils.AddrFromString(node.listener.Addr().String())
+	return socketAddr
 }
 
 func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
@@ -149,3 +143,8 @@ func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte
 
 // choose and maintain node host list
 // keep metadata about from previous node queries
+
+func (node *Node) shutdown() {
+	node.listener.Close()
+	// pass data on to someone else
+}

@@ -9,10 +9,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="appending EOF character to network write function">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="save before breaking changes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -244,7 +244,8 @@
     <MESSAGE value="almost working" />
     <MESSAGE value="still not solved the read/wite blocking bug" />
     <MESSAGE value="appending EOF character to network write function" />
-    <option name="LAST_COMMIT_MESSAGE" value="appending EOF character to network write function" />
+    <MESSAGE value="save before breaking changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="save before breaking changes" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
