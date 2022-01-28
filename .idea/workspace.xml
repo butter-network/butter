@@ -9,10 +9,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="save before breaking changes">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="fixed os defined port bug">
+      <change afterPath="$PROJECT_DIR$/traverse/ambassador.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/traverse/traverse.go" beforeDir="false" afterPath="$PROJECT_DIR$/traverse/traverse.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +249,8 @@
     <MESSAGE value="still not solved the read/wite blocking bug" />
     <MESSAGE value="appending EOF character to network write function" />
     <MESSAGE value="save before breaking changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="save before breaking changes" />
+    <MESSAGE value="fixed os defined port bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed os defined port bug" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

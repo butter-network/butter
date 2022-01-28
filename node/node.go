@@ -82,7 +82,12 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node)) (Node, 
 	return node, nil
 }
 
-func (node *Node) Listen() {
+func (node *Node) Start() {
+	go node.listen()
+	node.ClientBehaviour(node)
+}
+
+func (node *Node) listen() {
 	fmt.Println("Node is listening at ", node.listener.Addr())
 
 	for {
@@ -147,4 +152,10 @@ func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte
 func (node *Node) shutdown() {
 	node.listener.Close()
 	// pass data on to someone else
+}
+
+func (node *Node) UpdateIP(ip string) {
+	node.listener.Close()
+	keepPort := node.SocketAddr().Port
+	node.listener, _ = net.Listen("tcp", ip+":"+string(keepPort))
 }
