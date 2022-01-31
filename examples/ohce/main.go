@@ -61,7 +61,7 @@ func main() {
 	// - Specifying a port or setting it to 0 to let the OS assign a port
 	// - Defining an upper limit for the memory usage of the node on the system (recommended setting it to 2048mb)
 	// - Specifying a clientBehaviour function to describe the interface for the user to interact with the decentralised application
-	node, _ := node.NewNode(0, 2048, clientBehaviour)
+	node, _ := node.NewNode(0, 2048, clientBehaviour, false)
 
 	// Specifying a serverBehaviour function to be called when an app level packet is received
 	node.RegisterRoute("reverse-message/", serverBehaviour)

@@ -17,6 +17,8 @@ type SocketAddr struct {
 	Port uint16
 }
 
+type SocketAddrSlice []SocketAddr
+
 func (s *SocketAddr) ToString() string {
 	return fmt.Sprintf("%s:%d", s.Ip.String(), s.Port)
 }
@@ -24,6 +26,17 @@ func (s *SocketAddr) ToString() string {
 func (s *SocketAddr) ToJson() ([]byte, error) {
 	e, err := json.Marshal(s)
 	return e, err
+}
+
+func (s *SocketAddrSlice) ToJson() ([]byte, error) {
+	e, err := json.Marshal(s)
+	return e, err
+}
+
+func AddrSliceFromJson(addrJson []byte) (SocketAddrSlice, error) {
+	var s SocketAddrSlice
+	err := json.Unmarshal(addrJson, &s)
+	return s, err
 }
 
 func AddrFromJson(addressInJson []byte) (SocketAddr, error) {

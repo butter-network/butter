@@ -9,12 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added very high level traverse methodology">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="fixed incorrect user input from reverse echo example">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/information_retrieval_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/information_retrieval_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/pcg.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/store.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/store.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +98,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.folding" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -250,7 +256,8 @@
     <MESSAGE value="save before breaking changes" />
     <MESSAGE value="fixed os defined port bug" />
     <MESSAGE value="added very high level traverse methodology" />
-    <option name="LAST_COMMIT_MESSAGE" value="added very high level traverse methodology" />
+    <MESSAGE value="fixed incorrect user input from reverse echo example" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed incorrect user input from reverse echo example" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

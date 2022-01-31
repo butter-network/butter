@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	mock_conn "github.com/jordwest/mock-conn"
 	"log"
 	"net"
 )
@@ -34,6 +35,11 @@ func createConnections(remoteHost SocketAddr) (net.Conn, error) {
 	}
 
 	return conn, nil
+}
+
+func createMockConnection(remoteHost SocketAddr) mock_conn.Conn {
+	conn := mock_conn.NewConn()
+	return *conn
 }
 
 func Read(conn net.Conn) ([]byte, error) {

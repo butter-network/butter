@@ -3,6 +3,7 @@ package butter
 import (
 	"github.com/a-shine/butter/discover"
 	"github.com/a-shine/butter/node"
+	"github.com/a-shine/butter/retrieve"
 	"github.com/a-shine/butter/traverse"
 )
 
@@ -11,6 +12,7 @@ func Spawn(node *node.Node, traverseFlag bool) {
 	if traverseFlag {
 		go traverse.Traverse(node)
 	}
+	retrieve.InitialiseRetrieveBehaviour(node)
 	node.Start()
 }
 
@@ -21,8 +23,3 @@ func SpawnEmbassador(node *node.Node) {
 	//go traverse.AppendAmbassadorBehaviour(node)
 	node.Start()
 }
-
-//func SimulationSpawn(node *node.Node, traverseFlag bool) {
-//	go discover.SimulationDiscover(node)
-//	node.SimulatedStart()
-//}
