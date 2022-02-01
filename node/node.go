@@ -90,8 +90,8 @@ func (node *Node) Start() {
 	node.ClientBehaviour(node)
 }
 
-// shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
-func (node *Node) shutdown() {
+// Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
+func (node *Node) Shutdown() {
 	// TODO: Gracefully shutdown method incomplete
 	err := node.listener.Close()
 	if err != nil {
