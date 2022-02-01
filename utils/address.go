@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-const SocketAddressSize int = 6 // bytes
+const SocketAddressSize int = 6 // Bytes
 
-// SocketAddr has a size 4 bytes (IP) + 2 bytes (port) = 6 bytes
+// SocketAddr has a size 4 bytes (IPv4) + 2 bytes (port) = 6 bytes
 type SocketAddr struct {
 	Ip   net.IP
 	Port uint16
@@ -26,17 +26,6 @@ func (s *SocketAddr) ToString() string {
 func (s *SocketAddr) ToJson() ([]byte, error) {
 	e, err := json.Marshal(s)
 	return e, err
-}
-
-func (s *SocketAddrSlice) ToJson() ([]byte, error) {
-	e, err := json.Marshal(s)
-	return e, err
-}
-
-func AddrSliceFromJson(addrJson []byte) (SocketAddrSlice, error) {
-	var s SocketAddrSlice
-	err := json.Unmarshal(addrJson, &s)
-	return s, err
 }
 
 func AddrFromJson(addressInJson []byte) (SocketAddr, error) {
@@ -69,4 +58,15 @@ func AddrFromString(address string) (SocketAddr, error) {
 	socketAddress.Ip = ip
 	socketAddress.Port = uint16(port)
 	return socketAddress, nil
+}
+
+func (s *SocketAddrSlice) ToJson() ([]byte, error) {
+	e, err := json.Marshal(s)
+	return e, err
+}
+
+func AddrSliceFromJson(addrJson []byte) (SocketAddrSlice, error) {
+	var s SocketAddrSlice
+	err := json.Unmarshal(addrJson, &s)
+	return s, err
 }

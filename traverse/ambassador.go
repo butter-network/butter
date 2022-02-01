@@ -70,3 +70,5 @@ func handleAmbassadorialRequest(conn net.Conn, ambassador *Ambassador) {
 	//}
 	//ambassador.lock.Unlock()
 }
+
+// keep track of ambassor nodes in known hosts so a traversed node can ask any of it's known hosts if they either are an ambassador or know of an ambassador

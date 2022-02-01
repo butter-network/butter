@@ -1,6 +1,7 @@
 package retrieve
 
 import (
+	"fmt"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 )
@@ -24,7 +25,7 @@ func try(node *node.Node, query []byte) []byte {
 	return query
 }
 
-func InitialiseRetrieveBehaviour(node *node.Node) {
+func AppendRetrieveBehaviour(node *node.Node) {
 	node.RegisterRoute("retrieve/", retrieve)
 	//node.RegisterRoute("found/", found)
 	//node.RegisterRoute("try/", try)
@@ -56,7 +57,10 @@ func bfs(node *node.Node, query string) []byte {
 		queue = queue[1:]
 		// Start a connection to the host, Ask host if he has data, receive resposnse
 		response, _ := utils.Request(host, []byte("retrieve/"), []byte(query))
-		route, payload := utils.ParsePacket(response)
+		route, payload, err := utils.ParsePacket(response)
+		if err != nil {
+			fmt.Println("unable to parse packet")
+		}
 		// If the returned packet is success + the data then return it
 		// else add the known hosts of the remote node to the end of the queue
 		if string(route) == "found/" {

@@ -56,7 +56,7 @@ func clientBehaviour(node *node.Node) {
 				// errors at all costs as we want to maximise node availability
 				fmt.Println("unable to send message to", knownHosts[i])
 			}
-			fmt.Println(knownHosts[i].ToString(), "responded with: ", res)
+			fmt.Println(knownHosts[i].ToString(), "responded with:", res)
 		}
 	}
 }
