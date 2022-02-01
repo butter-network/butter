@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 )
 
 type Node struct {
@@ -58,9 +59,9 @@ func (node *Node) Block(id string) (Block, error) {
 
 // UpdateIP of node to the given IP. This is important for updating an IP from local to public during NAT traversal.
 func (node *Node) UpdateIP(ip string) {
-	node.listener.Close()
 	cachePort := node.SocketAddr().Port
-	node.listener, _ = net.Listen("tcp", ip+":"+string(cachePort))
+	node.closeListener()
+	node.listener, _ = net.Listen("tcp", ip+":"+strconv.Itoa(int(cachePort)))
 }
 
 // --- Adders ---
@@ -87,7 +88,7 @@ func (node *Node) AddBlock(keywords []string, data string) string {
 	// TODO: add the logic to break down the data into blocks if it exceeds the block size
 	id, _ := uuid.NewV4()
 	node.storage[*id] = Block{
-		keywords: processKeywords(keywords),
+		keywords: naiveProcessKeywords(keywords),
 		part:     1,
 		parts:    1,
 		data:     naiveProcessData(data),
@@ -163,14 +164,18 @@ func (node *Node) Start() {
 	node.ClientBehaviour(node)
 }
 
-// Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
-func (node *Node) Shutdown() {
-	// TODO: Gracefully shutdown method incomplete
+func (node *Node) closeListener() {
 	err := node.listener.Close()
 	if err != nil {
 		log.Println("Error closing listener:", err.Error())
 		log.Println("Unable to shutdown gracefully")
 	}
+}
+
+// Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
+func (node *Node) Shutdown() {
+	// TODO: Gracefully shutdown method incomplete
+	node.closeListener()
 }
 
 // listen to incoming connections from other nodes and handle them in serrate goroutines
@@ -193,14 +198,17 @@ func (node *Node) listen() {
 func (node *Node) HandleRequest(conn net.Conn) {
 	packet, err := utils.Read(&conn) // Read incoming buffer until EOF
 	if err != nil {
-		return
+		log.Println("Unable to read due to", err.Error())
 	}
 
 	// RouteHandler will handle invalid packet or route errors by returning an error uri. This allows us to always
 	// handle requests without panicking.
 	response := node.RouteHandler(packet)
 
-	utils.Write(&conn, response)
+	err = utils.Write(&conn, response)
+	if err != nil {
+		log.Println("Unable to write due to:", err.Error())
+	}
 
 	err = conn.Close()
 	if err != nil {
