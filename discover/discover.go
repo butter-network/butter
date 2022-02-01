@@ -1,7 +1,10 @@
+// Discovery protocol implementation for butter nodes to prevent the cold start problem (i.e. node's exist on the same
+// network but are not aware of each other's existence). This package is a good example of how to build packages on top
+// of butter nodes.
+
 package discover
 
 import (
-	"fmt"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 	"log"
@@ -16,8 +19,6 @@ const (
 	maxDatagramSize = 8192
 )
 
-// All routes have node and payload as parameters and return a response.
-
 func pingReceived(node *node.Node, addr []byte) []byte {
 	remoteAddr, _ := utils.AddrFromJson(addr)
 	node.AddKnownHost(remoteAddr)
@@ -26,15 +27,12 @@ func pingReceived(node *node.Node, addr []byte) []byte {
 	uri := []byte("pong/")
 	_, err := utils.Request(remoteAddr, uri, nodeAddr)
 	if err != nil {
-		//log.Printf("ping request failed: %s", err)
 		return []byte("")
 	}
-	//fmt.Println("asking for pong: ", request)
 	return []byte("ok")
 }
 
 func pongReceived(node *node.Node, addr []byte) []byte {
-	//log.Printf("pong received from %s", addr)
 	remoteAddr, err := utils.AddrFromJson(addr)
 	if err != nil {
 		log.Printf("pongReceived: %s", err)
@@ -99,7 +97,6 @@ func ListenForMulticasts(node *node.Node) {
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
 			foundNode(src, n, b, node)
-			fmt.Println("Known peers: ", node.KnownHosts())
 		}
 	}
 }

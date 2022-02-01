@@ -9,10 +9,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="cleaned up node implementation">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="cleaned up node package">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,7 +231,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="implement naive bfs information retrieval" />
     <MESSAGE value="workspace changes" />
     <MESSAGE value="Implementing latex compile page workflow" />
     <MESSAGE value="added sections from suggested format" />
@@ -256,7 +255,8 @@
     <MESSAGE value="working with more comments" />
     <MESSAGE value="added graceful shutdown" />
     <MESSAGE value="cleaned up node implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleaned up node implementation" />
+    <MESSAGE value="cleaned up node package" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleaned up node package" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

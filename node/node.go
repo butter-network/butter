@@ -67,7 +67,8 @@ func (node *Node) UpdateIP(ip string) {
 // --- Adders ---
 
 // RegisterRoute allows a node to register a behaviour for a route. This allows dapp designers to aff their own
-// functionality and build on top of butter nodes.
+// functionality and build on top of butter nodes. All routes have node and incoming payload as parameters and return a
+// response payload.
 func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
 	node.routes[route] = handler
 }
