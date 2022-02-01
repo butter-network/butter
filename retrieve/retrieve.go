@@ -7,7 +7,7 @@ import (
 )
 
 func retrieve(node *node.Node, query []byte) []byte {
-	block, err := node.GetBlock(string(query))
+	block, err := node.Block(string(query))
 	if err == nil {
 		return append([]byte("found/"), block.Data()...)
 	}
@@ -37,7 +37,7 @@ func AppendRetrieveBehaviour(node *node.Node) {
 func NaiveRetrieve(node *node.Node, query string) []byte {
 	// do I have this information, if so return it
 	// else BFS (pass the query on to all known hosts (partial view)
-	block, err := node.GetBlock(string(query))
+	block, err := node.Block(string(query))
 	if err == nil {
 		return block.Data()
 	}

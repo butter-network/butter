@@ -20,7 +20,7 @@ const (
 
 func pingReceived(node *node.Node, addr []byte) []byte {
 	remoteAddr, _ := utils.AddrFromJson(addr)
-	node.AddNewKnownHost(remoteAddr)
+	node.AddKnownHost(remoteAddr)
 	socketAddr := node.SocketAddr()
 	nodeAddr, _ := socketAddr.ToJson()
 	uri := []byte("pong/")
@@ -40,7 +40,7 @@ func pongReceived(node *node.Node, addr []byte) []byte {
 		log.Printf("pongReceived: %s", err)
 		return nil
 	}
-	node.AddNewKnownHost(remoteAddr)
+	node.AddKnownHost(remoteAddr)
 	return []byte("/successful-introduction/")
 }
 

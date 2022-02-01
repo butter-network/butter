@@ -22,6 +22,79 @@ type Node struct {
 	ambassador      bool
 }
 
+// --- Getters ---
+
+func (node *Node) Address() string {
+	return node.listener.Addr().String()
+}
+
+func (node *Node) SocketAddr() utils.SocketAddr {
+	socketAddr, _ := utils.AddrFromString(node.listener.Addr().String())
+	return socketAddr
+}
+
+func (node *Node) KnownHosts() []utils.SocketAddr {
+	return node.knownHosts
+}
+
+func (node *Node) KnownHostsStruct() utils.SocketAddrSlice {
+	return node.knownHosts
+}
+
+func (node *Node) IsSimulated() bool {
+	return node.simulated
+}
+
+// Block from the node's storage by its UUID. If the block is not found, an empty block with an error is returned.
+func (node *Node) Block(id string) (Block, error) {
+	parsedId, _ := uuid.Parse([]byte(id))
+	if val, ok := node.storage[*parsedId]; ok {
+		return val, nil
+	}
+	return Block{}, errors.New("block not found")
+}
+
+// --- Setters ---
+
+// UpdateIP of node to the given IP. This is important for updating an IP from local to public during NAT traversal.
+func (node *Node) UpdateIP(ip string) {
+	node.listener.Close()
+	cachePort := node.SocketAddr().Port
+	node.listener, _ = net.Listen("tcp", ip+":"+string(cachePort))
+}
+
+// --- Adders ---
+
+// RegisterRoute allows a node to register a behaviour for a route. This allows dapp designers to aff their own
+// functionality and build on top of butter nodes.
+func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
+	node.routes[route] = handler
+}
+
+// AddKnownHost to increase node's partial view of the network. If already in known hosts, does nothing. If known
+// hosts list is full, runs manageKnownHosts function (black box function that manages an optimal known host list).
+func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
+	// TODO: check if the host is already known
+	if len(node.knownHosts) < cap(node.knownHosts) {
+		node.knownHosts = append(node.knownHosts, remoteHost)
+	}
+	node.manageKnownHosts()
+}
+
+// AddBlock to the node's storage. A UUID is generated for every bit of information added to the network (no update
+// functionality yet!). Returns the UUID of the new block as a string.
+func (node *Node) AddBlock(keywords []string, data string) string {
+	// TODO: add the logic to break down the data into blocks if it exceeds the block size
+	id, _ := uuid.NewV4()
+	node.storage[*id] = Block{
+		keywords: processKeywords(keywords),
+		part:     1,
+		parts:    1,
+		data:     naiveProcessData(data),
+	}
+	return id.String()
+}
+
 // NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
 // specific client behaviour. If the port is unspecified (i.e. 0), teh OS will allocate an available port. The max
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
@@ -109,9 +182,8 @@ func (node *Node) listen() {
 			log.Println("Node is unable to accept incoming connections due to: ", err.Error())
 			continue // forces next iteration of the loop skipping any code in between
 		}
-		defer conn.Close() // TODO: Find better way of doing this
 
-		// Handle connections in a new goroutine - allows a node to handle multiple connections at once
+		// Pass connection to request handler in a new goroutine - allows a node to handle multiple connections at once
 		go node.HandleRequest(conn)
 	}
 }
@@ -119,86 +191,44 @@ func (node *Node) listen() {
 // HandleRequest by reading the connection buffer, processing the packet and writing the response to the connection
 // buffer
 func (node *Node) HandleRequest(conn net.Conn) {
-	packet, err := utils.Read(&conn)
+	packet, err := utils.Read(&conn) // Read incoming buffer until EOF
 	if err != nil {
 		return
 	}
-	response := node.RouteHandler(packet) // handle invalid route error but do not panic - just ignore
+
+	// RouteHandler will handle invalid packet or route errors by returning an error uri. This allows us to always
+	// handle requests without panicking.
+	response := node.RouteHandler(packet)
+
 	utils.Write(&conn, response)
+
+	err = conn.Close()
+	if err != nil {
+		log.Println("Error closing connection:", err.Error())
+	}
 }
 
-func (node *Node) RouteHandler(packet []byte) []byte { //TODO return invalid route error
+// RouteHandler for incoming packets that applies the correct response to the packet or returns an error
+// ("invalid-packet/" if the node is unable to pass the packet or "invalid-route" if the node does not have a
+// registered behaviour corresponding to the route)
+func (node *Node) RouteHandler(packet []byte) []byte {
 	route, payload, err := utils.ParsePacket(packet)
 	if err != nil {
-		return []byte("invalid-route/")
+		return []byte("invalid-packet/")
 	}
-	response := node.routes[string(route)](node, payload)
-	return response
-}
 
-func (node *Node) AddNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
-	if len(node.knownHosts) < cap(node.knownHosts) {
-		node.knownHosts = append(node.knownHosts, remoteHost)
-		return true, nil
+	// TODO: Don't think this works - need to test
+	if response := node.routes[string(route)](node, payload); response != nil {
+		return response
 	}
-	return false, errors.New("known hosts array is full")
+
+	return []byte("invalid-route/")
 }
 
-func (node *Node) KnownHosts() []utils.SocketAddr {
-	return node.knownHosts
-}
-
-func (node *Node) SocketAddr() utils.SocketAddr {
-	socketAddr, _ := utils.AddrFromString(node.listener.Addr().String())
-	return socketAddr
-}
-
-func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
-	node.routes[route] = handler
-}
-
-// choose and maintain node host list
-// keep metadata about from previous node queries
-
-func (node *Node) UpdateIP(ip string) {
-	node.listener.Close()
-	keepPort := node.SocketAddr().Port
-	node.listener, _ = net.Listen("tcp", ip+":"+string(keepPort))
-}
-
-func manageKnownHosts(node *Node) {
+func (node *Node) manageKnownHosts() {
+	// TODO: Implement known hosts management
+	// choose and maintain node host list
+	// keep metadata about from previous node queries
 	//learn about known hosts every time I deal with a request
 	//make a known hosts list evaluator function
-}
-
-func (node *Node) GetBlock(id string) (Block, error) {
-	parsedId, _ := uuid.Parse([]byte(id))
-	if val, ok := node.storage[*parsedId]; ok {
-		return val, nil
-	}
-	return Block{}, errors.New("block not found")
-}
-
-func (node *Node) AddBlock(keywords []string, data string) string {
-	// potentially add the logic to break down the data into it's component parts
-	id, _ := uuid.NewV4()
-	node.storage[*id] = Block{
-		keywords: processKeywords(keywords),
-		part:     1,
-		parts:    1,
-		data:     naiveProcessData(data),
-	}
-	return id.String()
-}
-
-func (node *Node) IsSimulated() bool {
-	return node.simulated
-}
-
-func (node *Node) KnownHostsStruct() utils.SocketAddrSlice {
-	return node.knownHosts
-}
-
-func (node *Node) Address() string {
-	return node.listener.Addr().String()
 }

@@ -9,10 +9,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="working with more comments">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added graceful shutdown">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -254,7 +255,8 @@
     <MESSAGE value="more comments" />
     <MESSAGE value="this works" />
     <MESSAGE value="working with more comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="working with more comments" />
+    <MESSAGE value="added graceful shutdown" />
+    <option name="LAST_COMMIT_MESSAGE" value="added graceful shutdown" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
