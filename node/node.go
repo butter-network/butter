@@ -6,6 +6,7 @@ import (
 	"github.com/a-shine/butter/utils"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
+	"log"
 	"net"
 	"os"
 )
@@ -26,16 +27,16 @@ type Node struct {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMB uint64, clientBehaviour func(*Node), simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(*Node), simulated bool) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
-	if maxMemoryMB == 0 {
-		maxMemoryMB = 2048
+	if maxMemoryMb == 0 {
+		maxMemoryMb = 2048
 	}
 
-	// Convert from mb to bytes
-	maxMemory := mbToBytes(maxMemoryMB)
+	// Convert user specified max memory in mb to bytes
+	maxMemory := mbToBytes(maxMemoryMb)
 
 	// check if max memory is more than some arbitrary min value (what is the minimum value that would be useful?)
 	if maxMemory < mbToBytes(512) {
@@ -82,41 +83,55 @@ func NewNode(port uint16, maxMemoryMB uint64, clientBehaviour func(*Node), simul
 	return node, nil
 }
 
+// Start node by listening out for incoming connections and starting the application specific client behaviour. A node
+// behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
 func (node *Node) Start() {
 	go node.listen()
 	node.ClientBehaviour(node)
 }
 
-func (node *Node) listen() {
-	for {
-		// Listen for an incoming connection.
-		conn, err := node.listener.Accept()
-		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
-			os.Exit(1)
-		}
-		fmt.Println("Received connection")
-		defer conn.Close()
-		// Handle connections in a new goroutine.
-		go node.newHandleRequest(conn)
+// shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
+func (node *Node) shutdown() {
+	// TODO: Gracefully shutdown method incomplete
+	err := node.listener.Close()
+	if err != nil {
+		log.Println("Error closing listener:", err.Error())
+		log.Println("Unable to shutdown gracefully")
 	}
 }
 
-func (node *Node) newHandleRequest(conn net.Conn) {
-	packet, err := utils.Read(conn)
+// listen to incoming connections from other nodes and handle them in serrate goroutines
+func (node *Node) listen() {
+	for {
+		conn, err := node.listener.Accept()
+		if err != nil {
+			// Avoid fatal errors at all costs - we want to maximise node availability
+			log.Println("Node is unable to accept incoming connections due to: ", err.Error())
+			continue // forces next iteration of the loop skipping any code in between
+		}
+		defer conn.Close() // TODO: Find better way of doing this
+
+		// Handle connections in a new goroutine - allows a node to handle multiple connections at once
+		go node.HandleRequest(conn)
+	}
+}
+
+// HandleRequest by reading the connection buffer, processing the packet and writing the response to the connection
+// buffer
+func (node *Node) HandleRequest(conn net.Conn) {
+	packet, err := utils.Read(&conn)
 	if err != nil {
 		return
 	}
-	response := node.NewRouteHandler(packet) // handle invalid route error but do not panic - just ignore
-	fmt.Println("Response: ", response)
-	utils.Write(conn, response)
+	response := node.RouteHandler(packet) // handle invalid route error but do not panic - just ignore
+	utils.Write(&conn, response)
 }
 
-func (node *Node) NewRouteHandler(packet []byte) []byte { //TODO return invalid route error
-	fmt.Println(string(packet))
-	route, payload, _ := utils.ParsePacket(packet)
-	fmt.Println("Received request to ", string(route))
-	fmt.Println("Payload: ", string(payload))
+func (node *Node) RouteHandler(packet []byte) []byte { //TODO return invalid route error
+	route, payload, err := utils.ParsePacket(packet)
+	if err != nil {
+		return []byte("invalid-route/")
+	}
 	response := node.routes[string(route)](node, payload)
 	return response
 }
@@ -130,8 +145,6 @@ func (node *Node) AddNewKnownHost(remoteHost utils.SocketAddr) (bool, error) {
 }
 
 func (node *Node) KnownHosts() []utils.SocketAddr {
-	//node.lock.Lock()
-	//defer node.lock.Unlock()
 	return node.knownHosts
 }
 
@@ -146,11 +159,6 @@ func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte
 
 // choose and maintain node host list
 // keep metadata about from previous node queries
-
-func (node *Node) shutdown() {
-	node.listener.Close()
-	// pass data on to someone else
-}
 
 func (node *Node) UpdateIP(ip string) {
 	node.listener.Close()
@@ -182,26 +190,6 @@ func (node *Node) AddBlock(keywords []string, data string) string {
 	}
 	return id.String()
 }
-
-//// just store as much of the data as possible - cut off the rest
-//func naiveProcessData(data string) [3840]byte {
-//	var formattedData [3840]byte
-//	for i, _ := range formattedData {
-//		formattedData[i] = data[i]
-//	}
-//	return formattedData
-//}
-//
-//func processKeywords(keywords []string) [5][50]byte {
-//	var formattedKeywords [5][50]byte
-//	for i, _ := range formattedKeywords {
-//		var word [50]byte
-//		for j, _ := range word {
-//			formattedKeywords[i][j] = keywords[i][j]
-//		}
-//	}
-//	return formattedKeywords
-//}
 
 func (node *Node) IsSimulated() bool {
 	return node.simulated

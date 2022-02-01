@@ -78,7 +78,7 @@ func PingLAN(node *node.Node) {
 
 func foundNode(src *net.UDPAddr, n int, b []byte, node *node.Node) {
 	packet := b[:n]
-	node.NewRouteHandler(packet)
+	node.RouteHandler(packet)
 }
 
 func ListenForMulticasts(node *node.Node) {

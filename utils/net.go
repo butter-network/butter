@@ -42,8 +42,8 @@ func createMockConnection(remoteHost SocketAddr) mock_conn.Conn {
 	return *conn
 }
 
-func Read(conn net.Conn) ([]byte, error) {
-	reader := bufio.NewReader(conn)
+func Read(conn *net.Conn) ([]byte, error) {
+	reader := bufio.NewReader(*conn)
 	var buffer bytes.Buffer
 	for {
 		b, err := reader.ReadByte()
@@ -58,8 +58,8 @@ func Read(conn net.Conn) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
-func Write(conn net.Conn, packet []byte) error {
-	writer := bufio.NewWriter(conn)
+func Write(conn *net.Conn, packet []byte) error {
+	writer := bufio.NewWriter(*conn)
 	appended := append(packet, EOF)
 	_, err := writer.Write(appended)
 	if err != nil {
@@ -82,12 +82,12 @@ func Request(remoteHost SocketAddr, route []byte, payload []byte) ([]byte, error
 	packet := append(route, payload...)
 	packet = append(packet, EOF)
 
-	err = Write(conn, packet)
+	err = Write(&conn, packet)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := Read(conn)
+	response, err := Read(&conn)
 	if err != nil {
 		return nil, err
 	}
