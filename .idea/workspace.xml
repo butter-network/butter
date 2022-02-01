@@ -9,13 +9,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="not tested but saving anyway">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="more comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/information_retrieval_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/information_retrieval_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/parsing.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/parsing.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +78,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
+    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="go" />
     <property name="configurable..is.expanded" value="false" />
     <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
     <property name="go.formatter.settings.were.checked" value="true" />
@@ -252,7 +251,9 @@
     <MESSAGE value="added very high level traverse methodology" />
     <MESSAGE value="fixed incorrect user input from reverse echo example" />
     <MESSAGE value="not tested but saving anyway" />
-    <option name="LAST_COMMIT_MESSAGE" value="not tested but saving anyway" />
+    <MESSAGE value="some cleaned up code" />
+    <MESSAGE value="more comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="more comments" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

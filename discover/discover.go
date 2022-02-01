@@ -19,23 +19,22 @@ const (
 // All routes have node and payload as parameters and return a response.
 
 func pingReceived(node *node.Node, addr []byte) []byte {
-	log.Printf("ping received from %s", addr)
 	remoteAddr, _ := utils.AddrFromJson(addr)
 	node.AddNewKnownHost(remoteAddr)
 	socketAddr := node.SocketAddr()
 	nodeAddr, _ := socketAddr.ToJson()
 	uri := []byte("pong/")
-	request, err := utils.Request(remoteAddr, uri, nodeAddr)
+	_, err := utils.Request(remoteAddr, uri, nodeAddr)
 	if err != nil {
-		log.Printf("ping request failed: %s", err)
+		//log.Printf("ping request failed: %s", err)
 		return []byte("")
 	}
-	fmt.Println("asking for pong: ", request)
+	//fmt.Println("asking for pong: ", request)
 	return []byte("ok")
 }
 
 func pongReceived(node *node.Node, addr []byte) []byte {
-	log.Printf("pong received from %s", addr)
+	//log.Printf("pong received from %s", addr)
 	remoteAddr, err := utils.AddrFromJson(addr)
 	if err != nil {
 		log.Printf("pongReceived: %s", err)

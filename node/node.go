@@ -10,23 +10,6 @@ import (
 	"os"
 )
 
-const BlockSize = 4096
-
-// A Block has a size of 4096 bytes with a uuid of size 16 bytes, 5 keywords of max size 50 bytes, 2 part numbers of
-// size 8 bytes each, a geotag of size 2 bytes and a data of size 4096 - 16 - 5*50 - 2*8 - 2 = 3840 bytes. A Block is
-// uniquely identified by combining its uuid and part number e.g. <UUID>/<PartNumber>.
-type Block struct {
-	keywords [5][50]byte // 5 keywords
-	part     uint64      // i.e. part 1 of 5 parts
-	parts    uint64
-	geo      [2]byte // e.g. uk, us, etc
-	data     [3840]byte
-}
-
-func (b *Block) Data() []byte {
-	return b.data[:]
-}
-
 type Node struct {
 	listener        net.Listener
 	knownHosts      []utils.SocketAddr  // find a way of locking this
@@ -35,38 +18,44 @@ type Node struct {
 	ClientBehaviour func(*Node)
 	routes          map[string]func(*Node, []byte) []byte
 	simulated       bool
+	ambassador      bool
 }
 
-// NewNode based on the local IP address of the computer, an OS allocated or specified port number and the desired
-// memory usage. The max memory is specified in megabytes.
-func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node), simulated bool) (Node, error) {
+// NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
+// specific client behaviour. If the port is unspecified (i.e. 0), teh OS will allocate an available port. The max
+// memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
+// to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
+// system memory.
+func NewNode(port uint16, maxMemoryMB uint64, clientBehaviour func(*Node), simulated bool) (Node, error) {
 	var node Node
 
+	// Sets the default memory to 2048 MB if not specified
+	if maxMemoryMB == 0 {
+		maxMemoryMB = 2048
+	}
+
 	// Convert from mb to bytes
-	maxMemoryInBytes := maxMemory * 1024 * 1024
+	maxMemory := mbToBytes(maxMemoryMB)
 
 	// check if max memory is more than some arbitrary min value (what is the minimum value that would be useful?)
-	if maxMemory < 512 {
+	if maxMemory < mbToBytes(512) {
 		return node, errors.New("allocated memory must be at least 512MB")
-	} else if maxMemoryInBytes > memory.TotalMemory() {
+	} else if maxMemory > memory.TotalMemory() {
 		return node, errors.New("allocated memory must be less than the total system memory")
 	}
-	//else if maxMemoryInBytes > memory.FreeMemory() {
-	//	return node, errors.New("allocated memory must be less than the free system memory")
-	//}
 
 	// Determine the capacity of the knownHosts list size based on user specified max memory
-	maxKnownHosts := uint64((0.05 * float64(maxMemoryInBytes)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
+	maxKnownHosts := uint64((0.05 * float64(maxMemory)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
 
 	// Determine the upper limit of data block
-	maxStorageBlocks := (maxMemoryInBytes - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
+	maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
 	//if simulated {
 	//	// create a simulated listener?
 	//	listener := mock_conn.NewConn()
 	//} else {
 	// Determine the preferred local ip of the machine
-	localIpString := utils.GetOutboundIP()
+	localIpString := utils.GetOutboundIP() // TODO: Find a better way to do this
 
 	var socketAddr utils.SocketAddr
 	socketAddr.Ip = localIpString
@@ -87,6 +76,7 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node), simulat
 		ClientBehaviour: clientBehaviour,
 		routes:          make(map[string]func(*Node, []byte) []byte),
 		simulated:       simulated,
+		ambassador:      false,
 	}
 
 	return node, nil
@@ -124,7 +114,7 @@ func (node *Node) newHandleRequest(conn net.Conn) {
 
 func (node *Node) NewRouteHandler(packet []byte) []byte { //TODO return invalid route error
 	fmt.Println(string(packet))
-	route, payload := utils.ParsePacket(packet)
+	route, payload, _ := utils.ParsePacket(packet)
 	fmt.Println("Received request to ", string(route))
 	fmt.Println("Payload: ", string(payload))
 	response := node.routes[string(route)](node, payload)
@@ -193,25 +183,25 @@ func (node *Node) AddBlock(keywords []string, data string) string {
 	return id.String()
 }
 
-// just store as much of the data as possible - cut off the rest
-func naiveProcessData(data string) [3840]byte {
-	var formattedData [3840]byte
-	for i, _ := range formattedData {
-		formattedData[i] = data[i]
-	}
-	return formattedData
-}
-
-func processKeywords(keywords []string) [5][50]byte {
-	var formattedKeywords [5][50]byte
-	for i, _ := range formattedKeywords {
-		var word [50]byte
-		for j, _ := range word {
-			formattedKeywords[i][j] = keywords[i][j]
-		}
-	}
-	return formattedKeywords
-}
+//// just store as much of the data as possible - cut off the rest
+//func naiveProcessData(data string) [3840]byte {
+//	var formattedData [3840]byte
+//	for i, _ := range formattedData {
+//		formattedData[i] = data[i]
+//	}
+//	return formattedData
+//}
+//
+//func processKeywords(keywords []string) [5][50]byte {
+//	var formattedKeywords [5][50]byte
+//	for i, _ := range formattedKeywords {
+//		var word [50]byte
+//		for j, _ := range word {
+//			formattedKeywords[i][j] = keywords[i][j]
+//		}
+//	}
+//	return formattedKeywords
+//}
 
 func (node *Node) IsSimulated() bool {
 	return node.simulated
