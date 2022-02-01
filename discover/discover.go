@@ -67,13 +67,11 @@ func PingLAN(node *node.Node) {
 	socketAddr := node.SocketAddr()
 	socketAddress, _ := socketAddr.ToJson()
 	for {
-		fmt.Println("I'm pinging...")
 		c.Write(append(uri, socketAddress...))
 		time.Sleep(1 * time.Second)
 
 		// If I know a peer, I do not need to continue pinging the LAN
 		if len(node.KnownHosts()) > 0 {
-			fmt.Println("I know a peer, so I am done pinging the LAN")
 			break
 		}
 	}

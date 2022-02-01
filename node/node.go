@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/a-shine/butter/utils"
-	mock_conn "github.com/jordwest/mock-conn"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
 	"net"
@@ -62,23 +61,23 @@ func NewNode(port uint16, maxMemory uint64, clientBehaviour func(*Node), simulat
 	// Determine the upper limit of data block
 	maxStorageBlocks := (maxMemoryInBytes - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
-	if simulated {
-		// create a simulated listener?
-		listener := mock_conn.NewConn()
-	} else {
-		// Determine the preferred local ip of the machine
-		localIpString := utils.GetOutboundIP()
+	//if simulated {
+	//	// create a simulated listener?
+	//	listener := mock_conn.NewConn()
+	//} else {
+	// Determine the preferred local ip of the machine
+	localIpString := utils.GetOutboundIP()
 
-		var socketAddr utils.SocketAddr
-		socketAddr.Ip = localIpString
-		socketAddr.Port = port
+	var socketAddr utils.SocketAddr
+	socketAddr.Ip = localIpString
+	socketAddr.Port = port
 
-		listener, err := net.Listen("tcp", socketAddr.ToString())
-		if err != nil {
-			fmt.Println("Error listening:", err.Error())
-			os.Exit(1)
-		}
+	listener, err := net.Listen("tcp", socketAddr.ToString())
+	if err != nil {
+		fmt.Println("Error listening:", err.Error())
+		os.Exit(1)
 	}
+	//}
 
 	node = Node{
 		listener:        listener,
@@ -99,8 +98,6 @@ func (node *Node) Start() {
 }
 
 func (node *Node) listen() {
-	fmt.Println("Node is listening at ", node.listener.Addr())
-
 	for {
 		// Listen for an incoming connection.
 		conn, err := node.listener.Accept()
@@ -127,7 +124,7 @@ func (node *Node) newHandleRequest(conn net.Conn) {
 
 func (node *Node) NewRouteHandler(packet []byte) []byte { //TODO return invalid route error
 	fmt.Println(string(packet))
-	route, payload := utils.NewParsePacket(packet)
+	route, payload := utils.ParsePacket(packet)
 	fmt.Println("Received request to ", string(route))
 	fmt.Println("Payload: ", string(payload))
 	response := node.routes[string(route)](node, payload)
@@ -222,4 +219,8 @@ func (node *Node) IsSimulated() bool {
 
 func (node *Node) KnownHostsStruct() utils.SocketAddrSlice {
 	return node.knownHosts
+}
+
+func (node *Node) Address() string {
+	return node.listener.Addr().String()
 }
