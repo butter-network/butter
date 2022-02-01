@@ -52,6 +52,12 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
 
 Take a look at more examples in the [examples/](./examples) directory.
 
+To run one of the included examples, from the root of the project type: 
+```bash 
+go run examples/<example_name>/main.go
+(e.g. go run examples/ohce/main.go)
+```
+
 ## Working on the platform
 
 ### Development
@@ -60,6 +66,7 @@ Take a look at more examples in the [examples/](./examples) directory.
 - Raise an issue or pull request
 
 **Explaining the project structure**:
+
 Making a peer-to-peer system can be broken down into 5 main components:
 
 1. Defining the node behaviour and maintaining the network by managing known hosts (`node/`)
