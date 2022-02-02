@@ -48,7 +48,12 @@ func (node *Node) IsSimulated() bool {
 
 // Block from the node's storage by its UUID. If the block is not found, an empty block with an error is returned.
 func (node *Node) Block(id string) (Block, error) {
-	parsedId, _ := uuid.Parse([]byte(id))
+	parsedId, err := uuid.ParseHex(id)
+	if err != nil {
+		fmt.Println("Error parsing UUID:", err)
+		return Block{}, err
+	}
+	fmt.Println("Parsed ID: ", parsedId)
 	if val, ok := node.storage[*parsedId]; ok {
 		return val, nil
 	}
@@ -161,8 +166,8 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(*Node), simul
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
 func (node *Node) Start() {
-	go node.listen()
-	node.ClientBehaviour(node)
+	go node.ClientBehaviour(node)
+	node.listen()
 }
 
 func (node *Node) closeListener() {

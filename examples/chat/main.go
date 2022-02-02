@@ -13,8 +13,8 @@ import (
 
 // The serverBehavior for this application is to print the received message to console for the user to read and return
 // a confirmation receipt
-func serverBehaviour(_ *node.Node, packet []byte) []byte {
-	message := string(packet)
+func serverBehaviour(_ *node.Node, payload []byte) []byte {
+	message := string(payload)
 	fmt.Println("Received:", message)
 	return []byte("received/")
 }

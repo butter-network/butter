@@ -9,12 +9,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added instructions on how to run an example">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="updated chat example">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/wiki/wiki.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/information_retrieval_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/information_retrieval_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +78,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="TODO_SCOPE" value="All Places" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
     <property name="cidr.known.project.marker" value="true" />
@@ -247,7 +250,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Implementing latex compile page workflow" />
     <MESSAGE value="added sections from suggested format" />
     <MESSAGE value="update readme" />
     <MESSAGE value="re-working project structure" />
@@ -272,7 +274,8 @@
     <MESSAGE value="cleaned up node implementation" />
     <MESSAGE value="cleaned up node package" />
     <MESSAGE value="added instructions on how to run an example" />
-    <option name="LAST_COMMIT_MESSAGE" value="added instructions on how to run an example" />
+    <MESSAGE value="updated chat example" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated chat example" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

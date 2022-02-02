@@ -1,10 +1,12 @@
 package butter
 
 import (
+	"fmt"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/retrieve"
 	"github.com/a-shine/butter/store"
 	"testing"
+	"time"
 )
 
 // TODO: Complete the test
@@ -15,42 +17,43 @@ var uuids = make([]string, 0)
 
 func TestInformationRetrieval(t *testing.T) {
 	// create many nodes and spawn into butter network
-	for i := 0; i < nodes; i++ {
-		node, _ := node.NewNode(0, 512, clientBehaviourTest, false)
+	for i := 0; i < nodes-1; i++ {
+		n, _ := node.NewNode(0, 512, dummyClientBehaviour, false)
 
-		retrieve.AppendRetrieveBehaviour(&node)
+		fmt.Println("Node created -", n.Address())
 
-		uuid := store.NaiveStore(&node)
+		dummyKeywords := []string{"dummy", "dummy", "dummy", "dummy", "dummy"}
+		uuid := store.NaiveStore(&n, dummyKeywords, "dummy")
 		uuids = append(uuids, uuid)
 
 		// Spawn your node into the butter network
-		go Spawn(&node, false) // blocking
+		go Spawn(&n, false) // blocking
+		fmt.Println(n.KnownHosts())
 	}
 
 	// add information to nodes (could be any random string)
 	// store the uuid in a slice
 
+	time.Sleep(time.Second * 5)
+
 	// then outside of loop create a new node
-	node := node.NewNode(0, 512, clientBehaviour, false)
-	retrieve.AppendRetrieveBehaviour(&node)
-	Spawn(&node, false) // blocking
+	n, _ := node.NewNode(0, 512, clientBehaviour, false)
+	fmt.Println("Node created -", n.Address())
+	Spawn(&n, false) // blocking
 	// search for each piece of information by going over the uuids
 	// time the amount of time taken to retrieve the information
 }
 
-func clientBehaviourTest(n *node.Node) {
-	// do nothing
+func dummyClientBehaviour(n *node.Node) {
+	// do nothing - just using them for their listener functionality do noy need to interact with them
 }
 
 func clientBehaviour(n *node.Node) {
-	// do nothing
-	for i, uuid := range uuids {
+	fmt.Println(n.KnownHosts())
+	for _, uuid := range uuids {
 		// start a timer
-		retrieve.Retrieve(n, uuid)
+		data := retrieve.NaiveRetrieve(n, uuid)
+		fmt.Println(string(data))
 		// stop timer
-		if i == len(uuids)-1 {
-			break
-		}
-
 	}
 }
