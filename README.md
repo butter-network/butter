@@ -5,17 +5,17 @@
 
 ## Background
 
-`butter` is a networking stack and library for building decentralised applications (dapps). The goal of the project is to design an *efficient decentralised platform* that is as close as possible to being fully decentralised (no single controlling entity or point of failure). The result is a distributed network with an unstructured peer-to-peer architecture.
+`butter` is a networking stack and library for building decentralised applications (dapps). The goal of the project is to design an *efficient decentralised framework* that is as close as possible to being fully decentralised (no single controlling entity or point of failure). The result is a distributed network with an unstructured peer-to-peer architecture.
 
 Please see the full [project documentation](https://a-shine.github.io/butter/) for more information.
 
-**Understanding what is meant by *efficient decentralised platform*:**
+**Understanding what is meant by *efficient decentralised framework*:**
 
 - `butter` is *efficient* in the sense that it 
   - maintains persistent data consistently (despite node failure and high churn) while trying to minimise data redundancy (low degree of duplicate data)
   - takes a space-efficient approach to creating and maintaining the list known hosts per node (by determining who are the 'best' remote hosts to know are on a node-by-node basis)
 - `butter` is *decentralised* in the sense that it is built with an unstructured peer-to-peer architecture
-- `butter` is a *platform* in the sense that it provides tooling and utilities (in the form of a library) as well as documentation and examples for developing dapps
+- `butter` is a *framework* in the sense that it provides tooling and utilities (in the form of a library packages and a standard atomic node) as well as documentation and examples for developing dapps
 
 This project should facilitate the development of dapps by abstracting away the distributed behaviour from the developers and accommodate nodes with a whole variety of hardware.
 
@@ -37,10 +37,19 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
    This will download the library and configure your `go.mod` file.
 2. Import the package into your project source:
    ```go
+   package main
    import "github.com/a-shine/butter"
    ```
 
 ### Examples
+Take a look the examples in the [examples/](./examples) directory.
+
+To run one of the included examples, from the root of the project type:
+```bash 
+go run examples/<example_name>/main.go
+(e.g. go run examples/ohce/main.go)
+```
+
 #### Non-persistent data (Chat application)
 ```go
 // TODO: Add commented example code
@@ -49,14 +58,6 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
 ```go
 // TODO: Add commented example code
 ````
-
-Take a look at more examples in the [examples/](./examples) directory.
-
-To run one of the included examples, from the root of the project type: 
-```bash 
-go run examples/<example_name>/main.go
-(e.g. go run examples/ohce/main.go)
-```
 
 ## Working on the platform
 

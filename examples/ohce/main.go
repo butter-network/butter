@@ -1,5 +1,5 @@
-// Simple example of a butter dapp (decentralised application): reverse echo. A node sends a user specified message to
-// each of it's known hosts, the hosts reply with the same message reversed.
+// Example of a butter dapp (decentralised application) where data is not persistent: reverse echo. A node sends a user
+// specified message to each of it's known hosts, the hosts reply with the same message reversed.
 package main
 
 import (
@@ -54,7 +54,7 @@ func clientBehaviour(node *node.Node) {
 			if err != nil {
 				// If there is an error, log the error BUT DO NOT FAIL - in decentralised application we avoid fatal
 				// errors at all costs as we want to maximise node availability
-				fmt.Println("unable to send message to", knownHosts[i])
+				fmt.Println("Unable to send message to", knownHosts[i])
 			}
 			fmt.Println(knownHosts[i].ToString(), "responded with:", res)
 		}
