@@ -1,9 +1,4 @@
-package node
-
-// mbToBytes converts a megabyte value to bytes.
-func mbToBytes(mb uint64) uint64 {
-	return mb * 1024 * 1024
-}
+package persist
 
 // naiveProcessData stores as much of the input data as possible in the Block data field and cuts off the rest. This
 // will later be improved by breaking down the data into several Block(s) if necessary.

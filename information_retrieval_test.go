@@ -3,8 +3,8 @@ package butter
 import (
 	"fmt"
 	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/retrieve"
-	"github.com/a-shine/butter/store"
+	"github.com/a-shine/butter/persist/retrieve"
+	"github.com/a-shine/butter/persist/store"
 	"testing"
 	"time"
 )

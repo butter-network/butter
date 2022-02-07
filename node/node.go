@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/a-shine/butter/utils"
-	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
 	"log"
 	"net"
@@ -12,14 +11,9 @@ import (
 	"strconv"
 )
 
-type Overlay interface {
-	GetNode() *Node
-}
-
 type Node struct {
 	listener        net.Listener
-	knownHosts      []utils.SocketAddr  // find a way of locking this
-	storage         map[uuid.UUID]Block // find away of locking this
+	knownHosts      []utils.SocketAddr // find a way of locking this
 	uptime          float64
 	ClientBehaviour func(interface{})
 	routes          map[string]func(*Node, []byte) []byte
@@ -50,20 +44,6 @@ func (node *Node) IsSimulated() bool {
 	return node.simulated
 }
 
-// Block from the node's storage by its UUID. If the block is not found, an empty block with an error is returned.
-func (node *Node) Block(id string) (Block, error) {
-	parsedId, err := uuid.ParseHex(id)
-	if err != nil {
-		fmt.Println("Error parsing UUID:", err)
-		return Block{}, err
-	}
-	fmt.Println("Parsed ID: ", parsedId)
-	if val, ok := node.storage[*parsedId]; ok {
-		return val, nil
-	}
-	return Block{}, errors.New("block not found")
-}
-
 // --- Setters ---
 
 // UpdateIP of node to the given IP. This is important for updating an IP from local to public during NAT traversal.
@@ -92,20 +72,6 @@ func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
 	node.manageKnownHosts()
 }
 
-// AddBlock to the node's storage. A UUID is generated for every bit of information added to the network (no update
-// functionality yet!). Returns the UUID of the new block as a string.
-func (node *Node) AddBlock(keywords []string, data string) string {
-	// TODO: add the logic to break down the data into blocks if it exceeds the block size
-	id, _ := uuid.NewV4()
-	node.storage[*id] = Block{
-		keywords: naiveProcessKeywords(keywords),
-		part:     1,
-		parts:    1,
-		data:     naiveProcessData(data),
-	}
-	return id.String()
-}
-
 // NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
 // specific client behaviour. If the port is unspecified (i.e. 0), teh OS will allocate an available port. The max
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
@@ -120,10 +86,10 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 	}
 
 	// Convert user specified max memory in mb to bytes
-	maxMemory := mbToBytes(maxMemoryMb)
+	maxMemory := utils.MbToBytes(maxMemoryMb)
 
 	// check if max memory is more than some arbitrary min value (what is the minimum value that would be useful?)
-	if maxMemory < mbToBytes(512) {
+	if maxMemory < utils.MbToBytes(512) {
 		return node, errors.New("allocated memory must be at least 512MB")
 	} else if maxMemory > memory.TotalMemory() {
 		return node, errors.New("allocated memory must be less than the total system memory")
@@ -131,9 +97,6 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 
 	// Determine the capacity of the knownHosts list size based on user specified max memory
 	maxKnownHosts := uint64((0.05 * float64(maxMemory)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
-
-	// Determine the upper limit of data block
-	maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
 	//if simulated {
 	//	// create a simulated listener?
@@ -156,7 +119,6 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 	node = Node{
 		listener:        listener,
 		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
-		storage:         make(map[uuid.UUID]Block, maxStorageBlocks),
 		uptime:          0,
 		ClientBehaviour: clientBehaviour,
 		routes:          make(map[string]func(*Node, []byte) []byte),
@@ -169,7 +131,7 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
-func (node *Node) Start(overlay Overlay) {
+func (node *Node) Start(overlay interface{}) {
 	go node.ClientBehaviour(overlay)
 	node.listen()
 }

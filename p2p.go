@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/a-shine/butter/discover"
 	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/retrieve"
+	"github.com/a-shine/butter/persist/retrieve"
 	"github.com/a-shine/butter/traverse"
 	"os"
 	"os/signal"
@@ -14,7 +14,7 @@ import (
 // Spawn node into the network (the node serves as an entry-point to the butter network). You can also do this manually
 // to have more control over the specific protocols used in your dapp. This function presents a simple abstraction with
 // the included default butter protocols.
-func Spawn(node *node.Node, traverseFlag bool, overlay node.Overlay) {
+func Spawn(node *node.Node, overlay interface{}, traverseFlag bool) {
 	setupLeaveHandler(node)
 	go discover.Discover(node)
 	if traverseFlag {

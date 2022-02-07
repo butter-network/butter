@@ -11,13 +11,9 @@ import (
 	"os"
 )
 
-type OverlayNode struct {
+type Overlay struct {
 	node *node.Node
 	// You can any other fields you might need to create an overlay network...
-}
-
-func (n *OverlayNode) GetNode() *node.Node {
-	return n.node
 }
 
 // Takes as input a string and returns the string in reverse.
@@ -50,14 +46,14 @@ func send(remoteHost utils.SocketAddr, msg string) (string, error) {
 // The clientBehavior for this application is to send a string to all the node's known hosts and ask them to reverse it
 // and return it back
 func clientBehaviour(appInterface interface{}) {
-	peer := appInterface.(*OverlayNode)
+	overlay := appInterface.(*Overlay)
 	// Create an input loop
 	for {
 		fmt.Print("Type message:")
 		in := bufio.NewReader(os.Stdin)
 		line, _ := in.ReadString('\n') // Read string up to newline
 
-		knownHosts := peer.node.KnownHosts() // Get the node's known hosts
+		knownHosts := overlay.node.KnownHosts() // Get the node's known hosts
 
 		for i := 0; i < len(knownHosts); i++ { // For each known host
 			res, err := send(knownHosts[i], line) // Ask them to reverse the input message
@@ -84,5 +80,5 @@ func main() {
 	butterNode.RegisterRoute("reverse-message/", serverBehaviour) // The client behaviour interacts with this route
 
 	// Spawn your node into the butter network
-	butter.Spawn(&butterNode, false, &OverlayNode{node: &butterNode}) // Blocking
+	butter.Spawn(&butterNode, &Overlay{node: &butterNode}, false) // Blocking
 }

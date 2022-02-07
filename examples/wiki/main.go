@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/retrieve"
-	"github.com/a-shine/butter/store"
+	"github.com/a-shine/butter/persist"
+	"github.com/a-shine/butter/persist/retrieve"
+	"github.com/a-shine/butter/persist/store"
 	"os"
 )
 
-func addArticle(node *node.Node) {
+func addArticle(overlay *persist.Overlay) {
 	var keywords []string
 	fmt.Println("What is the information you would like to store: ")
 	in := bufio.NewReader(os.Stdin)
@@ -27,11 +28,11 @@ func addArticle(node *node.Node) {
 		}
 		keywords = append(keywords, keyword)
 	}
-	articleUuid := store.NaiveStore(node, keywords, data)
+	articleUuid := store.NaiveStore(overlay, keywords, data)
 	fmt.Println("Your article has been stored with UUID: ", articleUuid)
 }
 
-func readArticle(node *node.Node) {
+func readArticle(overlay *persist.Overlay) {
 	var searchType string
 	fmt.Println("Would you like to \n-retrieve(1) a specific piece of information or, \n-explore(2) information on the network:")
 	fmt.Scanln(&searchType)
@@ -40,7 +41,7 @@ func readArticle(node *node.Node) {
 		var uuid string
 		fmt.Println("What is the UUID of the piece of information you would like to retrieve: ")
 		fmt.Scanln(&uuid)
-		fmt.Println(string(retrieve.NaiveRetrieve(node, uuid)))
+		fmt.Println(string(retrieve.NaiveRetrieve(overlay, uuid)))
 	case "2":
 	// TODO: implement search engine behaviour
 	default:
@@ -48,7 +49,8 @@ func readArticle(node *node.Node) {
 	}
 }
 
-func clientBehaviour(node *node.Node) {
+func clientBehaviour(appInterface interface{}) {
+	overlay := appInterface.(*persist.Overlay) // uses the included persist package to describe the overlay network
 	for {
 		var interactionType string
 		fmt.Print("Would you like to add(1) or search(2) information on the network: ")
@@ -56,9 +58,9 @@ func clientBehaviour(node *node.Node) {
 
 		switch interactionType {
 		case "1":
-			addArticle(node)
+			addArticle(overlay)
 		case "2":
-			readArticle(node)
+			readArticle(overlay)
 		default:
 			fmt.Println("Invalid choice")
 		}
