@@ -14,14 +14,14 @@ import (
 // Spawn node into the network (the node serves as an entry-point to the butter network). You can also do this manually
 // to have more control over the specific protocols used in your dapp. This function presents a simple abstraction with
 // the included default butter protocols.
-func Spawn(node *node.Node, traverseFlag bool) {
+func Spawn(node *node.Node, traverseFlag bool, overlay node.Overlay) {
 	setupLeaveHandler(node)
 	go discover.Discover(node)
 	if traverseFlag {
 		go traverse.Traverse(node)
 	}
 	retrieve.AppendRetrieveBehaviour(node)
-	node.Start()
+	node.Start(overlay)
 }
 
 // setupLeaveHandler creates a listener on a new goroutine which will notify the program if it receives an interrupt
@@ -41,9 +41,9 @@ func setupLeaveHandler(node *node.Node) {
 // connections across subnetworks. To be an ambassador a node inherently needs to be available publicly (must port
 // forward either manually or via UPNP and have a public IP address). The added ambassadorial behaviours allows the node
 // to share the public addresses of other traversed (i.e. public) nodes between each other.
-func SpawnAmbassador(node *node.Node) {
-	go discover.Discover(node)
-	go traverse.Traverse(node)
-	//go traverse.AppendAmbassadorBehaviour(node) // the node keeps track of ambassador so if someone needs an ambassador they can find them dynamically (improvement on bootstrapping)
-	node.Start()
-}
+//func SpawnAmbassador(node *node.Node) {
+//	go discover.Discover(node)
+//	go traverse.Traverse(node)
+//	//go traverse.AppendAmbassadorBehaviour(node) // the node keeps track of ambassador so if someone needs an ambassador they can find them dynamically (improvement on bootstrapping)
+//	node.Start()
+//}

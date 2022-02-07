@@ -9,9 +9,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="wiki demo working but not fully tested">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added doc stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/refs.bib" beforeDir="false" afterPath="$PROJECT_DIR$/docs/refs.bib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,13 +87,13 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.watchers.conflict.with.on.save.actions.check.performed" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../cs347-cw" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../margarine" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.folding" />
+    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -245,7 +248,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="update readme" />
     <MESSAGE value="re-working project structure" />
     <MESSAGE value="changed to byte codes" />
     <MESSAGE value="created new better example demonstrations" />
@@ -270,7 +272,8 @@
     <MESSAGE value="added instructions on how to run an example" />
     <MESSAGE value="updated chat example" />
     <MESSAGE value="wiki demo working but not fully tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="wiki demo working but not fully tested" />
+    <MESSAGE value="added doc stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="added doc stuff" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

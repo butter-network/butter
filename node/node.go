@@ -12,12 +12,16 @@ import (
 	"strconv"
 )
 
+type Overlay interface {
+	GetNode() *Node
+}
+
 type Node struct {
 	listener        net.Listener
 	knownHosts      []utils.SocketAddr  // find a way of locking this
 	storage         map[uuid.UUID]Block // find away of locking this
 	uptime          float64
-	ClientBehaviour func(*Node)
+	ClientBehaviour func(interface{})
 	routes          map[string]func(*Node, []byte) []byte
 	simulated       bool
 	ambassador      bool
@@ -107,7 +111,7 @@ func (node *Node) AddBlock(keywords []string, data string) string {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(*Node), simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}), simulated bool) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -165,8 +169,8 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(*Node), simul
 
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
-func (node *Node) Start() {
-	go node.ClientBehaviour(node)
+func (node *Node) Start(overlay Overlay) {
+	go node.ClientBehaviour(overlay)
 	node.listen()
 }
 
