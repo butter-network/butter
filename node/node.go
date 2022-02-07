@@ -11,12 +11,17 @@ import (
 	"strconv"
 )
 
+// Having this interface allows me to use disccover without defining an overlay network
+type Overlay interface {
+	Node() *Node
+}
+
 type Node struct {
 	listener        net.Listener
 	knownHosts      []utils.SocketAddr // find a way of locking this
 	uptime          float64
 	ClientBehaviour func(interface{})
-	routes          map[string]func(*Node, []byte) []byte
+	routes          map[string]func(*Node, []byte) []byte // node level routes TODO: ACTUALLY IT DOESN'T WORK TO HAVE SEPARATE NODE AND OVERLAY ROUTES
 	simulated       bool
 	ambassador      bool
 }

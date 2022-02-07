@@ -28,7 +28,7 @@ func reverse(s string) string {
 
 // The serverBehavior for this application is to reverse the packet it receives and return it back to the sender as a
 // response
-func serverBehaviour(_ *node.Node, payload []byte) []byte {
+func serverBehaviour(_ interface{}, payload []byte) []byte {
 	message := string(payload)
 	reversedMsg := reverse(message)
 	return []byte(reversedMsg)

@@ -9,11 +9,23 @@ import (
 
 type Overlay struct {
 	node    *node.Node
-	storage map[uuid.UUID]Block // Introduce the notion of persistent storage expressed in the Overlay network
+	routes  map[string]func(*Overlay, []byte) []byte // overlay level routes
+	storage map[uuid.UUID]Block                      // Introduce the notion of persistent storage expressed in the Overlay network
 }
 
 func (o *Overlay) Node() *node.Node {
 	return o.node
+}
+
+func NewOverlay(node *node.Node) Overlay {
+	return Overlay{
+		node:    node,
+		storage: make(map[uuid.UUID]Block),
+	}
+}
+
+func (o *Overlay) RegisterRoute(route string, handler func(*Overlay, []byte) []byte) {
+	o.routes[route] = handler
 }
 
 // Determine the upper limit of data block

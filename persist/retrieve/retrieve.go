@@ -26,8 +26,8 @@ func try(node *node.Node, query []byte) []byte {
 	return query
 }
 
-func AppendRetrieveBehaviour(node *node.Node) {
-	node.RegisterRoute("retrieve/", retrieve)
+func AppendRetrieveBehaviour(overlay *persist.Overlay) {
+	overlay.RegisterRoute("retrieve/", retrieve)
 	//node.RegisterRoute("found/", found)
 	//node.RegisterRoute("try/", try)
 }

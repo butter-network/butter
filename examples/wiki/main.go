@@ -78,6 +78,8 @@ func main() {
 	// No need to specify retrieval or storage server behaviours as they are handled by the provided butter storage and
 	//retrieve packages
 
+	overlay := persist.NewOverlay(&butterNode) // Creates a new overlay network
+
 	// Spawn your node into the butter network
-	butter.Spawn(&butterNode, false) // Blocking
+	butter.Spawn(&butterNode, overlay, false) // Blocking
 }
