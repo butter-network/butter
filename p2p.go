@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/a-shine/butter/discover"
 	"github.com/a-shine/butter/node"
+	"github.com/a-shine/butter/persist"
 	"github.com/a-shine/butter/retrieve"
 	"github.com/a-shine/butter/traverse"
 	"os"
@@ -24,9 +25,10 @@ func Spawn(overlay node.Overlay, traverseFlag bool) {
 	n.Start(overlay)
 }
 
-func SpawnPersist(overlay node.Overlay, traverseFlag bool) {
+func SpawnDefaultOverlay(node *node.Node, traverseFlag bool) {
+	overlay := persist.NewOverlay(node) // Creates a new overlay network
 	retrieve.AppendRetrieveBehaviour(overlay.Node())
-	Spawn(overlay, traverseFlag)
+	Spawn(&overlay, traverseFlag)
 }
 
 // setupLeaveHandler creates a listener on a new goroutine which will notify the program if it receives an interrupt

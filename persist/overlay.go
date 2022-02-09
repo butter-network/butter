@@ -43,3 +43,10 @@ func (o *Overlay) Block(id string) (Block, error) {
 	}
 	return Block{}, errors.New("block not found")
 }
+
+func NewOverlay(node *node.Node) Overlay {
+	return Overlay{
+		node:    node,
+		storage: make(map[uuid.UUID]Block),
+	}
+}

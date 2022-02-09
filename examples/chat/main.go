@@ -11,14 +11,18 @@ import (
 	"os"
 )
 
-type Overlay struct {
+type OverlayNode struct {
 	node *node.Node
 	// You can any other fields you might need to create an overlay network...
 }
 
+func (n *OverlayNode) Node() *node.Node {
+	return n.node
+}
+
 // The serverBehavior for this application is to print the received message to console for the user to read and return
 // a confirmation receipt
-func serverBehaviour(_ *node.Node, payload []byte) []byte {
+func serverBehaviour(_ node.Overlay, payload []byte) []byte {
 	message := string(payload)
 	fmt.Println("Received:", message)
 	return []byte("received/")
@@ -35,8 +39,8 @@ func send(remoteHost utils.SocketAddr, msg string) (string, error) {
 
 // The clientBehavior for this application is to send a string to all the node's known hosts and see if they have
 // received it successfully
-func clientBehaviour(appInterface interface{}) {
-	overlay := appInterface.(*Overlay)
+func clientBehaviour(overlayInterface node.Overlay) {
+	overlay := overlayInterface.(*OverlayNode)
 	// Create an input loop
 	for {
 		fmt.Print("Type message:")
@@ -70,5 +74,5 @@ func main() {
 	butterNode.RegisterRoute("message/", serverBehaviour) // The client behaviour interacts with this route
 
 	// Spawn your node into the butter network
-	butter.Spawn(&butterNode, &Overlay{node: &butterNode}, false) // Blocking
+	butter.Spawn(&OverlayNode{node: &butterNode}, false) // Blocking
 }

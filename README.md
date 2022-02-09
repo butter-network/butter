@@ -1,11 +1,11 @@
-# butter
+![](butterLogo.png)
 > The network that spreads! 🧈
 
 ![compile_deploy_latex](https://github.com/a-shine/butter/actions/workflows/compile_deploy_latex.yml/badge.svg)
 
 ## Background
 
-`butter` is a networking stack and library for building decentralised applications (dapps). The goal of the project is to design an *efficient decentralised framework* that is as close as possible to being fully decentralised (no single controlling entity or point of failure). The result is a distributed network with an unstructured peer-to-peer architecture.
+`butter` is a networking stack and framework for building decentralised applications (dapps). The goal of the project is to design an *efficient decentralised framework* that is as close as possible to being fully decentralised (no single controlling entity or point of failure). The result is a distributed network with an unstructured peer-to-peer architecture.
 
 Please see the full [project documentation](https://a-shine.github.io/butter/) for more information.
 
@@ -41,6 +41,10 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
    import "github.com/a-shine/butter"
    ```
 
+### Working with the framework
+Butter is designed to be modular. It provides an inbuilt overlay (implementation of the Overlay interface) called persist (which is what allows for the inbuilt storage and retrieval packages to work) but if you wish to implement your own overlay network that is possible too. You can implement your own version of the Overlay struct.
+For ease of use you can use the default overlay network using the `butter.SpawnDefaultOverlay` function. but yu have the lexibiluty to pick and chose what component packahes you would like to use from the frameowkr.
+
 ### Examples
 Take a look the examples in the [examples/](./examples) directory.
 
@@ -68,13 +72,14 @@ go run examples/<example_name>/main.go
 
 **Explaining the project structure**:
 
-Making a peer-to-peer system can be broken down into 5 main components:
+Making a functional peer-to-peer system can be broken down into several components:
 
 1. Defining the node behaviour and maintaining the network by managing known hosts (`node/`)
 2. Discovery (`discover/`)
 3. NAT traversal (`traverse/`)
-4. (Persistent) information storage (`store/`)
-5. (Persistent) information retrieval (`retrieve/`)
+4. Persistent overlay network (`persist/`)
+   1. (Persistent) information storage (`store/`)
+   2. (Persistent) information retrieval (`retrieve/`)
 
 These are reflected in the project package structure
 

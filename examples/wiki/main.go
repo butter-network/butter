@@ -41,7 +41,7 @@ func readArticle(overlay *persist.Overlay) {
 		var uuid string
 		fmt.Println("What is the UUID of the piece of information you would like to retrieve: ")
 		fmt.Scanln(&uuid)
-		fmt.Println(string(retrieve.NaiveRetrieve(overlay, uuid)))
+		fmt.Println(string(retrieve.NaiveRetrieve(*overlay, uuid)))
 	case "2":
 	// TODO: implement search engine behaviour
 	default:
@@ -49,8 +49,8 @@ func readArticle(overlay *persist.Overlay) {
 	}
 }
 
-func clientBehaviour(appInterface interface{}) {
-	overlay := appInterface.(*persist.Overlay) // uses the included persist package to describe the overlay network
+func clientBehaviour(overlay node.Overlay) {
+	persistOverlay := overlay.(*persist.Overlay) // uses the included persist package to describe the overlay network
 	for {
 		var interactionType string
 		fmt.Print("Would you like to add(1) or search(2) information on the network: ")
@@ -58,9 +58,9 @@ func clientBehaviour(appInterface interface{}) {
 
 		switch interactionType {
 		case "1":
-			addArticle(overlay)
+			addArticle(persistOverlay)
 		case "2":
-			readArticle(overlay)
+			readArticle(persistOverlay)
 		default:
 			fmt.Println("Invalid choice")
 		}
@@ -77,9 +77,6 @@ func main() {
 
 	// No need to specify retrieval or storage server behaviours as they are handled by the provided butter storage and
 	//retrieve packages
-
-	overlay := persist.NewOverlay(&butterNode) // Creates a new overlay network
-
 	// Spawn your node into the butter network
-	butter.Spawn(&butterNode, overlay, false) // Blocking
+	butter.SpawnDefaultOverlay(&butterNode, false) // Blocking (spanwn with the default inbuilt overlay network which allows for persistent storage
 }
