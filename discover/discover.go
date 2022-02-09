@@ -43,8 +43,8 @@ func pongReceived(overlay node.Overlay, addr []byte) []byte {
 }
 
 func Discover(overlay node.Overlay) {
-	overlay.Node().RegisterRoute(pingRoute, pingReceived)
-	overlay.Node().RegisterRoute(pongRoute, pongReceived)
+	overlay.Node().RegisterServerBehaviour(pingRoute, pingReceived)
+	overlay.Node().RegisterServerBehaviour(pongRoute, pongReceived)
 
 	go ListenForMulticasts(overlay)
 	PingLAN(overlay)

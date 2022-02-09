@@ -71,9 +71,11 @@ func main() {
 	// Create a new node by: specifying a port (or setting it to 0 to let the OS assign one), defining an upper limit on
 	// memory usage (recommended setting it to 2048mb) and specifying a clientBehaviour function that describes the
 	// user-interface to interact with the decentralised application
-	butterNode, _ := node.NewNode(0, 2048, clientBehaviour, false)
+	butterNode, _ := node.NewNode(0, 2048, false)
 
 	fmt.Println("Node is listening at", butterNode.Address())
+
+	butterNode.RegisterClientBehaviour(clientBehaviour)
 
 	// No need to specify retrieval or storage server behaviours as they are handled by the provided butter storage and
 	//retrieve packages

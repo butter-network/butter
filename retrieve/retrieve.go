@@ -28,9 +28,9 @@ func try(node *node.Node, query []byte) []byte {
 }
 
 func AppendRetrieveBehaviour(node *node.Node) {
-	node.RegisterRoute("retrieve/", retrieve)
-	//node.RegisterRoute("found/", found)
-	//node.RegisterRoute("try/", try)
+	node.RegisterServerBehaviour("retrieve/", retrieve)
+	//node.RegisterServerBehaviour("found/", found)
+	//node.RegisterServerBehaviour("try/", try)
 }
 
 // NaiveRetrieve High level entrypoint for searching for a specific piece of information on the network

@@ -11,18 +11,19 @@ import (
 	"strconv"
 )
 
+// Overlay interface describes what an implemented Overlay struct should look like.
 type Overlay interface {
 	Node() *Node
 }
 
 type Node struct {
-	listener        net.Listener
-	knownHosts      []utils.SocketAddr // find a way of locking this
-	uptime          float64
-	ClientBehaviour func(Overlay)
-	routes          map[string]func(Overlay, []byte) []byte
-	simulated       bool
-	ambassador      bool
+	listener         net.Listener
+	knownHosts       []utils.SocketAddr // find a way of locking this
+	uptime           float64
+	clientBehaviours []func(Overlay)
+	serverBehaviours map[string]func(Overlay, []byte) []byte
+	simulated        bool
+	ambassador       bool
 }
 
 // --- Getters ---
@@ -59,11 +60,15 @@ func (node *Node) UpdateIP(ip string) {
 
 // --- Adders ---
 
-// RegisterRoute allows a node to register a behaviour for a route. This allows dapp designers to aff their own
+// RegisterServerBehaviour allows a node to register a behaviour for a route. This allows dapp designers to aff their own
 // functionality and build on top of butter nodes. All routes have node and incoming payload as parameters and return a
 // response payload.
-func (node *Node) RegisterRoute(route string, handler func(Overlay, []byte) []byte) {
-	node.routes[route] = handler
+func (node *Node) RegisterServerBehaviour(route string, handler func(Overlay, []byte) []byte) {
+	node.serverBehaviours[route] = handler
+}
+
+func (node *Node) RegisterClientBehaviour(handler func(Overlay)) {
+	node.clientBehaviours = append(node.clientBehaviours, handler)
 }
 
 // AddKnownHost to increase node's partial view of the network. If already in known hosts, does nothing. If known
@@ -81,7 +86,7 @@ func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(Overlay), simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -124,13 +129,13 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(Overlay), sim
 	//}
 
 	node = Node{
-		listener:        listener,
-		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
-		uptime:          0,
-		ClientBehaviour: clientBehaviour,
-		routes:          make(map[string]func(Overlay, []byte) []byte),
-		simulated:       simulated,
-		ambassador:      false,
+		listener:         listener,
+		knownHosts:       make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
+		uptime:           0,
+		clientBehaviours: make([]func(Overlay), 0),
+		serverBehaviours: make(map[string]func(Overlay, []byte) []byte),
+		simulated:        simulated,
+		ambassador:       false,
 	}
 
 	return node, nil
@@ -139,7 +144,9 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(Overlay), sim
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
 func (node *Node) Start(overlay Overlay) {
-	go node.ClientBehaviour(overlay)
+	for i := range node.clientBehaviours {
+		go node.clientBehaviours[i](overlay)
+	}
 	node.listen(overlay)
 }
 
@@ -205,7 +212,7 @@ func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 	}
 
 	// TODO: Don't think this works - need to test
-	if response := node.routes[string(route)](overlay, payload); response != nil {
+	if response := node.serverBehaviours[string(route)](overlay, payload); response != nil {
 		return response
 	}
 
