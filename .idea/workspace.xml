@@ -9,13 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="changed client to use user defined generic overlay">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="working abstraction of node and overlay network">
+      <change afterPath="$PROJECT_DIR$/butterLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persist/overlay.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persist/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +41,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="switch_architecture" />
+        <entry key="$PROJECT_DIR$" value="7fb900f930edf0df75e0335e5e27821af40b0297" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -64,7 +69,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="22uvIA067pWgN1ZvBbM5FVDQjh9" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -103,11 +108,11 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/persist" />
-      <recent name="$PROJECT_DIR$/store" />
       <recent name="$PROJECT_DIR$/node" />
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/discover" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/docs/imgs" />
     </key>
   </component>
   <component name="RunManager" selected="BibTeX.Build bibliohraphy">
@@ -273,8 +278,8 @@
     <MESSAGE value="updated chat example" />
     <MESSAGE value="wiki demo working but not fully tested" />
     <MESSAGE value="added doc stuff" />
-    <MESSAGE value="changed client to use user defined generic overlay" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed client to use user defined generic overlay" />
+    <MESSAGE value="working abstraction of node and overlay network" />
+    <option name="LAST_COMMIT_MESSAGE" value="working abstraction of node and overlay network" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

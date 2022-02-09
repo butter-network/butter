@@ -11,7 +11,6 @@ import (
 	"strconv"
 )
 
-// Having this interface allows me to use disccover without defining an overlay network
 type Overlay interface {
 	Node() *Node
 }
@@ -20,8 +19,8 @@ type Node struct {
 	listener        net.Listener
 	knownHosts      []utils.SocketAddr // find a way of locking this
 	uptime          float64
-	ClientBehaviour func(interface{})
-	routes          map[string]func(*Node, []byte) []byte // node level routes TODO: ACTUALLY IT DOESN'T WORK TO HAVE SEPARATE NODE AND OVERLAY ROUTES
+	ClientBehaviour func(Overlay)
+	routes          map[string]func(Overlay, []byte) []byte
 	simulated       bool
 	ambassador      bool
 }
@@ -63,7 +62,7 @@ func (node *Node) UpdateIP(ip string) {
 // RegisterRoute allows a node to register a behaviour for a route. This allows dapp designers to aff their own
 // functionality and build on top of butter nodes. All routes have node and incoming payload as parameters and return a
 // response payload.
-func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
+func (node *Node) RegisterRoute(route string, handler func(Overlay, []byte) []byte) {
 	node.routes[route] = handler
 }
 
@@ -82,7 +81,7 @@ func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}), simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(Overlay), simulated bool) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -91,10 +90,10 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 	}
 
 	// Convert user specified max memory in mb to bytes
-	maxMemory := utils.MbToBytes(maxMemoryMb)
+	maxMemory := mbToBytes(maxMemoryMb)
 
 	// check if max memory is more than some arbitrary min value (what is the minimum value that would be useful?)
-	if maxMemory < utils.MbToBytes(512) {
+	if maxMemory < mbToBytes(512) {
 		return node, errors.New("allocated memory must be at least 512MB")
 	} else if maxMemory > memory.TotalMemory() {
 		return node, errors.New("allocated memory must be less than the total system memory")
@@ -102,6 +101,9 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 
 	// Determine the capacity of the knownHosts list size based on user specified max memory
 	maxKnownHosts := uint64((0.05 * float64(maxMemory)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
+
+	// Determine the upper limit of data block
+	//maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
 	//if simulated {
 	//	// create a simulated listener?
@@ -126,7 +128,7 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
 		uptime:          0,
 		ClientBehaviour: clientBehaviour,
-		routes:          make(map[string]func(*Node, []byte) []byte),
+		routes:          make(map[string]func(Overlay, []byte) []byte),
 		simulated:       simulated,
 		ambassador:      false,
 	}
@@ -136,9 +138,9 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
-func (node *Node) Start(overlay interface{}) {
+func (node *Node) Start(overlay Overlay) {
 	go node.ClientBehaviour(overlay)
-	node.listen()
+	node.listen(overlay)
 }
 
 func (node *Node) closeListener() {
@@ -156,7 +158,7 @@ func (node *Node) Shutdown() {
 }
 
 // listen to incoming connections from other nodes and handle them in serrate goroutines
-func (node *Node) listen() {
+func (node *Node) listen(overlay Overlay) {
 	for {
 		conn, err := node.listener.Accept()
 		if err != nil {
@@ -166,13 +168,13 @@ func (node *Node) listen() {
 		}
 
 		// Pass connection to request handler in a new goroutine - allows a node to handle multiple connections at once
-		go node.HandleRequest(conn)
+		go node.HandleRequest(conn, overlay)
 	}
 }
 
 // HandleRequest by reading the connection buffer, processing the packet and writing the response to the connection
 // buffer
-func (node *Node) HandleRequest(conn net.Conn) {
+func (node *Node) HandleRequest(conn net.Conn, overlay Overlay) {
 	packet, err := utils.Read(&conn) // Read incoming buffer until EOF
 	if err != nil {
 		log.Println("Unable to read due to", err.Error())
@@ -180,7 +182,7 @@ func (node *Node) HandleRequest(conn net.Conn) {
 
 	// RouteHandler will handle invalid packet or route errors by returning an error uri. This allows us to always
 	// handle requests without panicking.
-	response := node.RouteHandler(packet)
+	response := node.RouteHandler(packet, overlay)
 
 	err = utils.Write(&conn, response)
 	if err != nil {
@@ -196,14 +198,14 @@ func (node *Node) HandleRequest(conn net.Conn) {
 // RouteHandler for incoming packets that applies the correct response to the packet or returns an error
 // ("invalid-packet/" if the node is unable to pass the packet or "invalid-route" if the node does not have a
 // registered behaviour corresponding to the route)
-func (node *Node) RouteHandler(packet []byte) []byte {
+func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 	route, payload, err := utils.ParsePacket(packet)
 	if err != nil {
 		return []byte("invalid-packet/")
 	}
 
 	// TODO: Don't think this works - need to test
-	if response := node.routes[string(route)](node, payload); response != nil {
+	if response := node.routes[string(route)](overlay, payload); response != nil {
 		return response
 	}
 

@@ -1,6 +1,8 @@
 package persist
 
-import "unsafe"
+import (
+	"unsafe"
+)
 
 const BlockSize = uint64(unsafe.Sizeof(Block{}))
 

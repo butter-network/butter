@@ -7,13 +7,14 @@ import (
 	"github.com/a-shine/butter/utils"
 )
 
-func retrieve(overlay *persist.Overlay, query []byte) []byte {
-	block, err := overlay.Block(string(query))
+func retrieve(overlay node.Overlay, query []byte) []byte {
+	persistOverlay := overlay.(*persist.Overlay)
+	block, err := persistOverlay.Block(string(query))
 	if err == nil {
 		return append([]byte("found/"), block.Data()...)
 	}
 
-	hostsStruct := overlay.Node().KnownHostsStruct()
+	hostsStruct := persistOverlay.Node().KnownHostsStruct()
 	knownHostsJson, _ := hostsStruct.ToJson()
 	return append([]byte("try/"), knownHostsJson...)
 }
@@ -26,8 +27,8 @@ func try(node *node.Node, query []byte) []byte {
 	return query
 }
 
-func AppendRetrieveBehaviour(overlay *persist.Overlay) {
-	overlay.RegisterRoute("retrieve/", retrieve)
+func AppendRetrieveBehaviour(node *node.Node) {
+	node.RegisterRoute("retrieve/", retrieve)
 	//node.RegisterRoute("found/", found)
 	//node.RegisterRoute("try/", try)
 }
@@ -35,7 +36,7 @@ func AppendRetrieveBehaviour(overlay *persist.Overlay) {
 // NaiveRetrieve High level entrypoint for searching for a specific piece of information on the network
 // look if I have the information else look at the most likely known host to get to that information
 // one query per piece of information (one-to-one) hence the query has to be unique i.e i.d.
-func NaiveRetrieve(overlay *persist.Overlay, query string) []byte {
+func NaiveRetrieve(overlay persist.Overlay, query string) []byte {
 	// do I have this information, if so return it
 	// else BFS (pass the query on to all known hosts (partial view)
 	block, err := overlay.Block(string(query))
@@ -45,7 +46,7 @@ func NaiveRetrieve(overlay *persist.Overlay, query string) []byte {
 	return bfs(overlay, query)
 }
 
-func bfs(overlay *persist.Overlay, query string) []byte {
+func bfs(overlay persist.Overlay, query string) []byte {
 	// Initialise an empty queue
 	queue := make([]utils.SocketAddr, 0)
 	// Add all my known hosts to the queue
