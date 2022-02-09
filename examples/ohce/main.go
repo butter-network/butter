@@ -16,7 +16,7 @@ type OverlayNode struct {
 	// You can any other fields you might need to create an overlay network...
 }
 
-func (n *OverlayNode) GetNode() *node.Node {
+func (n *OverlayNode) Node() *node.Node {
 	return n.node
 }
 
@@ -32,7 +32,8 @@ func reverse(s string) string {
 
 // The serverBehavior for this application is to reverse the packet it receives and return it back to the sender as a
 // response
-func serverBehaviour(_ *node.Node, payload []byte) []byte {
+func serverBehaviour(appInterface node.Overlay, payload []byte) []byte {
+	_ = appInterface.(*OverlayNode)
 	message := string(payload)
 	reversedMsg := reverse(message)
 	return []byte(reversedMsg)
@@ -49,7 +50,7 @@ func send(remoteHost utils.SocketAddr, msg string) (string, error) {
 
 // The clientBehavior for this application is to send a string to all the node's known hosts and ask them to reverse it
 // and return it back
-func clientBehaviour(appInterface interface{}) {
+func clientBehaviour(appInterface node.Overlay) {
 	peer := appInterface.(*OverlayNode)
 	// Create an input loop
 	for {
@@ -84,5 +85,5 @@ func main() {
 	butterNode.RegisterRoute("reverse-message/", serverBehaviour) // The client behaviour interacts with this route
 
 	// Spawn your node into the butter network
-	butter.Spawn(&butterNode, false, &OverlayNode{node: &butterNode}) // Blocking
+	butter.Spawn(&OverlayNode{node: &butterNode}, false) // Blocking
 }

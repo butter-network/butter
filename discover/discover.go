@@ -19,10 +19,10 @@ const (
 	maxDatagramSize = 8192
 )
 
-func pingReceived(node *node.Node, addr []byte) []byte {
+func pingReceived(overlay node.Overlay, addr []byte) []byte {
 	remoteAddr, _ := utils.AddrFromJson(addr)
-	node.AddKnownHost(remoteAddr)
-	socketAddr := node.SocketAddr()
+	overlay.Node().AddKnownHost(remoteAddr)
+	socketAddr := overlay.Node().SocketAddr()
 	nodeAddr, _ := socketAddr.ToJson()
 	uri := []byte("pong/")
 	_, err := utils.Request(remoteAddr, uri, nodeAddr)
@@ -32,28 +32,28 @@ func pingReceived(node *node.Node, addr []byte) []byte {
 	return []byte("ok")
 }
 
-func pongReceived(node *node.Node, addr []byte) []byte {
+func pongReceived(overlay node.Overlay, addr []byte) []byte {
 	remoteAddr, err := utils.AddrFromJson(addr)
 	if err != nil {
 		log.Printf("pongReceived: %s", err)
 		return nil
 	}
-	node.AddKnownHost(remoteAddr)
+	overlay.Node().AddKnownHost(remoteAddr)
 	return []byte("/successful-introduction/")
 }
 
-func Discover(node *node.Node) {
-	node.RegisterRoute(pingRoute, pingReceived)
-	node.RegisterRoute(pongRoute, pongReceived)
+func Discover(overlay node.Overlay) {
+	overlay.Node().RegisterRoute(pingRoute, pingReceived)
+	overlay.Node().RegisterRoute(pongRoute, pongReceived)
 
-	go ListenForMulticasts(node)
-	PingLAN(node)
+	go ListenForMulticasts(overlay)
+	PingLAN(overlay)
 
 }
 
 var myPingAddr string
 
-func PingLAN(node *node.Node) {
+func PingLAN(overlay node.Overlay) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -61,25 +61,25 @@ func PingLAN(node *node.Node) {
 	c, err := net.DialUDP("udp", nil, addr)
 	myPingAddr = c.LocalAddr().String()
 	uri := []byte(pingRoute)
-	socketAddr := node.SocketAddr()
+	socketAddr := overlay.Node().SocketAddr()
 	socketAddress, _ := socketAddr.ToJson()
 	for {
 		c.Write(append(uri, socketAddress...))
 		time.Sleep(1 * time.Second)
 
 		// If I know a peer, I do not need to continue pinging the LAN
-		if len(node.KnownHosts()) > 0 {
+		if len(overlay.Node().KnownHosts()) > 0 {
 			break
 		}
 	}
 }
 
-func foundNode(src *net.UDPAddr, n int, b []byte, node *node.Node) {
+func foundNode(src *net.UDPAddr, n int, b []byte, overlay node.Overlay) {
 	packet := b[:n]
-	node.RouteHandler(packet)
+	overlay.Node().RouteHandler(packet, overlay)
 }
 
-func ListenForMulticasts(node *node.Node) {
+func ListenForMulticasts(overlay node.Overlay) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
 		log.Fatal(err)
@@ -96,7 +96,7 @@ func ListenForMulticasts(node *node.Node) {
 
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
-			foundNode(src, n, b, node)
+			foundNode(src, n, b, overlay)
 		}
 	}
 }

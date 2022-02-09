@@ -9,12 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added doc stuff">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="working abstraction of node and overlay network">
+      <change afterPath="$PROJECT_DIR$/butterLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persist/utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/refs.bib" beforeDir="false" afterPath="$PROJECT_DIR$/docs/refs.bib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +41,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="switch_architecture" />
+        <entry key="$PROJECT_DIR$" value="7fb900f930edf0df75e0335e5e27821af40b0297" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -248,7 +254,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="re-working project structure" />
     <MESSAGE value="changed to byte codes" />
     <MESSAGE value="created new better example demonstrations" />
     <MESSAGE value="modified serverBehaviour parameters" />
@@ -273,7 +278,8 @@
     <MESSAGE value="updated chat example" />
     <MESSAGE value="wiki demo working but not fully tested" />
     <MESSAGE value="added doc stuff" />
-    <option name="LAST_COMMIT_MESSAGE" value="added doc stuff" />
+    <MESSAGE value="working abstraction of node and overlay network" />
+    <option name="LAST_COMMIT_MESSAGE" value="working abstraction of node and overlay network" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/a-shine/butter/utils"
-	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pbnjay/memory"
 	"log"
 	"net"
@@ -13,16 +12,15 @@ import (
 )
 
 type Overlay interface {
-	GetNode() *Node
+	Node() *Node
 }
 
 type Node struct {
 	listener        net.Listener
-	knownHosts      []utils.SocketAddr  // find a way of locking this
-	storage         map[uuid.UUID]Block // find away of locking this
+	knownHosts      []utils.SocketAddr // find a way of locking this
 	uptime          float64
-	ClientBehaviour func(interface{})
-	routes          map[string]func(*Node, []byte) []byte
+	ClientBehaviour func(Overlay)
+	routes          map[string]func(Overlay, []byte) []byte
 	simulated       bool
 	ambassador      bool
 }
@@ -50,20 +48,6 @@ func (node *Node) IsSimulated() bool {
 	return node.simulated
 }
 
-// Block from the node's storage by its UUID. If the block is not found, an empty block with an error is returned.
-func (node *Node) Block(id string) (Block, error) {
-	parsedId, err := uuid.ParseHex(id)
-	if err != nil {
-		fmt.Println("Error parsing UUID:", err)
-		return Block{}, err
-	}
-	fmt.Println("Parsed ID: ", parsedId)
-	if val, ok := node.storage[*parsedId]; ok {
-		return val, nil
-	}
-	return Block{}, errors.New("block not found")
-}
-
 // --- Setters ---
 
 // UpdateIP of node to the given IP. This is important for updating an IP from local to public during NAT traversal.
@@ -78,7 +62,7 @@ func (node *Node) UpdateIP(ip string) {
 // RegisterRoute allows a node to register a behaviour for a route. This allows dapp designers to aff their own
 // functionality and build on top of butter nodes. All routes have node and incoming payload as parameters and return a
 // response payload.
-func (node *Node) RegisterRoute(route string, handler func(*Node, []byte) []byte) {
+func (node *Node) RegisterRoute(route string, handler func(Overlay, []byte) []byte) {
 	node.routes[route] = handler
 }
 
@@ -92,26 +76,12 @@ func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
 	node.manageKnownHosts()
 }
 
-// AddBlock to the node's storage. A UUID is generated for every bit of information added to the network (no update
-// functionality yet!). Returns the UUID of the new block as a string.
-func (node *Node) AddBlock(keywords []string, data string) string {
-	// TODO: add the logic to break down the data into blocks if it exceeds the block size
-	id, _ := uuid.NewV4()
-	node.storage[*id] = Block{
-		keywords: naiveProcessKeywords(keywords),
-		part:     1,
-		parts:    1,
-		data:     naiveProcessData(data),
-	}
-	return id.String()
-}
-
 // NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
 // specific client behaviour. If the port is unspecified (i.e. 0), teh OS will allocate an available port. The max
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}), simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(Overlay), simulated bool) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -133,7 +103,7 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 	maxKnownHosts := uint64((0.05 * float64(maxMemory)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
 
 	// Determine the upper limit of data block
-	maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
+	//maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
 
 	//if simulated {
 	//	// create a simulated listener?
@@ -156,10 +126,9 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 	node = Node{
 		listener:        listener,
 		knownHosts:      make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
-		storage:         make(map[uuid.UUID]Block, maxStorageBlocks),
 		uptime:          0,
 		ClientBehaviour: clientBehaviour,
-		routes:          make(map[string]func(*Node, []byte) []byte),
+		routes:          make(map[string]func(Overlay, []byte) []byte),
 		simulated:       simulated,
 		ambassador:      false,
 	}
@@ -171,7 +140,7 @@ func NewNode(port uint16, maxMemoryMb uint64, clientBehaviour func(interface{}),
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
 func (node *Node) Start(overlay Overlay) {
 	go node.ClientBehaviour(overlay)
-	node.listen()
+	node.listen(overlay)
 }
 
 func (node *Node) closeListener() {
@@ -189,7 +158,7 @@ func (node *Node) Shutdown() {
 }
 
 // listen to incoming connections from other nodes and handle them in serrate goroutines
-func (node *Node) listen() {
+func (node *Node) listen(overlay Overlay) {
 	for {
 		conn, err := node.listener.Accept()
 		if err != nil {
@@ -199,13 +168,13 @@ func (node *Node) listen() {
 		}
 
 		// Pass connection to request handler in a new goroutine - allows a node to handle multiple connections at once
-		go node.HandleRequest(conn)
+		go node.HandleRequest(conn, overlay)
 	}
 }
 
 // HandleRequest by reading the connection buffer, processing the packet and writing the response to the connection
 // buffer
-func (node *Node) HandleRequest(conn net.Conn) {
+func (node *Node) HandleRequest(conn net.Conn, overlay Overlay) {
 	packet, err := utils.Read(&conn) // Read incoming buffer until EOF
 	if err != nil {
 		log.Println("Unable to read due to", err.Error())
@@ -213,7 +182,7 @@ func (node *Node) HandleRequest(conn net.Conn) {
 
 	// RouteHandler will handle invalid packet or route errors by returning an error uri. This allows us to always
 	// handle requests without panicking.
-	response := node.RouteHandler(packet)
+	response := node.RouteHandler(packet, overlay)
 
 	err = utils.Write(&conn, response)
 	if err != nil {
@@ -229,14 +198,14 @@ func (node *Node) HandleRequest(conn net.Conn) {
 // RouteHandler for incoming packets that applies the correct response to the packet or returns an error
 // ("invalid-packet/" if the node is unable to pass the packet or "invalid-route" if the node does not have a
 // registered behaviour corresponding to the route)
-func (node *Node) RouteHandler(packet []byte) []byte {
+func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 	route, payload, err := utils.ParsePacket(packet)
 	if err != nil {
 		return []byte("invalid-packet/")
 	}
 
 	// TODO: Don't think this works - need to test
-	if response := node.routes[string(route)](node, payload); response != nil {
+	if response := node.routes[string(route)](overlay, payload); response != nil {
 		return response
 	}
 
