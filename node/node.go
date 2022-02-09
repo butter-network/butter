@@ -219,3 +219,7 @@ func (node *Node) manageKnownHosts() {
 	//learn about known hosts every time I deal with a request
 	//make a known hosts list evaluator function
 }
+
+func mbToBytes(mb uint64) uint64 {
+	return mb * 1024 * 1024
+}

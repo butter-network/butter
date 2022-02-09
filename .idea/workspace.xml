@@ -10,17 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="working abstraction of node and overlay network">
-      <change afterPath="$PROJECT_DIR$/butterLogo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/persist/utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/wiki/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/information_retrieval_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/information_retrieval_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/p2p.go" beforeDir="false" afterPath="$PROJECT_DIR$/p2p.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/store/store.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/store.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,10 +103,10 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/node" />
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/discover" />
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/docs/imgs" />
     </key>
   </component>
@@ -241,7 +236,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="main" />
+                        <option value="overlay-abstraction" />
                       </list>
                     </value>
                   </entry>

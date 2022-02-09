@@ -8,8 +8,8 @@ import (
 	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/persist"
-	"github.com/a-shine/butter/persist/retrieve"
-	"github.com/a-shine/butter/persist/store"
+	"github.com/a-shine/butter/retrieve"
+	"github.com/a-shine/butter/store"
 	"os"
 )
 
