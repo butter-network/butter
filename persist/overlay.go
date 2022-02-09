@@ -1,15 +1,16 @@
 package persist
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/a-shine/butter/node"
-	uuid "github.com/nu7hatch/gouuid"
 )
 
 type Overlay struct {
 	node    *node.Node
-	storage map[uuid.UUID]Block
+	storage map[[32]byte]Block
 }
 
 func (o *Overlay) Node() *node.Node {
@@ -20,25 +21,22 @@ func (o *Overlay) Node() *node.Node {
 // functionality yet!). Returns the UUID of the new block as a string.
 func (o *Overlay) AddBlock(keywords []string, data string) string {
 	// TODO: add the logic to break down the data into blocks if it exceeds the block size
-	id, _ := uuid.NewV4()
-	o.storage[*id] = Block{
+	hsha2 := sha256.Sum256([]byte(data))
+	o.storage[hsha2] = Block{
 		keywords: naiveProcessKeywords(keywords),
 		part:     1,
 		parts:    1,
 		data:     naiveProcessData(data),
 	}
-	return id.String()
+	return fmt.Sprintf("%x", hsha2)
 }
 
 // Block from the node's storage by its UUID. If the block is not found, an empty block with an error is returned.
 func (o *Overlay) Block(id string) (Block, error) {
-	parsedId, err := uuid.ParseHex(id)
-	if err != nil {
-		fmt.Println("Error parsing UUID:", err)
-		return Block{}, err
-	}
-	fmt.Println("Parsed ID: ", parsedId)
-	if val, ok := o.storage[*parsedId]; ok {
+	var hash [32]byte
+	data, _ := hex.DecodeString(id)
+	copy(hash[:], data)
+	if val, ok := o.storage[hash]; ok {
 		return val, nil
 	}
 	return Block{}, errors.New("block not found")
@@ -47,6 +45,6 @@ func (o *Overlay) Block(id string) (Block, error) {
 func NewOverlay(node *node.Node) Overlay {
 	return Overlay{
 		node:    node,
-		storage: make(map[uuid.UUID]Block),
+		storage: make(map[[32]byte]Block),
 	}
 }

@@ -9,14 +9,11 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="fixed examples">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="implemented ability to define several client behaviours">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/overlay.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,7 +247,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="modified serverBehaviour parameters" />
     <MESSAGE value="some stuff is working" />
     <MESSAGE value="save befor testing new architecture" />
     <MESSAGE value="almost working" />
@@ -275,7 +271,8 @@
     <MESSAGE value="working abstraction of node and overlay network" />
     <MESSAGE value="fixed merge issues" />
     <MESSAGE value="fixed examples" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed examples" />
+    <MESSAGE value="implemented ability to define several client behaviours" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented ability to define several client behaviours" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
