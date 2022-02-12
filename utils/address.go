@@ -17,6 +17,10 @@ type SocketAddr struct {
 	Port uint16
 }
 
+func (s *SocketAddr) IsEmpty() bool {
+	return s.Ip == nil || s.Port == 0
+}
+
 type SocketAddrSlice []SocketAddr
 
 func (s *SocketAddr) ToString() string {
