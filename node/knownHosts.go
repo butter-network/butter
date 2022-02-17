@@ -2,16 +2,39 @@ package node
 
 import (
 	"encoding/json"
-	"github.com/a-shine/butter/utils"
 	"time"
+
+	"github.com/a-shine/butter/utils"
 )
 
 // only need to do this when known host list is at capacity
 
 type HostQuality struct {
-	uptime           time.Duration
+	// TODO: add a sense of public vs private (known public allows you to be a
+	// bridge between subnets but private has lower latency)
+	uptime           uint64
 	availableStorage uint64
 	knownHosts       int
+}
+
+type KnownHosts struct {
+	cap uint
+
+	uptimeTally  uint64
+	storageTally uint64
+
+	Hosts map[utils.SocketAddr]HostQuality
+
+	highUptimeHighStorage uint
+	highUptimeLowStorage  uint
+	lowUptimeHighStorage  uint
+	lowUptimeLowStorage   uint
+
+	lastUpdate time.Time
+}
+
+func (knownHosts *KnownHosts) count() uint {
+	return uint(len(knownHosts.Hosts))
 }
 
 func hostQuality(overlay Overlay, _ []byte) []byte {
@@ -19,7 +42,7 @@ func hostQuality(overlay Overlay, _ []byte) []byte {
 
 	node := overlay.Node()
 
-	hostQuality.uptime = node.uptime()
+	hostQuality.uptime = uint64(node.uptime())
 	hostQuality.availableStorage = overlay.AvailableStorage()
 	hostQuality.knownHosts = len(node.KnownHosts())
 
@@ -29,108 +52,139 @@ func hostQuality(overlay Overlay, _ []byte) []byte {
 
 }
 
+func (knownHosts *KnownHosts) Addrs() map[utils.SocketAddr]HostQuality {
+	return knownHosts.Hosts
+}
+
 func AppendHostQualityServerBehaviour(node *Node) {
 	node.RegisterServerBehaviour("host-quality/", hostQuality)
 }
 
-type knownHosts struct {
-	state []utils.SocketAddr
-}
+func (knownHosts *KnownHosts) update() {
+	knownHosts.uptimeTally = 0
+	knownHosts.storageTally = 0
 
-func (node *Node) intelligentAddKnownHost(potentialHost utils.SocketAddr) {
-	var uptimeTally uint64
-	var storageTally uint64
-
-	var highUptimeHighStorage []utils.SocketAddr
-	var highUptimeLowStorage []utils.SocketAddr
-	var lowUptimeHighStorage []utils.SocketAddr
-	var lowUptimeLowStorage []utils.SocketAddr
-
-	var knownHostsQuality map[utils.SocketAddr]HostQuality{}
-
-	for _, host := range node.KnownHosts() {
+	for host, _ := range knownHosts.Hosts {
 		// get the host quality and add to a map of known hosts to their quality
 		var hostQuality HostQuality
-		response, _ := utils.Request(host, []byte("host-quality/"), []byte{})
+		response, err := utils.Request(host, []byte("host-quality/"), []byte{})
+		if err != nil {
+			knownHosts.Remove(host)
+			continue
+		}
 		_ = json.Unmarshal(response, &hostQuality)
-		knownHostsQuality[host] = hostQuality
+		knownHosts.Hosts[host] = hostQuality
 
 		// tally the uptime to obtain mean avg
 		// tally the storage to obtain mean avg
-		uptimeTally += uint64(hostQuality.uptime)
-		storageTally += hostQuality.availableStorage
+		knownHosts.uptimeTally += uint64(hostQuality.uptime)
+		knownHosts.storageTally += hostQuality.availableStorage
+	}
+	knownHosts.classifyHosts()
+	knownHosts.lastUpdate = time.Now()
+}
+
+func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
+	delete(knownHosts.Hosts, host)
+	// TODO: decrement the count
+}
+
+func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
+	if _, ok := knownHosts.Hosts[host]; ok {
+		return // already in the list
 	}
 
-	avgUptime := uptimeTally / uint64(len(node.KnownHosts()))
-	avgStorage := storageTally / uint64(len(node.KnownHosts()))
+	var hostQuality HostQuality
+	response, _ := utils.Request(host, []byte("host-quality/"), []byte{})
+	_ = json.Unmarshal(response, &hostQuality)
 
-	// classify hosts into 4 categories - add then to appropriate list
-	for _, host := range node.KnownHosts() {
-		if knownHostsQuality[host].uptime > avgUptime && knownHostsQuality[host].availableStorage > avgStorage {
-			highUptimeHighStorage = append(highUptimeHighStorage, host)
-		} else if knownHostsQuality[host].uptime > avgUptime && knownHostsQuality[host].availableStorage < avgStorage {
-			highUptimeLowStorage = append(highUptimeLowStorage, host)
-		} else if knownHostsQuality[host].uptime < avgUptime && knownHostsQuality[host].availableStorage > avgStorage {
-			lowUptimeHighStorage = append(lowUptimeHighStorage, host)
-		} else if knownHostsQuality[host].uptime < avgUptime && knownHostsQuality[host].availableStorage < avgStorage {
-			lowUptimeLowStorage = append(lowUptimeLowStorage, host)
-		}
+	knownHosts.hostType(hostQuality, knownHosts.avgUptime(), knownHosts.avgStorage())
+	// TODO: increment the correct category
+
+	if knownHosts.count() < knownHosts.cap {
+		knownHosts.Hosts[host] = hostQuality // if we have the memory just add the known host
+	} else {
+		knownHosts.intelligentAddKnownHost(host) // else figure out if its worth adding and who to remove
+	}
+}
+
+func (knownHosts *KnownHosts) avgUptime() uint64 {
+	if knownHosts.count() == 0 {
+		return 0
+	}
+	return knownHosts.uptimeTally / uint64(len(knownHosts.Hosts))
+}
+
+func (knownHosts *KnownHosts) avgStorage() uint64 {
+	if knownHosts.count() == 0 {
+		return 0
+	}
+	return knownHosts.storageTally / uint64(len(knownHosts.Hosts))
+}
+
+func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.SocketAddr) {
+	// OPTIMISATION - these can be cached as part of a KnownHosts struct, i.e. if we recently ran the above functions, we can assume that the distribution has not changed much and just skip to making the decision as to if we should add the known host or not
+
+	if time.Since(knownHosts.lastUpdate) > time.Minute*2 {
+		knownHosts.update()
 	}
 
+	//knownHosts.classifyHosts()
 
-	// see where the new knwown host lies in these 4 categories (by repeating the above)
+	avgUptime := knownHosts.avgUptime()
+	avgStorage := knownHosts.avgStorage()
 
-	//figure out the host uotime and storage distribution
+	// see where the new known host lies in these 4 categories (by repeating the above)
+	// figure out the host uptime and storage distribution
+	var hostQuality HostQuality
+	response, _ := utils.Request(potentialHost, []byte("host-quality/"), []byte{})
+	_ = json.Unmarshal(response, &hostQuality)
+	knownHosts.hostType(hostQuality, avgUptime, avgStorage)
+
 	//if the new host does not improve the distribution don't add - i.e. do nothing
 	//else remove a known host in the category with teh highesr frequency and add in the known host to the category with the least frequency
 }
 
-func (k *knownHosts) Copy() interface{} {
-	copiedState := make([]utils.SocketAddr, len(k.state))
-	copy(copiedState, k.state)
-	return &knownHosts{state: copiedState}
-}
+func (knownHosts *KnownHosts) classifyHosts() {
+	knownHosts.resetDistribution()
 
-func (k *knownHosts) Move() {
-	// take the host from possible host
-	// add it to state, remove another host from the state and set it as the possibleHost
-}
+	avgUptime := knownHosts.avgUptime()
+	avgStorage := knownHosts.avgStorage()
 
-// Value function for the list of known hosts - needs to be diverse (minimisae)
-func (k *knownHosts) Energy() float64 {
-	var energy float64
-
-	// 4 possible types of host - (high uptime, high storage), (high uptime, low storage), (low uptime, high storage), (low uptime, low storage)
-	// The value function switches between these 4 states as to what it values
-	valueHighUptime := true
-	valueHighStorage := true
-
-	// for each host in the state, get the uptime and available storage
-	for _, host := range k.state {
-		var hostQuality HostQuality
-		response, _ := utils.Request(host, []byte("host-quality/"), []byte{})
-		_ = json.Unmarshal(response, &hostQuality)
-		if valueHighUptime && valueHighStorage {
-			energy -= float64(hostQuality.uptime.Milliseconds()) // we like high uptime (the bigger the better)
-			energy -= float64(hostQuality.availableStorage)      // we like lots of available storage
-			valueHighUptime = true
-			valueHighStorage = false // move to next state
-		} else if valueHighUptime && !valueHighStorage {
-			energy -= float64(hostQuality.uptime.Milliseconds()) // we dislike high uptime (the bigger the better)
-			energy += float64(hostQuality.availableStorage)      // we dislike lots of available storage
-			valueHighUptime = false
-			valueHighStorage = true // move to next state
-		} else if !valueHighUptime && valueHighStorage {
-			energy += float64(hostQuality.uptime.Milliseconds()) // we like high uptime (the bigger the better)
-			energy -= float64(hostQuality.availableStorage)      // we like lots of available storage
-			valueHighUptime = false
-			valueHighStorage = false // move to next state
-		} else if !valueHighUptime && !valueHighStorage {
-			energy += float64(hostQuality.uptime.Milliseconds()) // we dislike high uptime (the bigger the better)
-			energy += float64(hostQuality.availableStorage)      // we dislike lots of available storage
-			valueHighUptime = true
-			valueHighStorage = true // move to next state
+	for _, quality := range knownHosts.Hosts {
+		switch knownHosts.hostType(quality, avgUptime, avgStorage) {
+		case "highUptimeHighStorage":
+			knownHosts.highUptimeHighStorage += 1
+		case "highUptimeLowStorage":
+			knownHosts.highUptimeLowStorage += 1
+		case "lowUptimeHighStorage":
+			knownHosts.lowUptimeHighStorage += 1
+		case "lowUptimeLowStorage":
+			knownHosts.lowUptimeLowStorage += 1
 		}
 	}
-	return energy
+}
+
+func (knownHosts *KnownHosts) resetDistribution() {
+	knownHosts.highUptimeHighStorage = 0
+	knownHosts.highUptimeLowStorage = 0
+	knownHosts.lowUptimeHighStorage = 0
+	knownHosts.lowUptimeLowStorage = 0
+}
+
+func (knownHosts *KnownHosts) hostType(hostQuality HostQuality, avgUptime uint64, avgStorage uint64) string {
+	if hostQuality.uptime > avgUptime && hostQuality.availableStorage > avgStorage {
+		return "highUptimeHighStorage"
+	} else if hostQuality.uptime > avgUptime && hostQuality.availableStorage < avgStorage {
+		return "highUptimeLowStorage"
+	} else if hostQuality.uptime < avgUptime && hostQuality.availableStorage > avgStorage {
+		return "lowUptimeHighStorage"
+	} else {
+		return "lowUptimeLowStorage"
+	}
+}
+
+func (knownHosts *KnownHosts) JsonDigest() []byte {
+	digest, _ := json.Marshal(knownHosts)
+	return digest
 }

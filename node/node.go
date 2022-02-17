@@ -3,27 +3,34 @@ package node
 import (
 	"errors"
 	"fmt"
-	"github.com/a-shine/butter/utils"
-	"github.com/pbnjay/memory"
 	"log"
 	"net"
 	"os"
 	"strconv"
+	"time"
+
+	"github.com/a-shine/butter/utils"
+	"github.com/pbnjay/memory"
 )
 
-// Overlay interface describes what an implemented Overlay struct should look like.
+// TODO: add and remove known host should not be public?
+// TODO: Known host optimisation - probabilistic simulated annealing
+
+// Overlay interface describes what an implemented Overlay struct should look like
 type Overlay interface {
 	Node() *Node
+	AvailableStorage() uint64
 }
 
 type Node struct {
 	listener         net.Listener
-	knownHosts       []utils.SocketAddr // find a way of locking this
-	uptime           float64
+	knownHosts       KnownHosts
+	started          time.Time
 	clientBehaviours []func(Overlay)
 	serverBehaviours map[string]func(Overlay, []byte) []byte
 	simulated        bool
 	ambassador       bool
+	storageMemoryCap uint64
 }
 
 // --- Getters ---
@@ -37,16 +44,20 @@ func (node *Node) SocketAddr() utils.SocketAddr {
 	return socketAddr
 }
 
-func (node *Node) KnownHosts() []utils.SocketAddr {
-	return node.knownHosts
+func (node *Node) KnownHosts() map[utils.SocketAddr]HostQuality {
+	return node.knownHosts.Addrs()
 }
 
-func (node *Node) KnownHostsStruct() utils.SocketAddrSlice {
+func (node *Node) KnownHostsStruct() KnownHosts {
 	return node.knownHosts
 }
 
 func (node *Node) IsSimulated() bool {
 	return node.simulated
+}
+
+func (node *Node) StorageMemoryCap() uint64 {
+	return node.storageMemoryCap
 }
 
 // --- Setters ---
@@ -67,6 +78,10 @@ func (node *Node) RegisterServerBehaviour(route string, handler func(Overlay, []
 	node.serverBehaviours[route] = handler
 }
 
+// much like you can have several server beahbiour you should be able to
+// append several of your own client behaviours to a node (each client
+// behaviour is append to a list and upon startup we create a goroutine for
+// each registered client behaviour)
 func (node *Node) RegisterClientBehaviour(handler func(Overlay)) {
 	node.clientBehaviours = append(node.clientBehaviours, handler)
 }
@@ -74,11 +89,11 @@ func (node *Node) RegisterClientBehaviour(handler func(Overlay)) {
 // AddKnownHost to increase node's partial view of the network. If already in known hosts, does nothing. If known
 // hosts list is full, runs manageKnownHosts function (black box function that manages an optimal known host list).
 func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
-	// TODO: check if the host is already known
-	if len(node.knownHosts) < cap(node.knownHosts) {
-		node.knownHosts = append(node.knownHosts, remoteHost)
-	}
-	node.manageKnownHosts()
+	node.knownHosts.Add(remoteHost)
+}
+
+func (node *Node) RemoveKnownHost(remoteHost utils.SocketAddr) {
+	node.knownHosts.Remove(remoteHost)
 }
 
 // NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
@@ -105,20 +120,26 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 	}
 
 	// Determine the capacity of the knownHosts list size based on user specified max memory
-	maxKnownHosts := uint64((0.05 * float64(maxMemory)) / float64(utils.SocketAddressSize)) // 5% of allocated memory is used for the known host list
+	knownHostsMemory := uint64(0.02 * float64(maxMemory)) // 2% of allocated memory is used for the known host list
+	knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
 
-	// Determine the upper limit of data block
-	//maxStorageBlocks := (maxMemory - maxKnownHosts) / BlockSize // remaining memory is used for the data blocks
+	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)
+	maxStorage := maxMemory - knownHostsMemory // remaining memory is used for the storage
 
 	//if simulated {
 	//	// create a simulated listener?
 	//	listener := mock_conn.NewConn()
 	//} else {
 	// Determine the preferred local ip of the machine
-	localIpString := utils.GetOutboundIP() // TODO: Find a better way to do this
+	//localIpString := utils.GetOutboundIP() // TODO: Find better way of doing this
+	//TODO: make return SocletAddr
+
+	ip, _ := utils.GetIp()
+	//fmt.Println("Local IP: ", ip)
 
 	var socketAddr utils.SocketAddr
-	socketAddr.Ip = localIpString
+	//socketAddr, _ = utils.AddrFromString(localIpString)
+	socketAddr.Ip = ip
 	socketAddr.Port = port
 
 	listener, err := net.Listen("tcp", socketAddr.ToString())
@@ -130,12 +151,13 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 
 	node = Node{
 		listener:         listener,
-		knownHosts:       make([]utils.SocketAddr, 0, maxKnownHosts), // make a slice of known hosts of length and capacity maxKnownHosts
-		uptime:           0,
+		knownHosts:       KnownHosts{cap: uint(knownHostsCap), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
+		started:          time.Time{},
 		clientBehaviours: make([]func(Overlay), 0),
 		serverBehaviours: make(map[string]func(Overlay, []byte) []byte),
 		simulated:        simulated,
 		ambassador:       false,
+		storageMemoryCap: maxStorage,
 	}
 
 	return node, nil
@@ -144,6 +166,9 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
 // behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
 func (node *Node) Start(overlay Overlay) {
+	node.RegisterClientBehaviour(updateKnownHosts) // periodically remove dead hosts from known hosts list
+	AppendHostQualityServerBehaviour(node)         // append host quality server behaviour to the node
+	node.started = time.Now()
 	for i := range node.clientBehaviours {
 		go node.clientBehaviours[i](overlay)
 	}
@@ -219,12 +244,20 @@ func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 	return []byte("invalid-route/")
 }
 
-func (node *Node) manageKnownHosts() {
-	// TODO: Implement known hosts management
-	// choose and maintain node host list
-	// keep metadata about from previous node queries
-	//learn about known hosts every time I deal with a request
-	//make a known hosts list evaluator function
+func (node *Node) uptime() time.Duration {
+	return time.Since(node.started)
+}
+
+// think of like a AI serahc problem you have a state of the world i.e. a state of a known host list which has an asoociated value (diverse list of known hosts)
+// you can change the state of the known list incrementally by creating a permutation of the list of known hosts - and re-computing the hostlistquality
+
+// BUG: This might not work (cause runtime errors)
+// Periodically (every 2 min) updateKnownHosts from the known hosts list
+func updateKnownHosts(overlay Overlay) {
+	for {
+		overlay.Node().knownHosts.update() // updates host metadata + removes dead hosts
+		time.Sleep(time.Second * 120)
+	}
 }
 
 func mbToBytes(mb uint64) uint64 {

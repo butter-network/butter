@@ -9,11 +9,20 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="implemented ability to define several client behaviours">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="not finished but want to save progress">
+      <change afterPath="$PROJECT_DIR$/utils/getIp.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/knownHosts.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/knownHosts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/block.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/persist/overlay.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/store.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/store.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/traverse/ambassador.go" beforeDir="false" afterPath="$PROJECT_DIR$/traverse/ambassador.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/address.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/address.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/net.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/net.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,6 +226,7 @@
       <option name="presentableId" value="Default" />
       <updated>1640700215777</updated>
       <workItem from="1640700224378" duration="19000" />
+      <workItem from="1644749660783" duration="62000" />
     </task>
     <servers />
   </component>
@@ -247,9 +257,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="some stuff is working" />
-    <MESSAGE value="save befor testing new architecture" />
-    <MESSAGE value="almost working" />
     <MESSAGE value="still not solved the read/wite blocking bug" />
     <MESSAGE value="appending EOF character to network write function" />
     <MESSAGE value="save before breaking changes" />
@@ -272,7 +279,10 @@
     <MESSAGE value="fixed merge issues" />
     <MESSAGE value="fixed examples" />
     <MESSAGE value="implemented ability to define several client behaviours" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented ability to define several client behaviours" />
+    <MESSAGE value="switched to retrieval by hash as apposed to by uuid" />
+    <MESSAGE value="added is empty method" />
+    <MESSAGE value="not finished but want to save progress" />
+    <option name="LAST_COMMIT_MESSAGE" value="not finished but want to save progress" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

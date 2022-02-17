@@ -2,11 +2,12 @@ package traverse
 
 import (
 	"fmt"
-	"github.com/a-shine/butter/utils"
 	"net"
 	"os"
 	"strconv"
 	"sync"
+
+	"github.com/a-shine/butter/utils"
 )
 
 // The Ambassador is a means of overcoming the NAT traversal problem. It bridges different subnetworks together by
@@ -20,7 +21,7 @@ type Ambassador struct {
 func startAmbassador(port int16) {
 	ambassador := Ambassador{}
 
-	localIp := utils.GetOutboundIP().String()
+	localIp := utils.GetOutboundIP()
 
 	// Create listener socket
 	l, err := net.Listen("tcp", localIp+":"+strconv.Itoa(int(port)))
@@ -71,4 +72,4 @@ func handleAmbassadorialRequest(conn net.Conn, ambassador *Ambassador) {
 	//ambassador.lock.Unlock()
 }
 
-// keep track of ambassor nodes in known hosts so a traversed node can ask any of it's known hosts if they either are an ambassador or know of an ambassador
+// keep track of ambassador nodes in known hosts so a traversed node can ask any of it's known hosts if they either are an ambassador or know of an ambassador

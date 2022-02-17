@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	mock_conn "github.com/jordwest/mock-conn"
 	"log"
 	"net"
@@ -11,16 +12,18 @@ import (
 const EOF byte = 26
 
 // GetOutboundIP gets the preferred outbound ip of this machine
-func GetOutboundIP() net.IP {
+func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
 
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	localAddr := conn.LocalAddr().String()
 
-	return localAddr.IP
+	fmt.Println(localAddr)
+
+	return localAddr
 }
 
 func createConnections(remoteHost SocketAddr) (net.Conn, error) {
@@ -93,4 +96,14 @@ func Request(remoteHost SocketAddr, route []byte, payload []byte) ([]byte, error
 	}
 
 	return response, nil
+}
+
+// Ping a remote host in an attempts to create a connection, returns an error if the host is unreachable
+func Ping(remoteHost SocketAddr) error {
+	conn, err := createConnections(remoteHost)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	return nil
 }

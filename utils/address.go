@@ -13,18 +13,18 @@ const SocketAddressSize int = 6 // Bytes
 
 // SocketAddr has a size 4 bytes (IPv4) + 2 bytes (port) = 6 bytes
 type SocketAddr struct {
-	Ip   net.IP
+	Ip   string
 	Port uint16
 }
 
 func (s *SocketAddr) IsEmpty() bool {
-	return s.Ip == nil || s.Port == 0
+	return s.Ip == "" || s.Port == 0
 }
 
 type SocketAddrSlice []SocketAddr
 
 func (s *SocketAddr) ToString() string {
-	return fmt.Sprintf("%s:%d", s.Ip.String(), s.Port)
+	return fmt.Sprintf("%s:%d", s.Ip, s.Port)
 }
 
 func (s *SocketAddr) ToJson() ([]byte, error) {
@@ -49,17 +49,20 @@ func AddrFromString(address string) (SocketAddr, error) {
 		err := errors.New("invalid address format")
 		return socketAddress, err
 	}
+
+	// check that IP is valid
 	ip := net.ParseIP(addressParts[0])
 	if ip == nil {
 		err := errors.New("invalid ip address")
 		return socketAddress, err
 	}
+
 	port, err := strconv.Atoi(addressParts[1])
 	if err != nil {
 		err := errors.New("invalid port")
 		return socketAddress, err
 	}
-	socketAddress.Ip = ip
+	socketAddress.Ip = addressParts[0]
 	socketAddress.Port = uint16(port)
 	return socketAddress, nil
 }

@@ -1,7 +1,9 @@
-![](butterLogo.png)
+# ![](butterLogo.png)
+
 > The network that spreads! 🧈
 
-![compile_deploy_latex](https://github.com/a-shine/butter/actions/workflows/compile_deploy_latex.yml/badge.svg)
+![docs](https://github.com/a-shine/butter/actions/workflows/compile_deploy_latex.yml/badge.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Background
 
@@ -11,7 +13,7 @@ Please see the full [project documentation](https://a-shine.github.io/butter/) f
 
 **Understanding what is meant by *efficient decentralised framework*:**
 
-- `butter` is *efficient* in the sense that it 
+- `butter` is *efficient* in the sense that it
   - maintains persistent data consistently (despite node failure and high churn) while trying to minimise data redundancy (low degree of duplicate data)
   - takes a space-efficient approach to creating and maintaining the list known hosts per node (by determining who are the 'best' remote hosts to know are on a node-by-node basis)
 - `butter` is *decentralised* in the sense that it is built with an unstructured peer-to-peer architecture
@@ -63,7 +65,7 @@ go run examples/<example_name>/main.go
 // TODO: Add commented example code
 ````
 
-## Working on the platform
+## Contributing
 
 ### Development
 

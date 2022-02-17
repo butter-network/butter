@@ -2,6 +2,7 @@ package retrieve
 
 import (
 	"fmt"
+
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/persist"
 	"github.com/a-shine/butter/utils"
@@ -15,7 +16,7 @@ func retrieve(overlay node.Overlay, query []byte) []byte {
 	}
 
 	hostsStruct := persistOverlay.Node().KnownHostsStruct()
-	knownHostsJson, _ := hostsStruct.ToJson()
+	knownHostsJson := hostsStruct.JsonDigest()
 	return append([]byte("try/"), knownHostsJson...)
 }
 
@@ -50,14 +51,14 @@ func bfs(overlay persist.Overlay, query string) []byte {
 	// Initialise an empty queue
 	queue := make([]utils.SocketAddr, 0)
 	// Add all my known hosts to the queue
-	for _, host := range overlay.Node().KnownHosts() {
+	for host := range overlay.Node().KnownHosts() {
 		queue = append(queue, host)
 	}
 	for len(queue) > 0 {
 		// Pop the first element from the queue
 		host := queue[0]
 		queue = queue[1:]
-		// Start a connection to the host, Ask host if he has data, receive resposnse
+		// Start a connection to the host, Ask host if he has data, receive response
 		response, _ := utils.Request(host, []byte("retrieve/"), []byte(query))
 		route, payload, err := utils.ParsePacket(response)
 		if err != nil {

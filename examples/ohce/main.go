@@ -20,6 +20,10 @@ func (n *OverlayNode) Node() *node.Node {
 	return n.node
 }
 
+func (n *OverlayNode) AvailableStorage() uint64 {
+	return 0
+}
+
 // Takes as input a string and returns the string in reverse.
 func reverse(s string) string {
 	rns := []rune(s) // Convert string to rune array
@@ -60,14 +64,14 @@ func clientBehaviour(appInterface node.Overlay) {
 
 		knownHosts := peer.node.KnownHosts() // Get the node's known hosts
 
-		for i := 0; i < len(knownHosts); i++ { // For each known host
-			res, err := send(knownHosts[i], line) // Ask them to reverse the input message
+		for host := range knownHosts { // For each known host
+			res, err := send(host, line) // Ask them to reverse the input message
 			if err != nil {
 				// If there is an error, log the error BUT DO NOT FAIL - in decentralised application we avoid fatal
 				// errors at all costs as we want to maximise node availability
-				fmt.Println("Unable to send message to", knownHosts[i])
+				fmt.Println("Unable to send message to", host)
 			}
-			fmt.Println(knownHosts[i].ToString(), "responded with:", res)
+			fmt.Println(host.ToString(), "responded with:", res)
 		}
 	}
 }
