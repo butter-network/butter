@@ -119,7 +119,7 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 		return node, errors.New("allocated memory must be less than the total system memory")
 	}
 
-	// Determine the capacity of the knownHosts list size based on user specified max memory
+	// Determine the capacity of the KnownHosts list size based on user specified max memory
 	knownHostsMemory := uint64(0.02 * float64(maxMemory)) // 2% of allocated memory is used for the known host list
 	knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
 
