@@ -11,6 +11,8 @@ import (
 	"github.com/a-shine/butter/node"
 )
 
+// TODO: Overlay not working properly
+
 type Overlay struct {
 	node       *node.Node
 	storageCap uint64
@@ -74,7 +76,7 @@ func NewOverlay(node *node.Node) Overlay {
 }
 
 func (o *Overlay) AddInformation(keywords []string, data []byte) string {
-	hash := sha256.Sum256([]byte(data))
+	hash := sha256.Sum256(data)
 	// append the part nb to the hash - so once we have found one block, we can
 	// determall the other hashes we need to find - allows us to parallelise
 	// cause we don't need to wait for a block to find the next one
@@ -108,3 +110,5 @@ func chunking(data []byte) [][4096]byte {
 
 	return chunks
 }
+
+// when trying to find participants for a block, try and find ones that have different geolocations if possible

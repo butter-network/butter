@@ -15,7 +15,7 @@ type HostQuality struct {
 	// bridge between subnets but private has lower latency)
 	Uptime           uint64
 	AvailableStorage uint64
-	KnownHosts       int
+	nbKnownHosts     int
 }
 
 type KnownHosts struct {
@@ -45,7 +45,7 @@ func hostQuality(overlay Overlay, _ []byte) []byte {
 
 	hostQuality.Uptime = uint64(node.uptime())
 	hostQuality.AvailableStorage = overlay.AvailableStorage()
-	hostQuality.KnownHosts = len(node.KnownHosts())
+	hostQuality.nbKnownHosts = len(node.KnownHosts())
 
 	json, _ := json.Marshal(hostQuality)
 

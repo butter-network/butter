@@ -9,10 +9,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="presentation slides">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="maintaining known host list">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/knownHosts.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/knownHosts.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/block.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/persist/overlay.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/presentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/presentation.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -247,7 +249,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="save before breaking changes" />
     <MESSAGE value="fixed os defined port bug" />
     <MESSAGE value="added very high level traverse methodology" />
     <MESSAGE value="fixed incorrect user input from reverse echo example" />
@@ -272,7 +273,8 @@
     <MESSAGE value="not finished but want to save progress" />
     <MESSAGE value="compiles" />
     <MESSAGE value="presentation slides" />
-    <option name="LAST_COMMIT_MESSAGE" value="presentation slides" />
+    <MESSAGE value="maintaining known host list" />
+    <option name="LAST_COMMIT_MESSAGE" value="maintaining known host list" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

@@ -12,7 +12,6 @@ const BlockSize = int(unsafe.Sizeof(Block{}))
 type Block struct {
 	keywords [5][50]byte // 5 keywords
 	//participants [3]utils.SocketAddr
-	part  int // i.e. part 1 of 5 parts
 	parts int
 	data  [4096]byte
 }

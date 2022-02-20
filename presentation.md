@@ -48,6 +48,14 @@ Run through the code of each example and then compile and run the demos
 
 <!--Leave blank-->
 
+# Butter philosophies
+First lets consiider the way Butter was designed (this will determine how we solve the problems)
+- Simplicity (needs to make building dapps easy and feel similar to existing backend web frameworks)
+- Modularity (you can pick and choose which aspects of the framework you want and re-implement others)
+- Memory greedy - use as much memory as you have been allowed to use - might as well use it
+- Never panick - it's a fault tolerant system to maximise availability, we should avoid nodes failing at all costs cause a node in a faulty state is still more valuable to the network than no node at all
+- Diversity - increase probabiliy of information availability and faster retrieval
+
 # The problems
 
 Key problems when designing decentralised unstructured peer-to-peer architecture systems
@@ -59,7 +67,7 @@ Key problems when designing decentralised unstructured peer-to-peer architecture
   - persistent fault-tolerant storage (high availability)
 - NAT traversal
 
-# Butter's approach
+# Butter's solutions
 
  how the framework addresses them
 
