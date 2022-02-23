@@ -13,9 +13,6 @@ import (
 	"github.com/pbnjay/memory"
 )
 
-// TODO: add and remove known host should not be public?
-// TODO: Known host optimisation - probabilistic simulated annealing
-
 // Overlay interface describes what an implemented Overlay struct should look like
 type Overlay interface {
 	Node() *Node
@@ -28,7 +25,6 @@ type Node struct {
 	started          time.Time
 	clientBehaviours []func(Overlay)
 	serverBehaviours map[string]func(Overlay, []byte) []byte
-	simulated        bool
 	ambassador       bool
 	storageMemoryCap uint64
 }
@@ -50,10 +46,6 @@ func (node *Node) KnownHosts() map[utils.SocketAddr]HostQuality {
 
 func (node *Node) KnownHostsStruct() KnownHosts {
 	return node.knownHosts
-}
-
-func (node *Node) IsSimulated() bool {
-	return node.simulated
 }
 
 func (node *Node) StorageMemoryCap() uint64 {
@@ -101,7 +93,7 @@ func (node *Node) RemoveKnownHost(remoteHost utils.SocketAddr) {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64) (Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -121,24 +113,14 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 
 	// Determine the capacity of the KnownHosts list size based on user specified max memory
 	knownHostsMemory := uint64(0.02 * float64(maxMemory)) // 2% of allocated memory is used for the known host list
-	//knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
+	knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
 
 	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)
 	maxStorage := maxMemory - knownHostsMemory // remaining memory is used for the storage
 
-	//if simulated {
-	//	// create a simulated listener?
-	//	listener := mock_conn.NewConn()
-	//} else {
-	// Determine the preferred local ip of the machine
-	//localIpString := utils.GetOutboundIP() // TODO: Find better way of doing this
-	//TODO: make return SocletAddr
-
 	ip, _ := utils.GetIp()
-	//fmt.Println("Local IP: ", ip)
 
 	var socketAddr utils.SocketAddr
-	//socketAddr, _ = utils.AddrFromString(localIpString)
 	socketAddr.Ip = ip
 	socketAddr.Port = port
 
@@ -147,15 +129,13 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
-	//}
 
 	node = Node{
 		listener:         listener,
-		knownHosts:       KnownHosts{cap: uint(1), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
+		knownHosts:       KnownHosts{cap: uint(knownHostsCap), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
 		started:          time.Time{},
 		clientBehaviours: make([]func(Overlay), 0),
 		serverBehaviours: make(map[string]func(Overlay, []byte) []byte),
-		simulated:        simulated,
 		ambassador:       false,
 		storageMemoryCap: maxStorage,
 	}

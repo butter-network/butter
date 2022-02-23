@@ -1,28 +1,4 @@
-% Butter - a decentralised application framework
-% Alexandre Shinebourne
-% March 2022
 
-# Outline
-- An overview of the project
-	- What is Butter?
-	- Motivation
-	- Review of the research & literature
-	- Demo
-- Getting technical
-	- Introducing the problems
-	- Butter's approach
-- How we got here?
-  - The path
-  - Unforeseen problems
-  - What's to come?
-
-# Introducing Butter
-
-Butter is a networking stack and framework for building decentralised applications (dapps)
-
-![](butterLogo.png)
-
-<!--First and formost, we have a nice logo!-->
 
 # Motivation
 
@@ -36,55 +12,4 @@ This project is an effort to look at a more efficient (most notably in redundanc
 
 Surely enough because most technologies that claim to be decentralised are not all that decentralised. During my research I came to realise that decentralisation was not a binary state but rather sliding scale. All these technologies that claim to be decenralise use Structured p2p networks with a Kadmilia Overlay network (or version of) and these require a bootsrap node - this bootstrap node could be any node but it has to be known - hence we use centralised databased of well known bootsrap nodes. This is not very fault-tolerant as i the database of bootsrap nodes goes down, then nodes that want to join the unstructured network can't find a boostrap node... This is not enough and brings us to the taxonomy of distributed systems...
 
-# The taxonomy of distributed systems
 
-# Demo
-
-So now that we know what butter is and where it lies in the taxonomy of distributed systems - lets give you guys a demo
-
-Run through the code of each example and then compile and run the demos
-
-# Getting technical
-
-<!--Leave blank-->
-
-# Butter philosophies
-First lets consiider the way Butter was designed (this will determine how we solve the problems)
-- Simplicity (needs to make building dapps easy and feel similar to existing backend web frameworks)
-- Modularity (you can pick and choose which aspects of the framework you want and re-implement others)
-- Memory greedy - use as much memory as you have been allowed to use - might as well use it
-- Never panick - it's a fault tolerant system to maximise availability, we should avoid nodes failing at all costs cause a node in a faulty state is still more valuable to the network than no node at all
-- Diversity - increase probabiliy of information availability and faster retrieval
-
-# The problems
-
-Key problems when designing decentralised unstructured peer-to-peer architecture systems
-
-- Discovery - cold start problem
-- Known host management - heavily AI inspired (GOFAI)
-- overlay network for persistent information 
-  - information retrieval - heavily AI inspired (GOFAI)
-  - persistent fault-tolerant storage (high availability)
-- NAT traversal
-
-# Butter's solutions
-
- how the framework addresses them
-
-| Problem name          | Butter's solution                              |
-| --------------------- | ---------------------------------------------- |
-| Discovery             | Multicast                                      |
-| Known host management | AI inspired (GOFAI) - state and value function |
-| IR                    | AI inspired (GOFAI) - directed BFS             |
-| Persistent storage    | PCG overlay                                    |
-| NAT Traversal         | (Imperfect) Ambassador nodes                   |
-
-Butter is greedy - it will try and use as much memory as you allow it to use
-
-# Discovery protocol
-
-# Known host management protocol
-
-# How we got here
-
-<!--Add project management story I.e. found progress to be very slow in rust and wasn’t the right tool for the job so made the decision to switch to go and project improved-->

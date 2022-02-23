@@ -8,7 +8,7 @@ import (
 )
 
 type Pipe struct {
-	conn mock_conn.Conn
+	//conn mock_conn.Conn
 }
 
 func (p *Pipe) Listen() {
@@ -30,7 +30,10 @@ func (p *Pipe) Listen() {
 }
 
 func (p *Pipe) Request(commInterface CommunicationInterface, route []byte, payload []byte) ([]byte, error) {
-	pipeInterface := commInterface.(*Pipe)
+	//pipeInterface := commInterface.(*Pipe)
+	// create a new conn
+	conn := mock_conn.NewConn()
+	conn.
 	return nil, nil
 }
 
