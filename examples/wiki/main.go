@@ -41,6 +41,7 @@ func readArticle(overlay *persist.Overlay) {
 		var uuid string
 		fmt.Println("What is the UUID of the piece of information you would like to retrieve: ")
 		fmt.Scanln(&uuid)
+		uuid = uuid + "/1"
 		fmt.Println(string(retrieve.NaiveRetrieve(*overlay, uuid)))
 	case "2":
 	// TODO: implement search engine behaviour
@@ -80,5 +81,5 @@ func main() {
 	// No need to specify retrieval or storage server behaviours as they are handled by the provided butter storage and
 	//retrieve packages
 	// Spawn your node into the butter network
-	butter.SpawnDefaultOverlay(&butterNode, false) // Blocking (spanwn with the default inbuilt overlay network which allows for persistent storage
+	butter.SpawnDefaultOverlay(butterNode, false) // Blocking (spanwn with the default inbuilt overlay network which allows for persistent storage
 }

@@ -93,7 +93,7 @@ func (node *Node) RemoveKnownHost(remoteHost utils.SocketAddr) {
 // memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
 // to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
 // system memory.
-func NewNode(port uint16, maxMemoryMb uint64) (Node, error) {
+func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
@@ -106,9 +106,9 @@ func NewNode(port uint16, maxMemoryMb uint64) (Node, error) {
 
 	// check if max memory is more than some arbitrary min value (what is the minimum value that would be useful?)
 	if maxMemory < mbToBytes(512) {
-		return node, errors.New("allocated memory must be at least 512MB")
+		return &node, errors.New("allocated memory must be at least 512MB")
 	} else if maxMemory > memory.TotalMemory() {
-		return node, errors.New("allocated memory must be less than the total system memory")
+		return &node, errors.New("allocated memory must be less than the total system memory")
 	}
 
 	// Determine the capacity of the KnownHosts list size based on user specified max memory
@@ -140,7 +140,7 @@ func NewNode(port uint16, maxMemoryMb uint64) (Node, error) {
 		storageMemoryCap: maxStorage,
 	}
 
-	return node, nil
+	return &node, nil
 }
 
 // Start node by listening out for incoming connections and starting the application specific client behaviour. A node
@@ -238,8 +238,4 @@ func updateKnownHosts(overlay Overlay) {
 		overlay.Node().knownHosts.update() // updates host metadata + removes dead hosts
 		time.Sleep(time.Second * 120)
 	}
-}
-
-func mbToBytes(mb uint64) uint64 {
-	return mb * 1024 * 1024
 }

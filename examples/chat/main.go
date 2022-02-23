@@ -20,6 +20,10 @@ func (n *OverlayNode) Node() *node.Node {
 	return n.node
 }
 
+func (n *OverlayNode) AvailableStorage() uint64 {
+	return 0
+}
+
 // The serverBehavior for this application is to print the received message to console for the user to read and return
 // a confirmation receipt
 func serverBehaviour(_ node.Overlay, payload []byte) []byte {
@@ -49,14 +53,14 @@ func clientBehaviour(overlayInterface node.Overlay) {
 
 		knownHosts := overlay.node.KnownHosts() // Get the node's known hosts
 
-		for i := 0; i < len(knownHosts); i++ { // For each known host
-			res, err := send(knownHosts[i], line) // Send them a message
+		for host := range knownHosts { // For each known host
+			res, err := send(host, line) // Ask them to reverse the input message
 			if err != nil {
 				// If there is an error, log the error BUT DO NOT FAIL - in decentralised application we avoid fatal
 				// errors at all costs as we want to maximise node availability
-				fmt.Println("Unable to send message to", knownHosts[i])
+				fmt.Println("Unable to send message to", host)
 			}
-			fmt.Println(knownHosts[i].ToString(), "responded with:", res)
+			fmt.Println(host.ToString(), "responded with:", res)
 		}
 	}
 }
@@ -75,5 +79,5 @@ func main() {
 	butterNode.RegisterClientBehaviour(clientBehaviour)
 
 	// Spawn your node into the butter network
-	butter.Spawn(&OverlayNode{node: &butterNode}, false) // Blocking
+	butter.Spawn(&OverlayNode{node: butterNode}, false) // Blocking
 }

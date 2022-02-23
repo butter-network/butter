@@ -9,15 +9,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="tested the known host management functionality">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="presentation slides semi completed">
+      <change afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/betternode/pipe.go" beforeDir="false" afterPath="$PROJECT_DIR$/betternode/pipe.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/examples/wiki/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pres.md" beforeDir="false" afterPath="$PROJECT_DIR$/pres.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/presentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/presentation.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,9 +224,9 @@
       <item itemvalue="BibTeX.Build bibliohraphy" />
       <item itemvalue="Go Build.Go build chat" />
       <item itemvalue="Go Build.Go build wiki" />
-      <item itemvalue="LaTeX.Build documentation" />
       <item itemvalue="Go Test.TestBiggestClass in github.com/a-shine/butter/node" />
       <item itemvalue="Go Test.TestHostType in github.com/a-shine/butter/node" />
+      <item itemvalue="LaTeX.Build documentation" />
     </list>
     <recent_temporary>
       <list>
@@ -280,7 +278,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed incorrect user input from reverse echo example" />
     <MESSAGE value="not tested but saving anyway" />
     <MESSAGE value="some cleaned up code" />
     <MESSAGE value="more comments" />
@@ -305,7 +302,8 @@
     <MESSAGE value="maintaining known host list" />
     <MESSAGE value="seems to work" />
     <MESSAGE value="tested the known host management functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="tested the known host management functionality" />
+    <MESSAGE value="presentation slides semi completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="presentation slides semi completed" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
