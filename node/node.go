@@ -121,7 +121,7 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 
 	// Determine the capacity of the KnownHosts list size based on user specified max memory
 	knownHostsMemory := uint64(0.02 * float64(maxMemory)) // 2% of allocated memory is used for the known host list
-	knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
+	//knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
 
 	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)
 	maxStorage := maxMemory - knownHostsMemory // remaining memory is used for the storage
@@ -151,7 +151,7 @@ func NewNode(port uint16, maxMemoryMb uint64, simulated bool) (Node, error) {
 
 	node = Node{
 		listener:         listener,
-		knownHosts:       KnownHosts{cap: uint(knownHostsCap), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
+		knownHosts:       KnownHosts{cap: uint(1), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
 		started:          time.Time{},
 		clientBehaviours: make([]func(Overlay), 0),
 		serverBehaviours: make(map[string]func(Overlay, []byte) []byte),

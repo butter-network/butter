@@ -9,12 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="maintaining known host list">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="seems to work">
+      <change afterPath="$PROJECT_DIR$/betternode/conn_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/betternode/node.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/betternode/pipe.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/betternode/tcp.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node/knownHostManagement_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/retrieve/retrieve_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/knownHosts.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/knownHosts.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persist/block.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/block.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/persist/overlay.go" beforeDir="false" afterPath="$PROJECT_DIR$/persist/overlay.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/presentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/presentation.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,14 +108,14 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/betternode" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/node" />
       <recent name="$PROJECT_DIR$/traverse" />
       <recent name="$PROJECT_DIR$/discover" />
-      <recent name="$PROJECT_DIR$/docs/imgs" />
     </key>
   </component>
-  <component name="RunManager" selected="BibTeX.Build bibliohraphy">
+  <component name="RunManager" selected="Go Test.TestHostType in github.com/a-shine/butter/node">
     <configuration name="Build bibliohraphy" type="BIBTEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory">
       <texify-bibtex>
         <compiler>BIBTEX</compiler>
@@ -151,6 +157,30 @@
       <package value="wiki" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/examples/wiki/wiki.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestBiggestClass in github.com/a-shine/butter/node" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="butter" />
+      <working_directory value="$PROJECT_DIR$/node" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/a-shine/butter/node" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestBiggestClass\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestHostType in github.com/a-shine/butter/node" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="butter" />
+      <working_directory value="$PROJECT_DIR$/node" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/a-shine/butter/node" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestHostType\E$" />
       <method v="2" />
     </configuration>
     <configuration name="Build documentation" type="LATEX_RUN_CONFIGURATION" factoryName="LaTeX configuration factory" temporary="true">
@@ -200,9 +230,13 @@
       <item itemvalue="Go Build.Go build chat" />
       <item itemvalue="Go Build.Go build wiki" />
       <item itemvalue="LaTeX.Build documentation" />
+      <item itemvalue="Go Test.TestBiggestClass in github.com/a-shine/butter/node" />
+      <item itemvalue="Go Test.TestHostType in github.com/a-shine/butter/node" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestHostType in github.com/a-shine/butter/node" />
+        <item itemvalue="Go Test.TestBiggestClass in github.com/a-shine/butter/node" />
         <item itemvalue="LaTeX.Build documentation" />
         <item itemvalue="LaTeX.Build documentation" />
         <item itemvalue="LaTeX.Build documentation" />
@@ -249,7 +283,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed os defined port bug" />
     <MESSAGE value="added very high level traverse methodology" />
     <MESSAGE value="fixed incorrect user input from reverse echo example" />
     <MESSAGE value="not tested but saving anyway" />
@@ -274,7 +307,8 @@
     <MESSAGE value="compiles" />
     <MESSAGE value="presentation slides" />
     <MESSAGE value="maintaining known host list" />
-    <option name="LAST_COMMIT_MESSAGE" value="maintaining known host list" />
+    <MESSAGE value="seems to work" />
+    <option name="LAST_COMMIT_MESSAGE" value="seems to work" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

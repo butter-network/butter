@@ -15,21 +15,26 @@ type HostQuality struct {
 	// bridge between subnets but private has lower latency)
 	Uptime           uint64
 	AvailableStorage uint64
-	nbKnownHosts     int
+	NbHostsKnown     uint64
 }
 
 type KnownHosts struct {
 	cap uint
 
-	uptimeTally  uint64
-	storageTally uint64
+	uptimeTally     uint64
+	storageTally    uint64
+	knownHostsTally uint64
 
 	Hosts map[utils.SocketAddr]HostQuality
 
-	highUptimeHighStorage uint
-	highUptimeLowStorage  uint
-	lowUptimeHighStorage  uint
-	lowUptimeLowStorage   uint
+	highUptimeHighStorageHighKH uint
+	highUptimeHighStorageLowKH  uint
+	highUptimeLowStorageHighKH  uint
+	highUptimeLowStorageLowKH   uint
+	lowUptimeHighStorageHighKH  uint
+	lowUptimeHighStorageLowKH   uint
+	lowUptimeLowStorageHighKH   uint
+	lowUptimeLowStorageLowKH    uint
 
 	lastUpdate time.Time
 }
@@ -45,7 +50,7 @@ func hostQuality(overlay Overlay, _ []byte) []byte {
 
 	hostQuality.Uptime = uint64(node.uptime())
 	hostQuality.AvailableStorage = overlay.AvailableStorage()
-	hostQuality.nbKnownHosts = len(node.KnownHosts())
+	hostQuality.NbHostsKnown = uint64(len(node.KnownHosts()))
 
 	json, _ := json.Marshal(hostQuality)
 
@@ -93,12 +98,14 @@ func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
 
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()
+	avgKH := knownHosts.avgKnownHosts()
 
-	knownHosts.decrementHostClass(hostQuality, avgUptime, avgStorage)
+	knownHosts.decrementHostClass(hostQuality, avgUptime, avgStorage, avgKH)
 
 	delete(knownHosts.Hosts, host)
 }
 
+// Also prioritise adding a host that is not known by anyone else - don't want the scenario where 3 nodes are at capacity and a new node hosts and can be added to the network
 func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
 	if _, ok := knownHosts.Hosts[host]; ok {
 		return // already in the list
@@ -111,10 +118,11 @@ func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
 	// TODO: increment the correct category
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()
+	avgKnownHosts := knownHosts.avgKnownHosts()
 
 	if knownHosts.count() < knownHosts.cap {
 		knownHosts.Hosts[host] = hostQuality // if we have the memory just add the known host
-		knownHosts.incrementHostClass(hostQuality, avgUptime, avgStorage)
+		knownHosts.incrementHostClass(hostQuality, avgUptime, avgStorage, avgKnownHosts)
 	} else {
 		knownHosts.intelligentAddKnownHost(host) // else figure out if its worth adding and who to remove
 	}
@@ -134,6 +142,13 @@ func (knownHosts *KnownHosts) avgStorage() uint64 {
 	return knownHosts.storageTally / uint64(len(knownHosts.Hosts))
 }
 
+func (knownHosts *KnownHosts) avgKnownHosts() uint64 {
+	if knownHosts.count() == 0 {
+		return 0
+	}
+	return knownHosts.knownHostsTally / uint64(len(knownHosts.Hosts))
+}
+
 func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.SocketAddr) {
 	// OPTIMISATION - these can be cached as part of a KnownHosts struct, i.e. if we recently ran the above functions, we can assume that the distribution has not changed much and just skip to making the decision as to if we should add the known host or not
 
@@ -143,13 +158,14 @@ func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.Socket
 
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()
+	avgKnownHosts := knownHosts.avgKnownHosts()
 
 	// see where the new known host lies in these 4 categories (by repeating the above)
 	// figure out the host Uptime and storage distribution
 	var hostQuality HostQuality
 	response, _ := utils.Request(potentialHost, []byte("host-quality/"), []byte{})
 	_ = json.Unmarshal(response, &hostQuality)
-	newHostType := knownHosts.hostType(hostQuality, avgUptime, avgStorage)
+	newHostType := hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts)
 
 	//if the new host does not improve the distribution don't add - i.e. do nothing
 	if newHostType == knownHosts.biggestClass() {
@@ -167,8 +183,9 @@ func (knownHosts *KnownHosts) removeFromBiggestClass() {
 	biggestClass := knownHosts.biggestClass()
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()
+	avgKnownHosts := knownHosts.avgKnownHosts()
 	for host, hostQuality := range knownHosts.Hosts {
-		if knownHosts.hostType(hostQuality, avgUptime, avgStorage) == biggestClass {
+		if hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts) == biggestClass {
 			knownHosts.Remove(host)
 			return
 		}
@@ -176,17 +193,25 @@ func (knownHosts *KnownHosts) removeFromBiggestClass() {
 }
 
 func (knownHosts *KnownHosts) biggestClass() string {
-	if knownHosts.highUptimeHighStorage > knownHosts.highUptimeLowStorage && knownHosts.highUptimeHighStorage > knownHosts.lowUptimeHighStorage && knownHosts.highUptimeHighStorage > knownHosts.lowUptimeLowStorage {
-		return "highUptimeHighStorage"
-	} else if knownHosts.highUptimeLowStorage > knownHosts.highUptimeHighStorage && knownHosts.highUptimeLowStorage > knownHosts.lowUptimeHighStorage && knownHosts.highUptimeLowStorage > knownHosts.lowUptimeLowStorage {
-		return "highUptimeLowStorage"
-	} else if knownHosts.lowUptimeHighStorage > knownHosts.highUptimeHighStorage && knownHosts.lowUptimeHighStorage > knownHosts.lowUptimeLowStorage {
-		return "lowUptimeHighStorage"
-	} else if knownHosts.lowUptimeLowStorage > knownHosts.highUptimeHighStorage && knownHosts.lowUptimeLowStorage > knownHosts.lowUptimeLowStorage {
-		return "lowUptimeLowStorage"
-	} else {
-		return "unknown"
+	// return the biggest class name
+	classes := make(map[string]uint)
+	classes["highUptimeHighStorageHighKH"] = knownHosts.highUptimeHighStorageHighKH
+	classes["highUptimeHighStorageLowKH"] = knownHosts.highUptimeHighStorageLowKH
+	classes["highUptimeLowStorageHighKH"] = knownHosts.highUptimeLowStorageHighKH
+	classes["highUptimeLowStorageLowKH"] = knownHosts.highUptimeLowStorageLowKH
+	classes["lowUptimeHighStorageHighKH"] = knownHosts.lowUptimeHighStorageHighKH
+	classes["lowUptimeHighStorageLowKH"] = knownHosts.lowUptimeHighStorageLowKH
+	classes["lowUptimeLowStorageHighKH"] = knownHosts.lowUptimeLowStorageHighKH
+	classes["lowUptimeLowStorageLowKH"] = knownHosts.lowUptimeLowStorageLowKH
+	var biggestClass string
+	var biggestClassCount uint
+	for class, count := range classes {
+		if count > biggestClassCount {
+			biggestClass = class
+			biggestClassCount = count
+		}
 	}
+	return biggestClass
 }
 
 func (knownHosts *KnownHosts) classifyHosts() {
@@ -194,54 +219,85 @@ func (knownHosts *KnownHosts) classifyHosts() {
 
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()
+	avgKnownHosts := knownHosts.avgKnownHosts()
 
 	for _, quality := range knownHosts.Hosts {
-		knownHosts.incrementHostClass(quality, avgUptime, avgStorage)
+		knownHosts.incrementHostClass(quality, avgUptime, avgStorage, avgKnownHosts)
 	}
 }
 
 func (knownHosts *KnownHosts) resetDistribution() {
-	knownHosts.highUptimeHighStorage = 0
-	knownHosts.highUptimeLowStorage = 0
-	knownHosts.lowUptimeHighStorage = 0
-	knownHosts.lowUptimeLowStorage = 0
+	knownHosts.highUptimeHighStorageHighKH = 0
+	knownHosts.highUptimeHighStorageLowKH = 0
+	knownHosts.highUptimeLowStorageHighKH = 0
+	knownHosts.highUptimeLowStorageLowKH = 0
+	knownHosts.lowUptimeHighStorageHighKH = 0
+	knownHosts.lowUptimeHighStorageLowKH = 0
+	knownHosts.lowUptimeLowStorageHighKH = 0
+	knownHosts.lowUptimeLowStorageLowKH = 0
 }
 
-func (knownHosts *KnownHosts) incrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64) {
-	switch knownHosts.hostType(hostQuality, avgUptime, avgStorage) {
-	case "highUptimeHighStorage":
-		knownHosts.highUptimeHighStorage += 1
-	case "highUptimeLowStorage":
-		knownHosts.highUptimeLowStorage += 1
-	case "lowUptimeHighStorage":
-		knownHosts.lowUptimeHighStorage += 1
-	case "lowUptimeLowStorage":
-		knownHosts.lowUptimeLowStorage += 1
+func (knownHosts *KnownHosts) incrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) {
+	switch hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts) {
+	case "highUptimeHighStorageHighKH":
+		knownHosts.highUptimeHighStorageHighKH++
+	case "highUptimeHighStorageLowKH":
+		knownHosts.highUptimeHighStorageLowKH++
+	case "highUptimeLowStorageHighKH":
+		knownHosts.highUptimeLowStorageHighKH++
+	case "highUptimeLowStorageLowKH":
+		knownHosts.highUptimeLowStorageLowKH++
+	case "lowUptimeHighStorageHighKH":
+		knownHosts.lowUptimeHighStorageHighKH++
+	case "lowUptimeHighStorageLowKH":
+		knownHosts.lowUptimeHighStorageLowKH++
+	case "lowUptimeLowStorageHighKH":
+		knownHosts.lowUptimeLowStorageHighKH++
+	case "lowUptimeLowStorageLowKH":
+		knownHosts.lowUptimeLowStorageLowKH++
 	}
 }
 
-func (knownHosts *KnownHosts) decrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64) {
-	switch knownHosts.hostType(hostQuality, avgUptime, avgStorage) {
-	case "highUptimeHighStorage":
-		knownHosts.highUptimeHighStorage -= 1
-	case "highUptimeLowStorage":
-		knownHosts.highUptimeLowStorage -= 1
-	case "lowUptimeHighStorage":
-		knownHosts.lowUptimeHighStorage -= 1
-	case "lowUptimeLowStorage":
-		knownHosts.lowUptimeLowStorage -= 1
+func (knownHosts *KnownHosts) decrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) {
+	switch hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts) {
+	case "highUptimeHighStorageHighKH":
+		knownHosts.highUptimeHighStorageHighKH--
+	case "highUptimeHighStorageLowKH":
+		knownHosts.highUptimeHighStorageLowKH--
+	case "highUptimeLowStorageHighKH":
+		knownHosts.highUptimeLowStorageHighKH--
+	case "highUptimeLowStorageLowKH":
+		knownHosts.highUptimeLowStorageLowKH--
+	case "lowUptimeHighStorageHighKH":
+		knownHosts.lowUptimeHighStorageHighKH--
+	case "lowUptimeHighStorageLowKH":
+		knownHosts.lowUptimeHighStorageLowKH--
+	case "lowUptimeLowStorageHighKH":
+		knownHosts.lowUptimeLowStorageHighKH--
+	case "lowUptimeLowStorageLowKH":
+		knownHosts.lowUptimeLowStorageLowKH--
 	}
 }
 
-func (knownHosts *KnownHosts) hostType(hostQuality HostQuality, avgUptime uint64, avgStorage uint64) string {
-	if hostQuality.Uptime > avgUptime && hostQuality.AvailableStorage > avgStorage {
-		return "highUptimeHighStorage"
-	} else if hostQuality.Uptime > avgUptime && hostQuality.AvailableStorage < avgStorage {
-		return "highUptimeLowStorage"
-	} else if hostQuality.Uptime < avgUptime && hostQuality.AvailableStorage > avgStorage {
-		return "lowUptimeHighStorage"
+func (hostQuality *HostQuality) hostType(avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) string {
+	if hostQuality.Uptime >= avgUptime && hostQuality.AvailableStorage >= avgStorage && hostQuality.NbHostsKnown >= avgKnownHosts {
+		return "highUptimeHighStorageHighKH"
+	} else if hostQuality.Uptime >= avgUptime && hostQuality.AvailableStorage >= avgStorage && hostQuality.NbHostsKnown < avgKnownHosts {
+		return "highUptimeHighStorageLowKH"
+	} else if hostQuality.Uptime >= avgUptime && hostQuality.AvailableStorage < avgStorage && hostQuality.NbHostsKnown >= avgKnownHosts {
+		return "highUptimeLowStorageHighKH"
+	} else if hostQuality.Uptime >= avgUptime && hostQuality.AvailableStorage < avgStorage && hostQuality.NbHostsKnown < avgKnownHosts {
+		return "highUptimeLowStorageLowKH"
+	} else if hostQuality.Uptime < avgUptime && hostQuality.AvailableStorage >= avgStorage && hostQuality.NbHostsKnown >= avgKnownHosts {
+		return "lowUptimeHighStorageHighKH"
+	} else if hostQuality.Uptime < avgUptime && hostQuality.AvailableStorage >= avgStorage && hostQuality.NbHostsKnown < avgKnownHosts {
+		return "lowUptimeHighStorageLowKH"
+	} else if hostQuality.Uptime < avgUptime && hostQuality.AvailableStorage < avgStorage && hostQuality.NbHostsKnown >= avgKnownHosts {
+		return "lowUptimeLowStorageHighKH"
+	} else if hostQuality.Uptime < avgUptime && hostQuality.AvailableStorage < avgStorage && hostQuality.NbHostsKnown < avgKnownHosts {
+		return "lowUptimeLowStorageLowKH"
 	} else {
-		return "lowUptimeLowStorage"
+		return "unknown"
 	}
 }
 
