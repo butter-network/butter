@@ -9,10 +9,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="removed log output for updating known hosts">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="improved presentation slides">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/distributedSystemsTaxonomy.png" beforeDir="false" afterPath="$PROJECT_DIR$/distributedSystemsTaxonomy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pres.md" beforeDir="false" afterPath="$PROJECT_DIR$/pres.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/information_retrieval_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/retrieve/retrieve_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,7 +63,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectId" id="22uvIA067pWgN1ZvBbM5FVDQjh9" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -276,7 +278,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="more comments" />
     <MESSAGE value="this works" />
     <MESSAGE value="working with more comments" />
     <MESSAGE value="added graceful shutdown" />
@@ -301,7 +302,8 @@
     <MESSAGE value="presentation slides semi completed" />
     <MESSAGE value="updated example" />
     <MESSAGE value="removed log output for updating known hosts" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed log output for updating known hosts" />
+    <MESSAGE value="improved presentation slides" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved presentation slides" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

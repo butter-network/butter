@@ -15,7 +15,7 @@ import (
 const (
 	pingRoute       = "ping/"
 	pongRoute       = "pong/"
-	addrGroup       = "224.0.0.1:9999"
+	addrGroup       = "224.0.0.1:9999" // Multicast address for all nodes
 	maxDatagramSize = 8192
 )
 

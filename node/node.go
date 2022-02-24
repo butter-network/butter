@@ -1,3 +1,7 @@
+// Node is at the core of the butter framework. Every dapp built with the butter framework will be composed of many
+// butter nodes. Each butter node will have behaviours that allow it to fulfill the functionality required from the
+// dapp.
+
 package node
 
 import (
@@ -63,42 +67,46 @@ func (node *Node) UpdateIP(ip string) {
 
 // --- Adders ---
 
-// RegisterServerBehaviour allows a node to register a behaviour for a route. This allows dapp designers to aff their own
-// functionality and build on top of butter nodes. All routes have node and incoming payload as parameters and return a
-// response payload.
-func (node *Node) RegisterServerBehaviour(route string, handler func(Overlay, []byte) []byte) {
-	node.serverBehaviours[route] = handler
-}
+// A node has a collection of behaviours that determine its functionality. Client behaviours determine how a user might
+// be expected to interact with a node while severe behaviours determine how a node might respond to certain requests.
 
-// much like you can have several server beahbiour you should be able to
-// append several of your own client behaviours to a node (each client
-// behaviour is append to a list and upon startup we create a goroutine for
-// each registered client behaviour)
+// RegisterClientBehaviour allows you to define several ways to interface with a node. The ability to append
+// user-defined functions allows you to add functionality to the node specific to your dapp.
 func (node *Node) RegisterClientBehaviour(handler func(Overlay)) {
 	node.clientBehaviours = append(node.clientBehaviours, handler)
 }
 
+// RegisterServerBehaviour allows a node to register a behaviour for a route to increase its ability to respond too
+// requests. All routes (specific server handler functions) take the overlay network and incoming payload as parameters,
+// process the request and return a response payload.
+func (node *Node) RegisterServerBehaviour(route string, handler func(Overlay, []byte) []byte) {
+	node.serverBehaviours[route] = handler
+}
+
 // AddKnownHost to increase node's partial view of the network. If already in known hosts, does nothing. If known
-// hosts list is full, runs manageKnownHosts function (black box function that manages an optimal known host list).
+// hosts list is full, determines intelligently if the host should be added and which should be removed. Be careful, a
+// node is not always added despite the function call.
 func (node *Node) AddKnownHost(remoteHost utils.SocketAddr) {
 	node.knownHosts.Add(remoteHost)
 }
 
+// RemoveKnownHost from node's list. If the host is not in the list, does nothing.
 func (node *Node) RemoveKnownHost(remoteHost utils.SocketAddr) {
 	node.knownHosts.Remove(remoteHost)
 }
 
-// NewNode based on the local IP address of the computer, a port number, the desired memory usage and an application
-// specific client behaviour. If the port is unspecified (i.e. 0), teh OS will allocate an available port. The max
-// memory is specified in megabytes. If the memory is not specified (i.e. 0), the default is 2048 MB (2GB). A node has
-// to contribute at least 512 MB of memory to the network (for it to be worthwhile) and use less memory than the total
-// system memory.
+// --- Constructor ---
+
+// NewNode based on the local IP address of the computer, a port number, the desired memory usage. If the port is
+// unspecified (i.e. 0), the OS will allocate an available port. The max memory is specified in megabytes. If the memory
+// is not specified (i.e. 0), the default is 512 MB (0.5GB). A node has to contribute at least 512 MB of memory to the
+// network (for it to be worthwhile) and use less memory than the total system memory.
 func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	var node Node
 
 	// Sets the default memory to 2048 MB if not specified
 	if maxMemoryMb == 0 {
-		maxMemoryMb = 2048
+		maxMemoryMb = 512
 	}
 
 	// Convert user specified max memory in mb to bytes
@@ -143,11 +151,11 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	return &node, nil
 }
 
-// Start node by listening out for incoming connections and starting the application specific client behaviour. A node
-// behaves both as a server and a client simultaneously (that's how peer-to-peer systems work).
+// Start node by listening out for incoming connections and starting the application specific client behaviours. A node
+// behaves both as a server and a client simultaneously (that's how peer-to-peer systems work!).
 func (node *Node) Start(overlay Overlay) {
-	node.RegisterClientBehaviour(updateKnownHosts) // periodically remove dead hosts from known hosts list
-	AppendHostQualityServerBehaviour(node)         // append host quality server behaviour to the node
+	node.RegisterClientBehaviour(updateKnownHosts) // Periodically remove dead hosts from known hosts list
+	AppendHostQualityServerBehaviour(node)         // Append host quality server behaviour to the node
 	node.started = time.Now()
 	for i := range node.clientBehaviours {
 		go node.clientBehaviours[i](overlay)
@@ -155,6 +163,7 @@ func (node *Node) Start(overlay Overlay) {
 	node.listen(overlay)
 }
 
+// TODO: Wait for all connections to close before returning
 func (node *Node) closeListener() {
 	err := node.listener.Close()
 	if err != nil {
@@ -166,6 +175,7 @@ func (node *Node) closeListener() {
 // Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
 func (node *Node) Shutdown() {
 	// TODO: Gracefully shutdown method incomplete
+	// TODO: add shoutdown methoth to overlay network so that it can be called from here - this would allow overlay network designers to implement their own graceful shutdown behaviour
 	node.closeListener()
 }
 
@@ -224,15 +234,13 @@ func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 	return []byte("invalid-route/")
 }
 
+// uptime of the node i.e. time since it started listening and hence contributing to the butter network
 func (node *Node) uptime() time.Duration {
 	return time.Since(node.started)
 }
 
-// think of like a AI serahc problem you have a state of the world i.e. a state of a known host list which has an asoociated value (diverse list of known hosts)
-// you can change the state of the known list incrementally by creating a permutation of the list of known hosts - and re-computing the hostlistquality
-
-// BUG: This might not work (cause runtime errors)
-// Periodically (every 2 min) updateKnownHosts from the known hosts list
+// updateKnownHosts by periodically (every 2 min) querying each known host for its HostQuality and storing the updated
+// information in the KnownHosts cache.
 func updateKnownHosts(overlay Overlay) {
 	for {
 		overlay.Node().knownHosts.update() // updates host metadata + removes dead hosts
