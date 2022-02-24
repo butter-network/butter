@@ -1,9 +1,9 @@
-package butter
+package retrieve
 
 import (
 	"fmt"
+	"github.com/a-shine/butter"
 	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/retrieve"
 	"github.com/a-shine/butter/store"
 	"testing"
 	"time"
@@ -18,7 +18,7 @@ var uuids = make([]string, 0)
 func TestInformationRetrieval(t *testing.T) {
 	// create many nodes and spawn into butter network
 	for i := 0; i < nodes-1; i++ {
-		n, _ := node.NewNode(0, 512, dummyClientBehaviour, false)
+		n, _ := node.NewNode(0, 512)
 
 		fmt.Println("Node created -", n.Address())
 
@@ -27,7 +27,7 @@ func TestInformationRetrieval(t *testing.T) {
 		uuids = append(uuids, uuid)
 
 		// Spawn your node into the butter network
-		go Spawn(&n, false) // blocking
+		go butter.Spawn(&n, false) // blocking
 		fmt.Println(n.KnownHosts())
 	}
 
@@ -39,7 +39,7 @@ func TestInformationRetrieval(t *testing.T) {
 	// then outside of loop create a new node
 	n, _ := node.NewNode(0, 512, clientBehaviour, false)
 	fmt.Println("Node created -", n.Address())
-	Spawn(&n, false) // blocking
+	butter.Spawn(&n, false) // blocking
 	// search for each piece of information by going over the uuids
 	// time the amount of time taken to retrieve the information
 }
@@ -52,7 +52,7 @@ func clientBehaviour(n *node.Node) {
 	fmt.Println(n.KnownHosts())
 	for _, uuid := range uuids {
 		// start a timer
-		data := retrieve.NaiveRetrieve(n, uuid)
+		data := NaiveRetrieve(n, uuid)
 		fmt.Println(string(data))
 		// stop timer
 	}

@@ -2,7 +2,6 @@ package node
 
 import (
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/a-shine/butter/utils"
@@ -67,9 +66,9 @@ func AppendHostQualityServerBehaviour(node *Node) {
 }
 
 func (knownHosts *KnownHosts) update() {
-	log.Println("Updating known hosts")
 	knownHosts.uptimeTally = 0
 	knownHosts.storageTally = 0
+	knownHosts.knownHostsTally = 0
 
 	for host, _ := range knownHosts.Hosts {
 		// get the host quality and add to a map of known hosts to their quality
@@ -86,11 +85,10 @@ func (knownHosts *KnownHosts) update() {
 		// tally the storage to obtain mean avg
 		knownHosts.uptimeTally += uint64(hostQuality.Uptime)
 		knownHosts.storageTally += hostQuality.AvailableStorage
+		knownHosts.knownHostsTally += hostQuality.NbHostsKnown
 	}
 	knownHosts.classifyHosts()
 	knownHosts.lastUpdate = time.Now()
-	log.Println("Updated known hosts")
-	log.Println("Known hosts:", knownHosts.Hosts)
 }
 
 func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {

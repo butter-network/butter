@@ -9,13 +9,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="presentation slides semi completed">
-      <change afterPath="$PROJECT_DIR$/node/utils.go" afterDir="false" />
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="updated example">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/chat/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/chat/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/wiki/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/wiki/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/information_retrieval_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/information_retrieval_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/knownHosts.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/knownHosts.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,11 +100,11 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/retrieve" />
       <recent name="$PROJECT_DIR$/betternode" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/node" />
       <recent name="$PROJECT_DIR$/traverse" />
-      <recent name="$PROJECT_DIR$/discover" />
     </key>
   </component>
   <component name="RunManager" selected="Go Test.TestHostType in github.com/a-shine/butter/node">
@@ -278,7 +275,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="not tested but saving anyway" />
     <MESSAGE value="some cleaned up code" />
     <MESSAGE value="more comments" />
     <MESSAGE value="this works" />
@@ -303,7 +299,8 @@
     <MESSAGE value="seems to work" />
     <MESSAGE value="tested the known host management functionality" />
     <MESSAGE value="presentation slides semi completed" />
-    <option name="LAST_COMMIT_MESSAGE" value="presentation slides semi completed" />
+    <MESSAGE value="updated example" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated example" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
