@@ -1,36 +1,51 @@
 # Butter
 
-A decentralised application framework
+A decentralised application (dapp) framework
+
+Note:
+The project title was 'efficient decentralised network with case studies' - and this resulted in Butter
 
 ---
 <!-- .slide: data-background="white" -->
 ![](butterLogo.png)
 
-Note: We have a nice logo!
+Note:
+First and foremost, we have a nice logo - extremely important for any framework :)
 
 ---
-
 ## Outline
 
-- An overview of the project
-    - What is Butter?
-    - Motivations
-    - Related projects
-    <!-- Review of the research & literature? -->
-    - Demo
-- Getting technical
-    - Introducing the problems
-    - Butter's approach
-        - Core design philosophies
-        - Solutions
-- How we got here?
-    - The path
-    - Unforeseen problems
-    - What's to come...
+Note:
+The presentation is broken down into 3 parts...
+
+---
+<!-- .slide: style="text-align: left;" -->
+### Part 1: An overview of the project 
+- What is Butter?
+- Motivations
+- Related projects
+<!-- Review of the research & literature? -->
+- Demo
 
 Note:
-The presentation is broken down into 3 parts In the related projects do a comparison with libp2p In the demo, run
-through building an echo/chat dapp and then demo the fancy wiki dapp
+In the demo, run through building an echo/chat dapp and then demo the fancy wiki dapp
+
+---
+<!-- .slide: style="text-align: left;" -->
+### Part 2: Getting technical (technical content)
+<!-- .slide: style="text-align: left;" -->
+- Introducing the problems
+- Butter's approach
+    - Core design philosophies
+    - Solutions
+
+---
+<!-- .slide: style="text-align: left;" -->
+### Part 3: How we got here? (project management)
+- The path
+- Unforeseen problems
+- What's to come...
+
 
 ---
 
@@ -65,6 +80,7 @@ In the taxonomy of distributed systems, it lies here... Why unstructured p2p?...
 
 ---
 
+<!-- .slide: style="text-align: left;" -->
 ### Related projects
 
 - [libp2p.io](https://libp2p.io/)
@@ -75,12 +91,13 @@ In the taxonomy of distributed systems, it lies here... Why unstructured p2p?...
 
 ---
 
+<!-- .slide: style="text-align: left;" -->
 ### Demo
 
 - Building an echo dapp from scratch
 - Wiki dapp
 
-The project GitHub page [github.com/a-shine/butter.com](https://github.com/a-shine/butter) includes examples to look at too!
+The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) includes examples to look at too!
 
 Note:
 Here's one I made earlier...
@@ -93,12 +110,12 @@ Here's one I made earlier...
 
 ### Introducing the problems
 
-- Peer discovery (cold start problem)
-- NAT traversal
-- Known host management (allowing everyone to contribute while still maintaining functionality)
+- **Peer discovery** (cold start problem)
+- **NAT traversal** (not really a focus currently)
+- **Known host management** (allowing everyone to contribute while still maintaining functionality)
 - Overlay network for persistent information
-    - Fault-tolerant storage (high availability)
-    - Information retrieval
+    - Fault-tolerant **storage** (high availability)
+    - **Information retrieval** (IR)
 
 Note:
 The key problems when designing decentralised unstructured peer-to-peer architecture systems...
@@ -108,33 +125,49 @@ The key problems when designing decentralised unstructured peer-to-peer architec
 ### Butter's approach
 
 ---
+#### Goal
 
-#### Core design philosophies
-
-- **Simplicity** (needs to make building dapps easy and feel similar to existing backend web frameworks)
-- **Modularity** (you can pick and choose which aspects of the framework you want and re-implement others)
-- **Memory greedy** - use as much memory as you have been allowed to use - might as well use it
-- **Never panic** - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
-  cause a node in a faulty state is still more valuable to the network than no node at all
-- **Diversity** - increase probability of information availability and faster retrieval
+Efficient and decentralised while not compromising availability
 
 Note:
-First lets consider the way Butter was designed (this will determine how we solve the problems)
+Reminiscent of the project's title 'efficient decentralised' as well as the motivations
+As I improved my knowledge of distributed systems I started to think about the butter through the lens of fault-tolerance
+
+---
+#### Core design philosophies
+
+<!-- .slide: style="text-align: left;" -->
+- Simplicity
+- Modularity
+- Memory greedy
+- Never panic (fault-tolerant)
+- Diversity
+
+Note:
+First lets consider the way Butter was designed (this will determine how we solve the problems) and how the philosophies align with the goal
+Since exploring the academia of distributed systems and fault-tolerance, I think the best way of looking at project is through the lens of fault-tolerant distributed systems particularly in regard to the availability dependability attribute
+- Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
+- Modularity - you can pick and choose which aspects of the framework you want and re-implement others
+- Memory greedy - use as much memory as you have been allowed to use - might as well use it
+- Never panic - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
+  cause a node in a faulty state is still more valuable to the network than no node at all
+- Diversity - Known host diversity (increase probability of information availability and faster retrieval) + spread load 
+  across all types of nodes
 
 ---
 
 #### Solutions
 
-| Problem          | Butter's solution         |
-| -------------------- |---------------------------|
-| Discovery            | Multicast                 |
-| NAT Traversal        | (Imperfect) Ambassador nodes |
-| Known host management | Known host quality cache  |
-| Persistent storage   | PCG overlay               |
-| IR                   | Directed BFS              |
+| Problem               | Butter's solution            |
+|-----------------------|------------------------------|
+| Discovery             | Multicast                    |
+| NAT Traversal         | (Imperfect) Ambassador nodes |
+| Known host management | Known host quality cache     |
+| Persistent storage    | PCG overlay                  |
+| IR                    | Directed BFS                 |
 
 Note:
-Bearing these problems in mind (and the design philisphies) we can go about designing a framework to solve them
+Bearing these problems in mind (and the design philosophies) we can go about designing a framework to solve them
 
 ---
 
@@ -165,6 +198,10 @@ Procedure Listen:
 
 ##### NAT Traversal
 
+These are somewhat centralised
+As a user, you can specify if you want your node to be an ambassador (on the condition it is accessible publicly)
+If it is an ambassador, all its local known hosts will be aware he is an ambassador, any other publicly available known host will then
+
 Note:
 Brush over this...
 
@@ -172,8 +209,8 @@ Brush over this...
 
 ##### Known host management 1
 
-- Known host quality determined by: uptime, available memory for stirage and nb of hosts known
-- Intuiatively - we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
+- Known host quality determined by: uptime, available storage and nb. of hosts known
+- Intuitively - we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
   BUT!
 - Diversity
 - Edge cases
@@ -184,8 +221,8 @@ Brush over this...
 
 ##### Known host management 2
 
-- Trivually if you have enough memory to store a new node, just store it (greedy philosophy)
-- If you are at capacity, you can see whether or not the new node would make the list of known hosts more diverse
+- Trivially if you have enough memory to store a new node, just store it (greedy philosophy)
+- If you are at capacity, you can see whether the new node would make the list of known hosts more diverse
 
 ---
 
@@ -225,9 +262,9 @@ network - groups
 - Term 1
     - Getting to grip with distributed systems, specifically decentralised (peer-to-peer architecture) systems
     - Learning about Rust and systems/network programming
-    - Reading academic literature on Information Retrieval in unstrucrured distributed architectures
+    - Reading academic literature on Information Retrieval in unstructured distributed architectures
     - Completion of the Discovery and NAT Traversal packages
-    - Implemenation of trivial Known host management, and Persistent storage packages
+    - Implementation of trivial Known host management, and Persistent storage packages
 - Christmas break
     - Lots more academic literature on IR in distributed systems
     - Implementation of IR using BFS
@@ -235,9 +272,9 @@ network - groups
     - Starting to write up project documentation
 - Term 2
     - Reading literature on fault-tolerance
-    - Shift in focus as the we start to look at project from a fault-tolerance perspective
-    - Reading literature on persistence storage on high churn unstrucrured p2p systems
-    - Implementation of inteligent known host management optimising for diversity
+    - Shift in focus as we start to look at project from a fault-tolerance perspective
+    - Reading literature on persistence storage on high churn unstructured p2p systems
+    - Implementation of intelligent known host management optimising for diversity
     - Implementation of persistent storage based on PCG overlay
     - Preparing presentation
 
@@ -269,11 +306,12 @@ Note:
 
 - Continued development of the project
 - Focus on building a testing framework for peer-to-peer systems in Go
-- Reeviewed sceptisism of libp2p
+- Reviewed scepticism of libp2p
 
 Note:
-Having been sceptocal of libp2p, I have a much better appreciation for it's design, I would like to contribute to it
-hopefully working towards a more unstrucrured architecrural design
+Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
+hopefully working towards a more unstructured architectural design
+Do a comparison with libp2p
 
 ---
 
@@ -281,4 +319,4 @@ hopefully working towards a more unstrucrured architecrural design
 
 - Adam (of course)
 - libp2p project
-- Tennanbaum book on distributed systems
+- Tanenbaum's book: Distributed systems: Principles and Paradigms
