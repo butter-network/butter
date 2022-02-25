@@ -9,11 +9,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="improved presentation slides">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="cleaning up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discover/discover.go" beforeDir="false" afterPath="$PROJECT_DIR$/discover/discover.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/retrieve/information_retrieval_test.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/retrieve/retrieve_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,7 +61,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="22uvIA067pWgN1ZvBbM5FVDQjh9" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -278,7 +276,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="this works" />
     <MESSAGE value="working with more comments" />
     <MESSAGE value="added graceful shutdown" />
     <MESSAGE value="cleaned up node implementation" />
@@ -303,7 +300,8 @@
     <MESSAGE value="updated example" />
     <MESSAGE value="removed log output for updating known hosts" />
     <MESSAGE value="improved presentation slides" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved presentation slides" />
+    <MESSAGE value="cleaning up" />
+    <option name="LAST_COMMIT_MESSAGE" value="cleaning up" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

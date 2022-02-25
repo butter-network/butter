@@ -23,11 +23,11 @@ func TestInformationRetrieval(t *testing.T) {
 		fmt.Println("Node created -", n.Address())
 
 		dummyKeywords := []string{"dummy", "dummy", "dummy", "dummy", "dummy"}
-		uuid := store.NaiveStore(&n, dummyKeywords, "dummy")
+		uuid := store.NaiveStore(n, dummyKeywords, "dummy")
 		uuids = append(uuids, uuid)
 
 		// Spawn your node into the butter network
-		go butter.Spawn(&n, false) // blocking
+		go butter.SpawnDefaultOverlay(n, false) // blocking
 		fmt.Println(n.KnownHosts())
 	}
 
@@ -39,7 +39,7 @@ func TestInformationRetrieval(t *testing.T) {
 	// then outside of loop create a new node
 	n, _ := node.NewNode(0, 512)
 	fmt.Println("Node created -", n.Address())
-	butter.Spawn(&n, false) // blocking
+	butter.SpawnDefaultOverlay(n, false) // blocking
 	// search for each piece of information by going over the uuids
 	// time the amount of time taken to retrieve the information
 }

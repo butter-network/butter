@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/a-shine/butter/utils"
@@ -25,6 +26,8 @@ type Overlay interface {
 
 type Node struct {
 	listener         net.Listener
+	quit             chan interface{}
+	wg               sync.WaitGroup
 	knownHosts       KnownHosts
 	started          time.Time
 	clientBehaviours []func(Overlay)
@@ -140,6 +143,7 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 
 	node = Node{
 		listener:         listener,
+		quit:             make(chan interface{}),
 		knownHosts:       KnownHosts{cap: uint(knownHostsCap), Hosts: make(map[utils.SocketAddr]HostQuality)}, // make a slice of known hosts of length and capacity knownHostsCap
 		started:          time.Time{},
 		clientBehaviours: make([]func(Overlay), 0),
@@ -147,6 +151,8 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 		ambassador:       false,
 		storageMemoryCap: maxStorage,
 	}
+
+	node.wg.Add(1)
 
 	return &node, nil
 }
@@ -165,11 +171,13 @@ func (node *Node) Start(overlay Overlay) {
 
 // TODO: Wait for all connections to close before returning
 func (node *Node) closeListener() {
+	close(node.quit)
 	err := node.listener.Close()
 	if err != nil {
 		log.Println("Error closing listener:", err.Error())
 		log.Println("Unable to shutdown gracefully")
 	}
+	node.wg.Wait()
 }
 
 // Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
@@ -181,16 +189,27 @@ func (node *Node) Shutdown() {
 
 // listen to incoming connections from other nodes and handle them in serrate goroutines
 func (node *Node) listen(overlay Overlay) {
+	defer node.wg.Done()
+
 	for {
 		conn, err := node.listener.Accept()
 		if err != nil {
-			// Avoid fatal errors at all costs - we want to maximise node availability
-			log.Println("Node is unable to accept incoming connections due to: ", err.Error())
-			continue // forces next iteration of the loop skipping any code in between
+			select {
+			case <-node.quit:
+				return
+			default:
+				// Avoid fatal errors at all costs - we want to maximise node availability
+				log.Println("Node is unable to accept incoming connections due to: ", err.Error())
+				//continue // forces next iteration of the loop skipping any code in between
+			}
+		} else {
+			node.wg.Add(1)
+			go func() {
+				// Pass connection to request handler in a new goroutine - allows a node to handle multiple connections at once
+				node.HandleRequest(conn, overlay)
+				node.wg.Done()
+			}()
 		}
-
-		// Pass connection to request handler in a new goroutine - allows a node to handle multiple connections at once
-		go node.HandleRequest(conn, overlay)
 	}
 }
 
