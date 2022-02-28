@@ -259,36 +259,56 @@ model e.g. DHTs a known bootstrap node, BitTorent requires super-peers (it calls
 ---
 ##### Persistent storage 2
 
-- Introducing the **PCG** (Peer Content Group) overlay
-- Based on the Reliable Content Distribution in P2p networks based on peer groups paper (seen on the previous slide) I had a way to reason about information more specifically duplicate/redundant information on the network - groups
-- At the end of the day, percistency is fairly trivial on when there is no node failure/link failure - just introduce a graceful exit procedure for nodes leaving the network (where they offload the information they host to their known hosts)
+- Information persistency is fairly trivial when there is no node/link failure - just introduce a graceful exit procedure for nodes leaving the network (offload the information to their known hosts)
 - But how do you deal with the possibility of node failure/link failure (specially relevant on high churn networks)? - redundancy
-- But if you introduce redundancy you need to find ways of efficiently managing redundant information - this is where the paper was really helpful
+- But if you introduce redundancy, how do you efficiently manage redundant information?
+
+Note:
+- This is where the Reliable content distribution based on peer groups paper was really helpful - how to manage and reason about duplicate data
 
 ---
 ##### Persistent storage 3
 
-- So when a new piece of information is added to the network, a group is created
-- The group is responsible for maintaining this information (trivial leader election as each group participant has a full view of the group updated with heartbeats)
-- A group can be in 3 states
-  - **Cold** - not enough members to ensure that the information is always available (high risk of information loss)
-  - **Goldilocks** - enough members to ensure that the information is always available (low risk of information loss)
-  - **Hot** - too many members (usually as a result of subnetworks merging) does not pose a risk to availability but rather to efficiently managing the group (time, storage, message complexity)
-- A group maintains itself through regular heartbeats
-- 'Butter' approach to information where groups actively try to spread there information to hosts if they are in a cold state (hence the name of framework)
+- Introducing: **PCG (Peer Content Group) overlay**
+- Way to reason about information more specifically duplicate/redundant information on the network through **Groups**
+
+Note:
+- Based on the Reliable Content Distribution in P2p networks based on peer groups paper (seen on the previous slides)
 
 ---
 ##### Persistent storage 4
 
+- When a new piece of information is added to the network, a group is created
+- Group is responsible for maintaining this information
+- A group maintains itself through regular heartbeats
+- 'Butter' approach to information where groups actively try to 'spread' their information to hosts if they are in a cold state (hence the name of framework)
+
+Note:
+Group maintaining information (trivial leader election as each group participant has a full view of the group updated with heartbeats)
+
+---
+<!-- .slide: style="text-align: left;" -->
+##### Persistent storage 5
+A group can be in one of three states
+  - **Cold** - not enough members to ensure that the information is available (high risk of information loss)
+  - **Goldilocks** - enough members to ensure that the information is available (low risk of information loss)
+  - **Hot** - too many members (no effect on availability but rather to efficiently managing the group in terms of time, storage, message complexity)
+  
+Note:
+The hot state is usually as a result of subnetworks merging
+
+---
+##### Persistent storage 6
+
 - By default, groups try and maintain information across 3 participants
-- But if the information is deemed important by the network i.e. if information is frequently queried (as determined by the group)
+- If the information is deemed important by the network i.e. frequently queried (as determined by the group)
 - Then the group seeks to maintain the information across more participants
 - This has the added benefit of increasing the performance of information retrieval (higher probability of encountering a node that contains the information you are looking for)
 
 ---
 ##### Information retrieval 1
-- When information is added, a hash of that information is created and it is broken down into 4kb chunks
-- An id for information is generated via the hash a nb. of chunks
+- When information is added, a hash of that information is created, and it is broken down into 4kb chunks
+- An id for information is generated via the hash and nb. of chunks
 - When you query the network you attempt to find any node that is holding the hash of the information regardless of the specific chunk
 - Once you have intercepted a first chuck you are aware of all the other chucks (as the nb of chunks is stored as metadata in the chunk)
 - So you can query for the remaining data in parallel
@@ -301,10 +321,10 @@ PROCEDURE QueryNetwork(infoId):
   IF infoId in Self:
     RETURN Self[infoId]
   ELSE:
-    BFS
+    BFS(infoId)
 ```
 
-```pseudocode
+<!-- ```pseudocode
 PROCEDURE BFS(infoId):
   QUEUE = [Self]
   VISITED = []
@@ -318,7 +338,7 @@ PROCEDURE BFS(infoId):
           QUEUE.append(NODE)
           VISITED.append(NODE)
   RETURN None
-```
+``` -->
 
 Note:
 When querying information...
@@ -331,7 +351,7 @@ When querying information...
 
 ---
 #### Summer 2021
-Learning about blockchains, IPFS and libp2p
+Started learning about blockchains, IPFS, libp2p, Chord and Kademlia DHTs
 
 ---
 #### Term 1
@@ -362,7 +382,10 @@ implementation of all the necessary components
 - Preparing presentation
 
 ---
-Throughout weekly meetings with Adam, who's been really helpful and supportive (as well as challenging might I add)
+Throughout weekly meetings with Adam
+
+Note:
+who's been really helpful and supportive (as well as challenging might I add)
 
 ---
 ### Unforeseen problems
@@ -374,7 +397,7 @@ Note:
 #### Problem 1
 
 - Development was taking too long
-- Not as well suited to asynchronous programming
+- Rust does not yet support easy asynchronous programming
 
 **Solution**: Switch from Rust to Go
 
@@ -391,7 +414,7 @@ programming as well as a very different language)
 
 - Poor quality of papers in peer-to-peer systems
     - Lack of consistent terminology
-    - Assumptions
+    - Too many assumptions
 - Lack of papers on unstructured peer-to-peer architectures
 
 **Solution**: Added challenge to the project in formalising a lot of the terminology and coming up with new creative 
