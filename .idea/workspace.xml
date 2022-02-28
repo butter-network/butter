@@ -9,10 +9,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="cleaning up">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="added graceful server shutdown (i.e. wait for client connections to finish before shutting down)">
+      <change afterPath="$PROJECT_DIR$/docs/imgs/0oGSfw7.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/main.synctex(busy)" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node/node.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/node.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/retrieve/retrieve_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/retrieve/retrieve_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/main.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/ohce/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/examples/ohce/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node/knownHosts.go" beforeDir="false" afterPath="$PROJECT_DIR$/node/knownHosts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pres.md" beforeDir="false" afterPath="$PROJECT_DIR$/pres.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -276,8 +280,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working with more comments" />
-    <MESSAGE value="added graceful shutdown" />
     <MESSAGE value="cleaned up node implementation" />
     <MESSAGE value="cleaned up node package" />
     <MESSAGE value="added instructions on how to run an example" />
@@ -301,7 +303,9 @@
     <MESSAGE value="removed log output for updating known hosts" />
     <MESSAGE value="improved presentation slides" />
     <MESSAGE value="cleaning up" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleaning up" />
+    <MESSAGE value="added graceful server shutdown (i.e. wait for client connections to finish before shutting down" />
+    <MESSAGE value="added graceful server shutdown (i.e. wait for client connections to finish before shutting down)" />
+    <option name="LAST_COMMIT_MESSAGE" value="added graceful server shutdown (i.e. wait for client connections to finish before shutting down)" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

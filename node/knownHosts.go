@@ -7,11 +7,7 @@ import (
 	"github.com/a-shine/butter/utils"
 )
 
-// only need to do this when known host list is at capacity
-
 type HostQuality struct {
-	// TODO: add a sense of public vs private (known public allows you to be a
-	// bridge between subnets but private has lower latency)
 	Uptime           uint64
 	AvailableStorage uint64
 	NbHostsKnown     uint64
@@ -122,6 +118,7 @@ func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
 		knownHosts.Hosts[host] = hostQuality // if we have the memory just add the known host
 		knownHosts.incrementHostClass(hostQuality, avgUptime, avgStorage, avgKnownHosts)
 	} else {
+		// only need to do this when known host list is at capacity
 		knownHosts.intelligentAddKnownHost(host) // else figure out if its worth adding and who to remove
 	}
 }

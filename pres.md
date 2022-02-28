@@ -21,9 +21,10 @@ The presentation is broken down into 3 parts...
 ---
 <!-- .slide: style="text-align: left;" -->
 ### Part 1: An overview of the project 
+
 - What is Butter?
 - Motivations
-- Related projects
+- Related works
 <!-- Review of the research & literature? -->
 - Demo
 
@@ -32,8 +33,8 @@ In the demo, run through building an echo/chat dapp and then demo the fancy wiki
 
 ---
 <!-- .slide: style="text-align: left;" -->
-### Part 2: Getting technical (technical content)
-<!-- .slide: style="text-align: left;" -->
+### Part 2: Getting technical <!-- (technical content) -->
+
 - Introducing the problems
 - Butter's approach
     - Core design philosophies
@@ -41,73 +42,77 @@ In the demo, run through building an echo/chat dapp and then demo the fancy wiki
 
 ---
 <!-- .slide: style="text-align: left;" -->
-### Part 3: How we got here? (project management)
+### Part 3: How we got here? <!-- (project management) -->
+
 - The path
 - Unforeseen problems
 - What's to come...
 
+---
+## Part 1: An overview of the project
 
 ---
-
-## Part 1: Overview
-
----
-
 ### What is Butter?
 
 Butter is a networking stack and framework for building decentralised applications (dapps).
 
 Note:
-What does that mean?... What makes it a framework is because it is composed of a collection of modular packages that you
-can piece together to handle the networking behaviour of your application You simply define your overlay network (or use
-the default one) and describe the processing you want the nodes of your application to do, the rest is handled by the
-framework
+What does that mean?... 
+What makes it a framework is because it is composed of a collection of modular packages that you
+can piece together to handle the networking behaviour of your application
+You simply define your overlay network (or use the default one) and describe the processing you want the nodes of your 
+application to do, the rest is handled by the framework
 
 ---
 ![](distributedSystemsTaxonomy.png)
 
 Note:
 In the taxonomy of distributed systems, it lies here... Why unstructured p2p?...
+Despite the benefits of a decentralised approach, the majority of popular P2P networks include structured elements such
+as lookup tables, super-peers or DHTs(Distributed Hash Tables). These are introduced primarily to improve network 
+performance by reducing message complexity. However, this then reintroduces some primary pitfalls of the client-server 
+model. Therefore, the implementation of an entirely unstructured P2P network service designed for information 
+availability and fault tolerance can have significant benefits.
 
 ---
-
 ### Motivations
 
 - Lack of confidence in cloud services
 - Fascinated by the idea of detaching information from infrastructure
 - Interested in designing systems that reflect how people deal with information in the real world (i.e. probabilistic
   vs. deterministic)
+- Finding a new way of interacting with information on the internet (new way of monetising)
 
 ---
-
 <!-- .slide: style="text-align: left;" -->
-### Related projects
+### Related works
 
 - [libp2p.io](https://libp2p.io/)
 - [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
 - [BitTorrent](https://www.bittorrent.com/)
 
 *(really only libp2p applies directly)
+Note:
+While Gnutella and BitTorrent are both decentralised peer-to-peer systems, they are the system as opposed to the 
+framework
+They have way less functionality and are fit for one purpose
 
 ---
-
 <!-- .slide: style="text-align: left;" -->
 ### Demo
 
 - Building an echo dapp from scratch
 - Wiki dapp
 
-The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) includes examples to look at too!
+The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) includes examples too
 
 Note:
 Here's one I made earlier...
 
 ---
-
 ## Part 2: Getting technical
 
 ---
-
 ### Introducing the problems
 
 - **Peer discovery** (cold start problem)
@@ -121,7 +126,6 @@ Note:
 The key problems when designing decentralised unstructured peer-to-peer architecture systems...
 
 ---
-
 ### Butter's approach
 
 ---
@@ -155,7 +159,6 @@ Since exploring the academia of distributed systems and fault-tolerance, I think
   across all types of nodes
 
 ---
-
 #### Solutions
 
 | Problem               | Butter's solution            |
@@ -164,61 +167,71 @@ Since exploring the academia of distributed systems and fault-tolerance, I think
 | NAT Traversal         | (Imperfect) Ambassador nodes |
 | Known host management | Known host quality cache     |
 | Persistent storage    | PCG overlay                  |
-| IR                    | Directed BFS                 |
+| IR                    | BFS (directed in future)     |
 
 Note:
 Bearing these problems in mind (and the design philosophies) we can go about designing a framework to solve them
 
 ---
-
 ##### Discovery
 
 ```pseudocode
-Procedure Ping:
-  For:
+PROCEDURE Ping:
+  FOR:
     Send a ping message along a UDP multicast channel
     Wait for a response
-    If response:
-      Add peer to known peers
-    break
-  End
+    IF response THEN:
+      Add remote node to known hosts
+      BREAK
+    ELSE
+      Timeout
+  END
 ```
 
 ```pseudocode
-Procedure Listen:
-  For:
-    listen for UDP packets in the multicast range
-    If packet:
-      If ping:
-        Send a response with your node listner socket address
-  End
+PROCEDURE Listen:
+  FOR:
+    Listen for UDP packets in the multicast range
+    IF packet THEN:
+      IF ping:
+        ADD them to your known hosts (if possible)
+        Send a response containing your address
+  END
 ```
 
 ---
+##### NAT Traversal 1
 
-##### NAT Traversal
+- No real decentralised solution for NAT traversal
+- Why is NAT a thing? - IPv4
 
-These are somewhat centralised
-As a user, you can specify if you want your node to be an ambassador (on the condition it is accessible publicly)
-If it is an ambassador, all its local known hosts will be aware he is an ambassador, any other publicly available known host will then
+Note:
+Could do hole-punching
+Best current approach is to use a boostrap DHT node (libp2p) but that requires some for of centralisation
+
+---
+##### NAT Traversal 2
+
+- As a user, you can specify if you want your node to be an Ambassador (on the condition it is accessible publicly)
+- If it is an Ambassador, he appends an Ambassador flag to his host quality metric
+- As an Ambassador, the node has an inbuilt behaviour to store a list of nodes that want to bridge subnetworks
+- His job is to find two nodes on separate subnetworks and introduce them
 
 Note:
 Brush over this...
 
 ---
-
 ##### Known host management 1
 
 - Known host quality determined by: uptime, available storage and nb. of hosts known
 - Intuitively - we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
-  BUT!
-- Diversity
 - Edge cases
-    - new node joining the network
-    - if 3 nodes and all have max node capacity 1
+    - New node joining the network
+    - If 3 nodes and all have max node capacity 1
+
+SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse distribution of host types
 
 ---
-
 ##### Known host management 2
 
 - Trivially if you have enough memory to store a new node, just store it (greedy philosophy)

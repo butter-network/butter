@@ -126,7 +126,7 @@ There are some problems specific to pure unstructure peer-to-peer architecture -
     \label{fig:butter-platform-taxonomy-abstracted}
 \end{figure}
 
-Figure \ref{fig:butter-platform-taxonomy} neatly shows how teh platform lies in the wider network stack. The top layer is a user defined application and the developer interacts with a butter node - this abstracts away all teh underlying behaviour that handles the distributed aspects of the system. 
+Figure \ref{fig:butter-platform-taxonomy} neatly shows how teh platform lies in the wider network stack. The top layer is a user defined application and the developer interacts with a butter node - this abstracts away all teh underlying behaviour that handles the distributed aspects of the system.
 
 \subsection{Peer discovery}
 \subsection{NAT traversal}
@@ -207,3 +207,6 @@ On a personal note, I find a centralised internet a worrying place. There is a f
 
 
 Design philosphy never have fatal errrors - you want to maximise node availability (fail-live?) If there is an error shrug it off and try something else
+
+
+Despite the benefits of a decentralised approach, the majority of popular P2P networks include structured elements such as lookup tables, super-peers\cite{super_peers} or DHTs(Distributed Hash Tables). These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some of the primary pitfalls of the client-server model. Therefore, the implementation of an entirely unstructured P2P network service designed for information availability and fault tolerance can have significant benefits. (this last sentence needs improving)
