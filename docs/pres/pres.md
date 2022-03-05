@@ -1,13 +1,15 @@
+<!-- Use speaker view (`s`) to keep track of things -->
 # Butter
 
 A decentralised application (dapp) framework
 
 Note:
-The project title was 'efficient decentralised network with case studies' - and this resulted in Butter
+- Project title was 'efficient decentralised network with case studies' - resulted in the creation of Butter
 
 ---
+
 <!-- .slide: data-background="white" -->
-![](butterLogo.png)
+![](https://github.com/a-shine/butter/blob/main/butterLogo.png?raw=true)
 
 Note:
 First and foremost, we have a nice logo - extremely important for any framework :)
@@ -29,7 +31,9 @@ The presentation is broken down into 3 parts...
 - Demo
 
 Note:
-In the demo, run through building an echo/chat dapp and then demo the fancy wiki dapp
+- In the demo, run through
+  - How a developer might use Butter to build a dapp
+  - Demo of a wiki dapp built with Butter
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -57,18 +61,18 @@ In the demo, run through building an echo/chat dapp and then demo the fancy wiki
 Butter is a networking stack and framework for building decentralised applications (dapps).
 
 Note:
-What does that mean?... 
-What makes it a framework is because it is composed of a collection of modular packages that you
-can piece together to handle the networking behaviour of your application
-You simply define your overlay network (or use the default one) and describe the processing you want the nodes of your 
-application to do, the rest is handled by the framework
+- What does that mean?... 
+  - What makes it a framework - composed of a collection of modular packages that can be pieced together to handle the 
+  networking behaviour of your application
+  - As a user, you define your overlay network (or use the default one) and describe the processing you want the nodes of your 
+  application to do, the rest is handled by the framework
 
 ---
 ![](distributedSystemsTaxonomy.png)
 
 Note:
-In the taxonomy of distributed systems, it lies here... Why unstructured p2p?... We'll see when we get to the 
-persistent storage overlay design...
+- In the taxonomy of distributed systems, it lies here... 
+- Why unstructured p2p?... We'll see when we get to the persistent storage overlay design...
 
 ---
 ### Motivations
@@ -87,23 +91,75 @@ persistent storage overlay design...
 - [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
 - [BitTorrent](https://www.bittorrent.com/)
 
-*(really only libp2p applies directly)
+*(really only `libp2p` applies directly)
+
 Note:
-While Gnutella and BitTorrent are both decentralised peer-to-peer systems, they are the system as opposed to the 
+- While Gnutella and BitTorrent are both decentralised peer-to-peer systems, they are the system as opposed to the 
 framework
-They have way less functionality and are fit for one purpose
+- They have less functionality and are fit for one purpose
 
 ---
 <!-- .slide: style="text-align: left;" -->
 ### Demo
 
-- Building an echo dapp from scratch
+- A node's journey by building a reverse echo dapp
 - Wiki dapp
 
 The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) includes examples too
 
+---
+<!-- .slide: style="text-align: left;" -->
+#### A node's journey 
+
+e.g. reverse echo dapp
+```go
+// DummyOverlay implements Overlay
+type DummyOverlay struct {
+	node *node.Node
+	// any other fields...
+}
+
+func rEchoMsg(msg []byte) []byte {
+	return reverse(m)
+}
+
+func sendMsg(super node.Overlay) {
+	// User inputted message
+	for host := range super.Node().KnownHosts() {
+        // send the message
+        // read the response
+        // output the response
+    }
+}
+
+func main() {
+	// Create a Butter node
+    butterNode, err := node.NewNode(0, 512)
+	
+    // Specifying app level server behaviours
+    butterNode.RegisterServerBehaviour("recho-message/", rEchoMsg)
+    butterNode.RegisterClientBehaviour(sendMsg)
+
+    // Spawn your node into the butter network
+    butter.Spawn(&DummyOverlay{node: butterNode}, false) // Blocking
+}
+```
+
 Note:
-Here's one I made earlier...
+- Explain from the main function down
+  1. first a node is created (define a port and allocate memory the node can use)
+  2. Associate the app specific behaviours with the node e.g. if a node receives a request to recho-message, it will reverse the message and return it
+  3. Define a high level node, termed overlay node which gives the developer the ability to add extra functionality to a node such as storage for persistency (you'll see later)
+  4. Spawn the node into the butter network
+     1. Launches the startup sequence (peer discovery)
+     2. Node learns bout the network to form its partial view
+     3. Node starts listening and handling requests and interacts with the rest of the network
+
+---
+#### Wiki dapp
+
+Note:
+- Note that there is no central server here, the information isn't stored in a database but remains persistent in the network
 
 ---
 ## Part 2: Getting technical
@@ -112,14 +168,15 @@ Here's one I made earlier...
 ### Introducing the problems
 
 - **Peer discovery** (cold start problem)
-- **NAT traversal** (not really a focus currently)
 - **Known host management** (allowing everyone to contribute while still maintaining functionality)
+- **NAT traversal** (not really a focus currently)
 - Overlay network for persistent information
     - Fault-tolerant **storage** (high availability)
     - **Information retrieval** (IR)
 
 Note:
-The key problems when designing decentralised unstructured peer-to-peer architecture systems...
+- The key problems when designing decentralised unstructured peer-to-peer architecture systems...
+- Can I ask, if you are familiar with the problems - I'm happy to quickly explain if necessary...
 
 ---
 ### Butter's approach
@@ -140,7 +197,7 @@ As I improved my knowledge of distributed systems I started to think about the b
 - Simplicity
 - Modularity
 - Memory greedy
-- Never panic (fault-tolerant)
+- Avoid panicking (fault-tolerant approach - manage faulty states)
 - Diversity
 
 Note:
@@ -149,7 +206,7 @@ Since exploring the academia of distributed systems and fault-tolerance, I think
 - Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
 - Modularity - you can pick and choose which aspects of the framework you want and re-implement others
 - Memory greedy - use as much memory as you have been allowed to use - might as well use it
-- Never panic - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
+- Avoid panicing - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
   cause a node in a faulty state is still more valuable to the network than no node at all
 - Diversity - Known host diversity (increase probability of information availability and faster retrieval) + spread load 
   across all types of nodes
@@ -160,8 +217,8 @@ Since exploring the academia of distributed systems and fault-tolerance, I think
 | Problem               | Butter's solution            |
 |-----------------------|------------------------------|
 | Discovery             | Multicast                    |
-| NAT Traversal         | (Imperfect) Ambassador nodes |
 | Known host management | Known host quality cache     |
+| NAT Traversal         | (Imperfect) Ambassador nodes |
 | Persistent storage    | PCG overlay                  |
 | IR                    | BFS (directed in future)     |
 
@@ -196,6 +253,27 @@ PROCEDURE Listen:
 ```
 
 ---
+##### Known host management 1
+
+- Known host quality determined by: uptime, available storage and nb. of hosts known
+- Intuitively, we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
+- Edge cases
+    - New node joining the network - how would they get themselves known?
+    - e.g. If 3 nodes and all have max node capacity 1
+
+---
+##### Known host management 2
+SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse distribution of host types
+
+---
+##### Known host management 3
+
+- Trivially if you have enough memory to store a new node, and do not already know him, just store it (greedy philosophy)
+- If you are at capacity, you can see whether the new node would make the list of known hosts more diverse
+  - If it does, remove a host from the most popular class and store the new one 
+  - Else, do nothing
+
+---
 ##### NAT Traversal 1
 
 - No real decentralised solution for NAT traversal
@@ -216,27 +294,6 @@ What did I come up with...
 
 Note:
 Brush over this...
-
----
-##### Known host management 1
-
-- Known host quality determined by: uptime, available storage and nb. of hosts known
-- Intuitively, we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
-- Edge cases
-    - New node joining the network - how would they get themselves known?
-    - e.g. If 3 nodes and all have max node capacity 1
-
----
-##### Known host management 2
-SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse distribution of host types
-
----
-##### Known host management 3
-
-- Trivially if you have enough memory to store a new node, and do not already know him, just store it (greedy philosophy)
-- If you are at capacity, you can see whether the new node would make the list of known hosts more diverse
-  - If it does, remove a host from the most popular class and store the new one 
-  - Else, do nothing
 
 ---
 ##### Persistent storage 1
@@ -398,6 +455,7 @@ Note:
 
 - Development was taking too long
 - Rust does not yet support easy asynchronous programming
+- Poor tooling (IDE support)
 
 **Solution**: Switch from Rust to Go
 
@@ -431,6 +489,7 @@ with his
 - Focus on building a testing framework for peer-to-peer systems in Go
 - Reviewed scepticism of libp2p
 - Integrate a Butter with a browser - idea that as you use the internet you contribute resources to it
+- Possibility of collaborating on a paper with Adam - summative review + formalisation of PCG and Known Host Management techniques
 
 Note:
 Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it

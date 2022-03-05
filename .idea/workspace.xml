@@ -9,9 +9,25 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="almost done">
+    <list default="true" id="43ee3fd7-75e4-4f3f-a576-5629b79def89" name="Changes" comment="finished first draft of the pres">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pres.md" beforeDir="false" afterPath="$PROJECT_DIR$/pres.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/distributedSystemsTaxonomy.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/distributedSystemsTaxonomy.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/commands.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/commands.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/distributedSystemsTaxonomy.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/distributedSystemsTaxonomy.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/imgs/0oGSfw7.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/imgs/0oGSfw7.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/imgs/Screenshot from 2021-12-03 11-23-39.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/imgs/Screenshot from 2021-12-03 11-23-39.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/imgs/Screenshot from 2022-01-17 17-13-57.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/imgs/Screenshot from 2022-01-17 17-13-57.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.synctex(busy)" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/main.synctex(busy)" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/main.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/main.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/networkLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/networkLayers.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/platformLayers.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/platformLayers.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/platformLayersAbstracted.tex" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/platformLayersAbstracted.tex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/refs.bib" beforeDir="false" afterPath="$PROJECT_DIR$/docs/report/refs.bib" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ideas.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/ideas.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/p2pDataAvailability.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/p2pDataAvailability.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pcgPaper.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/pcgPaper.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pres.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/pres.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/presentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pres/presentation.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,11 +116,11 @@
       <recent name="$PROJECT_DIR$/examples/ohce" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs" />
+      <recent name="$PROJECT_DIR$/docs/report" />
+      <recent name="$PROJECT_DIR$/pres" />
       <recent name="$PROJECT_DIR$/retrieve" />
       <recent name="$PROJECT_DIR$/betternode" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/node" />
-      <recent name="$PROJECT_DIR$/traverse" />
     </key>
   </component>
   <component name="RunManager" selected="Go Test.TestHostType in github.com/a-shine/butter/node">
@@ -117,7 +133,7 @@
           <env name="BIBINPUTS" value="$PROJECT_DIR$/docs" />
           <env name="BSTINPUTS" value="$PROJECT_DIR$/docs:" />
         </envs>
-        <main-file>$PROJECT_DIR$/docs/main.tex</main-file>
+        <main-file>$PROJECT_DIR$/docs/report/main.tex</main-file>
         <aux-dir>$USER_HOME$</aux-dir>
       </texify-bibtex>
       <method v="2" />
@@ -184,7 +200,7 @@
         <viewer-command />
         <compiler-arguments />
         <envs />
-        <main-file>$PROJECT_DIR$/docs/main.tex</main-file>
+        <main-file>$PROJECT_DIR$/docs/report/main.tex</main-file>
         <output-path>$PROJECT_DIR$/out</output-path>
         <auxil-path>{projectDir}/auxil</auxil-path>
         <compile-twice>false</compile-twice>
@@ -275,7 +291,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added instructions on how to run an example" />
     <MESSAGE value="updated chat example" />
     <MESSAGE value="wiki demo working but not fully tested" />
     <MESSAGE value="added doc stuff" />
@@ -300,7 +315,8 @@
     <MESSAGE value="added graceful server shutdown (i.e. wait for client connections to finish before shutting down)" />
     <MESSAGE value="better slides" />
     <MESSAGE value="almost done" />
-    <option name="LAST_COMMIT_MESSAGE" value="almost done" />
+    <MESSAGE value="finished first draft of the pres" />
+    <option name="LAST_COMMIT_MESSAGE" value="finished first draft of the pres" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
