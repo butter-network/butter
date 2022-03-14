@@ -1,3 +1,5 @@
+<!-- TODO: Add a few more diagrams -->
+
 <!-- Use speaker view (`s`) to keep track of things -->
 # Butter
 
@@ -5,6 +7,7 @@ A decentralised application (dapp) framework
 
 Note:
 - Project title was 'efficient decentralised network with case studies' - resulted in the creation of Butter
+- Have the same feeling I had when I first met my gf parents :)
 
 ---
 
@@ -12,13 +15,13 @@ Note:
 ![](https://github.com/a-shine/butter/blob/main/butterLogo.png?raw=true)
 
 Note:
-First and foremost, we have a nice logo - extremely important for any framework :)
+- First and foremost, we have a nice logo - extremely important for any framework :)
 
 ---
 ## Outline
 
 Note:
-The presentation is broken down into 3 parts...
+- The presentation is broken down into 3 parts...
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -41,8 +44,9 @@ Note:
 
 - Introducing the problems
 - Butter's approach
-    - Core design philosophies
-    - Solutions
+  - The goal
+  - Core design philosophies
+  - Solutions
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -73,6 +77,7 @@ Note:
 Note:
 - In the taxonomy of distributed systems, it lies here... 
 - Why unstructured p2p?... We'll see when we get to the persistent storage overlay design...
+- What makes it unstructured is that each node is atomic and is indistinguishable from any other node
 
 ---
 ### Motivations
@@ -113,6 +118,14 @@ The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/b
 
 e.g. reverse echo dapp
 ```go
+package main
+import (
+    "fmt"
+	"github.com/a-shine/butter"
+    "github.com/a-shine/butter/node"
+	"github.com/a-shine/butter/utils"
+)
+
 // DummyOverlay implements Overlay
 type DummyOverlay struct {
 	node *node.Node
@@ -124,11 +137,11 @@ func rEchoMsg(msg []byte) []byte {
 }
 
 func sendMsg(super node.Overlay) {
-	// User inputted message
+	// User input message...
 	for host := range super.Node().KnownHosts() {
-        // send the message
-        // read the response
-        // output the response
+		// Send message
+		response := utils.Request(host, "recho-message/", inputMsg)
+        fmt.Println(response)
     }
 }
 
@@ -136,11 +149,11 @@ func main() {
 	// Create a Butter node
     butterNode, err := node.NewNode(0, 512)
 	
-    // Specifying app level server behaviours
+    // Specifying app level behaviours
     butterNode.RegisterServerBehaviour("recho-message/", rEchoMsg)
     butterNode.RegisterClientBehaviour(sendMsg)
 
-    // Spawn your node into the butter network
+    // Spawn node into the Butter network
     butter.Spawn(&DummyOverlay{node: butterNode}, false) // Blocking
 }
 ```
@@ -176,7 +189,8 @@ Note:
 
 Note:
 - The key problems when designing decentralised unstructured peer-to-peer architecture systems...
-- Can I ask, if you are familiar with the problems - I'm happy to quickly explain if necessary...
+- How familiar are you with these problems, I'm going to explain them briefly but do stop me if you have further questions
+  - What is cold start? NAT?
 
 ---
 ### Butter's approach
@@ -187,13 +201,13 @@ Note:
 Efficient and decentralised while not compromising availability
 
 Note:
-Reminiscent of the project's title 'efficient decentralised' as well as the motivations
-As I improved my knowledge of distributed systems I started to think about the butter through the lens of fault-tolerance
+- Reminiscent of the project's title 'efficient decentralised' as well as the motivations
+- As I improved my knowledge of distributed systems I started to think of Butter through the lens of dependability and fault-tolerance
 
 ---
+<!-- .slide: style="text-align: left;" -->
 #### Core design philosophies
 
-<!-- .slide: style="text-align: left;" -->
 - Simplicity
 - Modularity
 - Memory greedy
@@ -201,15 +215,14 @@ As I improved my knowledge of distributed systems I started to think about the b
 - Diversity
 
 Note:
-First lets consider the way Butter was designed (this will determine how we solve the problems) and how the philosophies align with the goal
-Since exploring the academia of distributed systems and fault-tolerance, I think the best way of looking at project is through the lens of fault-tolerant distributed systems particularly in regard to the availability dependability attribute
-- Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
-- Modularity - you can pick and choose which aspects of the framework you want and re-implement others
-- Memory greedy - use as much memory as you have been allowed to use - might as well use it
-- Avoid panicing - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
-  cause a node in a faulty state is still more valuable to the network than no node at all
-- Diversity - Known host diversity (increase probability of information availability and faster retrieval) + spread load 
-  across all types of nodes
+- First lets consider the way Butter was designed (determine how we solve the problems) and how the philosophies align with the goal
+  - Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
+  - Modularity - you can pick and choose which aspects of the framework you want and re-implement others
+  - Memory greedy - use as much memory as you have been allowed to use
+  - Avoid panicking - it's a fault-tolerant system to maximise availability, we should avoid nodes failing at all costs
+    cause a node in a faulty state is still more valuable to the network than no node at all
+  - Diversity - Known host diversity (increase probability of information availability and faster retrieval) + spread load 
+    across all types of nodes
 
 ---
 #### Solutions
@@ -220,10 +233,10 @@ Since exploring the academia of distributed systems and fault-tolerance, I think
 | Known host management | Known host quality cache     |
 | NAT Traversal         | (Imperfect) Ambassador nodes |
 | Persistent storage    | PCG overlay                  |
-| IR                    | BFS (directed in future)     |
+| IR                    | Random TTL BFS               |
 
 Note:
-Bearing these problems in mind (and the design philosophies) we can go about designing a framework to solve them
+- Bearing these problems in mind (and the design philosophies) we can go about designing a framework to solve them
 
 ---
 ##### Discovery
@@ -263,7 +276,8 @@ PROCEDURE Listen:
 
 ---
 ##### Known host management 2
-SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse distribution of host types
+
+SOLUTION - Optimise known hosts not for a specific kind of host but for a diverse distribution of host types
 
 ---
 ##### Known host management 3
@@ -280,9 +294,9 @@ SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse
 - Why is NAT a thing? - IPv4
 
 Note:
-Could do hole-punching
-Best current approach is to use a boostrap DHT node (libp2p) but that requires some for of centralisation
-What did I come up with...
+- Could do hole-punching
+- Best current approach is to use a boostrap DHT node (libp2p) but that requires some for of centralisation
+- What did I come up with...
 
 ---
 ##### NAT Traversal 2
@@ -291,9 +305,6 @@ What did I come up with...
 - If it is an Ambassador, he appends an Ambassador flag to his host quality metric
 - As an Ambassador, the node has an inbuilt behaviour to store a list of nodes that want to bridge subnetworks
 - His job is to find two nodes on separate subnetworks and introduce them
-
-Note:
-Brush over this...
 
 ---
 ##### Persistent storage 1
@@ -363,15 +374,24 @@ The hot state is usually as a result of subnetworks merging
 - This has the added benefit of increasing the performance of information retrieval (higher probability of encountering a node that contains the information you are looking for)
 
 ---
-##### Information retrieval 1
+<!-- .slide: style="text-align: left;" -->
+##### Information retrieval 1 - Chunking
 - When information is added, a hash of that information is created, and it is broken down into 4kb chunks
 - An id for information is generated via the hash and nb. of chunks
 - When you query the network you attempt to find any node that is holding the hash of the information regardless of the specific chunk
 - Once you have intercepted a first chuck you are aware of all the other chucks (as the nb of chunks is stored as metadata in the chunk)
 - So you can query for the remaining data in parallel
 
+Note:
+- Skip over this
+
 ---
 ##### Information retrieval 2
+
+<img src="differentIMechanisms.png" width="750"/>
+
+---
+##### Information retrieval 3
 
 ```pseudocode
 PROCEDURE QueryNetwork(infoId):
@@ -449,6 +469,7 @@ who's been really helpful and supportive (as well as challenging might I add)
 
 Note:
 - There were 2 key project management decisions that I struggled with
+- The two major turning points in the project
 
 ---
 #### Problem 1
@@ -495,6 +516,16 @@ Note:
 Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
 hopefully working towards a more unstructured architectural design
 Do a comparison with libp2p
+
+---
+### Butter vs. libp2p
+![](https://miro.medium.com/max/2000/1*QDUHOeqahBdSnFGh22AxzA.jpeg)
+
+Note:
+- My initial view was I wanted to stear clear from libp2p
+- But as I made progress, my framework started to feel more and more like libp2p
+- The modularity is definitly inspired but libp2p is even more modulae (at the cost of ease of use)
+- They don't simply have one approach to transport, discovery, peer routing and conten routung but several...
 
 ---
 ## Acknowledgements
