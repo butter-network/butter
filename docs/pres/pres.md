@@ -107,77 +107,14 @@ Note:
 <!-- .slide: style="text-align: left;" -->
 ### Demo
 
-- A node's journey - building a reverse echo dapp
 - Wiki dapp
 
 The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) has lots more examples
 
 Note:
-- There are two levels of demo
-  - How a developer might use the framework to build a dapp - the developer experience
-  - A dapp built using Butter - a high-level application/service experience
-
----
-<!-- .slide: style="text-align: left;" -->
-#### A node's journey 
-
-e.g. reverse echo dapp
-```go
-package main
-import (
-    "fmt"
-	"github.com/a-shine/butter"
-    "github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/utils"
-)
-
-// DummyOverlay implements Overlay
-type DummyOverlay struct {
-	node *node.Node
-	// any other fields...
-}
-
-func rEchoMsg(msg []byte) []byte {
-	return reverse(m)
-}
-
-func sendMsg(super node.Overlay) {
-	// User input message...
-	for host := range super.Node().KnownHosts() {
-		// Send message
-		response := utils.Request(host, "recho-message/", inputMsg)
-        fmt.Println(response)
-    }
-}
-
-func main() {
-	// Create a Butter node
-    butterNode, err := node.NewNode(0, 512)
-	
-    // Specifying app level behaviours
-    butterNode.RegisterServerBehaviour("recho-message/", rEchoMsg)
-    butterNode.RegisterClientBehaviour(sendMsg)
-
-    // Spawn node into the Butter network
-    butter.Spawn(&DummyOverlay{node: butterNode}, false) // Blocking
-}
-```
-
-Note:
-- Explain from the main function down
-  1. first a node is created (define a port and allocate memory the node can use)
-  2. Associate the app specific behaviours with the node e.g. if a node receives a request to recho-message, it will reverse the message and return it
-  3. Define a high level node, termed overlay node which gives the developer the ability to add extra functionality to a node such as storage for persistency (you'll see later)
-  4. Spawn the node into the butter network
-     1. Launches the startup sequence (peer discovery)
-     2. Node learns bout the network to form its partial view
-     3. Node starts listening and handling requests and interacts with the rest of the network
-
----
-#### Wiki dapp
-
-Note:
+- Here I will show you a cool decentralise wiki application built using Butter
 - Note that there is no central server here, the information isn't stored in a database but remains persistent in the network
+- Show a few edge case i.e. kill a node show data persists
 
 ---
 ## Part 2: Getting technical
@@ -300,21 +237,18 @@ Note:
 ---
 ##### NAT Traversal 1
 
-- No real decentralised solution for NAT traversal
-- Why is NAT a thing? - IPv4
-
-Note:
-- Could do hole-punching
-- Best current approach is to use a boostrap DHT node (libp2p) but that requires some form of centralisation
-- What did I come up with?
-
----
-##### NAT Traversal 2
-
 - As a user, you can specify if you want your node to be an Ambassador (on the condition it is accessible publicly)
 - If it is an Ambassador, it appends an Ambassador flag to its host quality metric
 - As an Ambassador, the node has an inbuilt behaviour to store a list of nodes that want to bridge subnetworks
 - His job is to find two nodes on separate subnetworks and introduce them
+
+Note:
+- No real decentralised solution for NAT traversal
+- Why is NAT a thing? - IPv4
+- Could do hole-punching
+- Best current approach is to use a boostrap DHT node (libp2p) but that requires some form of centralisation
+- What did I come up with?
+- So this is what Butter does...
 
 ---
 ##### Persistent storage 1
@@ -323,7 +257,7 @@ Note:
 <img src="pcgPaper.png" width="430"/>
 
 Note:
-- I started by looking at the classic approach - Chord and Kademlia DHTs - produce structured overlay networks for information persistency
+- I started by looking at the classic approach - Chord and Kademlia DHTs - produce structured overlay networks for persistent information
 - The majority of popular P2P networks include structured elements such as lookup tables, super-peers or Distributed Hash Tables. These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some primary pitfalls of the centralised client-server model e.g. DHTs a known bootstrap node, BitTorrent requires super-peers (it calls trackers) that have lockup tables - that sounds fairly centralised to me
 - Therefor I knew I wanted to implement an entirely unstructured P2P network
 - I found 2 papers that gave me an idea - I didn't necessarily implement them but rather based my implementation on them
@@ -331,7 +265,7 @@ Note:
 ---
 ##### Persistent storage 2
 
-- Information persistency is fairly trivial when there is no node/link failure - just introduce a graceful exit procedure for nodes leaving the network (offload the information to their known hosts)
+- Having persistent information is fairly trivial when there is no node/link failure - just introduce a graceful exit procedure for nodes leaving the network (offload the information to their known hosts)
 - But how do you deal with the possibility of node failure/link failure (specially relevant on high churn networks)? - redundancy
 - But if you introduce redundancy, how do you efficiently manage redundant information?
 
@@ -542,8 +476,6 @@ Note:
 
 - Adam (of course)
 - libp2p project
-- Tanenbaum's book: Distributed systems: Principles and Paradigms
-
 
 <!-- Extra-stuff for completeness -->
 
@@ -568,3 +500,59 @@ Note:
 ##### Information retrieval
 
 <img src="Screenshot from 2022-03-15 17-11-59.png" width="750"/>
+
+---
+<!-- .slide: style="text-align: left;" -->
+#### A node's journey
+
+e.g. reverse echo dapp
+```go
+package main
+import (
+    "fmt"
+	"github.com/a-shine/butter"
+    "github.com/a-shine/butter/node"
+	"github.com/a-shine/butter/utils"
+)
+
+// DummyOverlay implements Overlay
+type DummyOverlay struct {
+	node *node.Node
+	// any other fields...
+}
+
+func rEchoMsg(msg []byte) []byte {
+	return reverse(m)
+}
+
+func sendMsg(super node.Overlay) {
+	// User input message...
+	for host := range super.Node().KnownHosts() {
+		// Send message
+		response := utils.Request(host, "recho-message/", inputMsg)
+        fmt.Println(response)
+    }
+}
+
+func main() {
+	// Create a Butter node
+    butterNode, err := node.NewNode(0, 512)
+	
+    // Specifying app level behaviours
+    butterNode.RegisterServerBehaviour("recho-message/", rEchoMsg)
+    butterNode.RegisterClientBehaviour(sendMsg)
+
+    // Spawn node into the Butter network
+    butter.Spawn(&DummyOverlay{node: butterNode}, false) // Blocking
+}
+```
+
+Note:
+- Explain from the main function down
+  1. first a node is created (define a port and allocate memory the node can use)
+  2. Associate the app specific behaviours with the node e.g. if a node receives a request to recho-message, it will reverse the message and return it
+  3. Define a high level node, termed overlay node which gives the developer the ability to add extra functionality to a node such as storage for persistency (you'll see later)
+  4. Spawn the node into the butter network
+    1. Launches the startup sequence (peer discovery)
+    2. Node learns bout the network to form its partial view
+    3. Node starts listening and handling requests and interacts with the rest of the network
