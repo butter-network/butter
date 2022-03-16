@@ -8,8 +8,8 @@
 A decentralised application (dapp) framework
 
 Note:
-- Have the same feeling I had when I first met my gf parents :)
 - Project title was 'efficient decentralised network with case studies' - resulted in the creation of Butter
+- This is it, culmination of a years work - I'm quite proud of it, and I love it :) - I'm excited to show you guys
 
 ---
 
@@ -293,6 +293,9 @@ SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse
 - If you are at capacity, you can see whether the new node would make the list of known hosts more diverse
   - If it does, remove a host from the most popular class and store the new one 
   - Else, do nothing
+
+Note:
+- Reminiscent of the AI optimisation stuff we learnt last year - known host list state, permutations either improves the state or not...
 
 ---
 ##### NAT Traversal 1
