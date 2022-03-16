@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"sync"
 	"time"
 
 	"github.com/a-shine/butter/utils"
@@ -14,6 +15,7 @@ type HostQuality struct {
 }
 
 type KnownHosts struct {
+	mu  sync.Mutex
 	cap uint
 
 	uptimeTally     uint64
@@ -62,6 +64,9 @@ func AppendHostQualityServerBehaviour(node *Node) {
 }
 
 func (knownHosts *KnownHosts) update() {
+	knownHosts.mu.Lock()
+	defer knownHosts.mu.Unlock()
+
 	knownHosts.uptimeTally = 0
 	knownHosts.storageTally = 0
 	knownHosts.knownHostsTally = 0
@@ -88,6 +93,9 @@ func (knownHosts *KnownHosts) update() {
 }
 
 func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
+	knownHosts.mu.Lock()
+	defer knownHosts.mu.Unlock()
+
 	hostQuality := knownHosts.Hosts[host]
 
 	avgUptime := knownHosts.avgUptime()
@@ -101,6 +109,9 @@ func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
 
 // Also prioritise adding a host that is not known by anyone else - don't want the scenario where 3 nodes are at capacity and a new node hosts and can be added to the network
 func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
+	knownHosts.mu.Lock()
+	defer knownHosts.mu.Unlock()
+
 	if _, ok := knownHosts.Hosts[host]; ok {
 		return // already in the list
 	}

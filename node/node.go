@@ -107,7 +107,7 @@ func (node *Node) RemoveKnownHost(remoteHost utils.SocketAddr) {
 func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	var node Node
 
-	// Sets the default memory to 2048 MB if not specified
+	// Sets the default memory to 512 MB if not specified
 	if maxMemoryMb == 0 {
 		maxMemoryMb = 512
 	}
