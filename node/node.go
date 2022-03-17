@@ -123,7 +123,7 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	}
 
 	// Determine the capacity of the KnownHosts list size based on user specified max memory
-	knownHostsMemory := uint64(0.02 * float64(maxMemory)) // 2% of allocated memory is used for the known host list
+	knownHostsMemory := uint64(0.0001 * float64(maxMemory)) // 0.001% of allocated memory is used for the known host list ~10,000 known hosts for 512MB
 	knownHostsCap := int(knownHostsMemory) / utils.SocketAddressSize
 
 	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)

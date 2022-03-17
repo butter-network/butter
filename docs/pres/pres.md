@@ -2,14 +2,16 @@
 <!-- Use speaker view (`s`) to keep track of things -->
 <!-- Aim to do part 1 in 5min, part 2 in 10min and part 3 in 3min-->
 <!-- Don't waffle be quick on each slide -->
+<!-- Use chrome for presentation -->
 
 # Butter
 
 A decentralised application (dapp) framework
 
 Note:
+- This is it! Culmination of a year work - I'm quite proud of it, and I have fallen in love with distributed and decentralised systems
+- I'm excited to show you guys
 - Project title was 'efficient decentralised network with case studies' - resulted in the creation of Butter
-- This is it, culmination of a years work - I'm quite proud of it, and I love it :) - I'm excited to show you guys
 
 ---
 
@@ -105,16 +107,15 @@ Note:
 
 ---
 <!-- .slide: style="text-align: left;" -->
-### Demo
+### Demo - Wiki dapp
 
-- Wiki dapp
-
-The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) has lots more examples
+(The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) has lots more examples)
 
 Note:
-- Here I will show you a cool decentralise wiki application built using Butter
+- So the title of the project was efficient decentralised network with case studies - I chose to show you the wiki as I think it is one of the nest use cases for Butter and decentralised architecture more generally
 - Note that there is no central server here, the information isn't stored in a database but remains persistent in the network
 - Show a few edge case i.e. kill a node show data persists
+- I really like this demo because I think a community driven wiki is a perfect use case for a decentralised application - the information is community driven, so it would be particularly cool to have the infrastructure community hosted as well
 
 ---
 ## Part 2: Getting technical
@@ -232,7 +233,7 @@ SOLUTION: Optimise known hosts not for a specific kind of host but for a diverse
   - Else, do nothing
 
 Note:
-- Reminiscent of the AI optimisation stuff we learnt last year - known host list state, permutations either improves the state or not...
+- Reminiscent of the AI optimisation algorithms we learnt last year - known host list state, permutations either improves the state or not...
 
 ---
 ##### NAT Traversal 1
@@ -244,9 +245,7 @@ Note:
 
 Note:
 - No real decentralised solution for NAT traversal
-- Why is NAT a thing? - IPv4
-- Could do hole-punching
-- Best current approach is to use a boostrap DHT node (libp2p) but that requires some form of centralisation
+- Best current approachs still require some form of centralised index
 - What did I come up with?
 - So this is what Butter does...
 
@@ -328,38 +327,16 @@ Improving on the BFS approach
 Note:
 - The advantage of RBFS is that it does not require global knowledge; a node is able to make local decisions in a fast manner since it only needs to select a portion of its peers.
 - On the other hand, this algorithm is probabilistic - some large segments of the network may become unreachable because a node was not able to understand that a particular link would lead the query to a large segment of the network
-- Decrease the avg nb of generated message per query by a factor of 5 - however you may not find the information you are looking for
 
 ---
 ##### Information retrieval 3
 
-```pseudocode
-PROCEDURE QueryNetwork(infoId):
-  IF infoId is stored locally:
-    RETURN localStorage[infoId]
-  ELSE:
-    TRY:
-      RBFS(infoId, TTL)
-    ELSE:
-      BFS(infoId, TTL)
-  END
-```
+<img src="Screenshot from 2022-03-15 17-11-59.png" width="750"/>
 
-<!-- ```pseudocode
-PROCEDURE BFS(infoId):
-  QUEUE = [Self]
-  VISITED = []
-  WHILE QUEUE != []:
-    NODE = QUEUE.pop()
-    IF NODE[infoId] != None:
-      RETURN NODE[infoId]
-    ELSE:
-      FOR NODE in NODE.neighbors:
-        IF NODE not in VISITED:
-          QUEUE.append(NODE)
-          VISITED.append(NODE)
-  RETURN None
-``` -->
+*Credit: Demetrios Zeinalipour-Yazti, Dimitrios Gunopulos*
+
+Note:
+- Decrease the avg nb of generated message per query by a factor of 5
 
 ---
 ## Part 3: How we got here
@@ -427,7 +404,7 @@ Note:
 Note:
 - By the nature of the project, I had to implement everything at least trivially to start testing and debugging system...
 - While Rust is a great language, it is still a little immature - the tooling is not great yet (just makes debugging a 
-bit harder), the Ownership semantics are quite unique and difficult to get to grips with
+bit harder), the Ownership semantics are quite unique and difficult to get to grip with
 - So will Rust is very performant and lightweight, it was not the right language for this project at least in the 
 context of the limited timeframe and also my limitations (I couldn't learn about systems, network, distributed 
 programming as well as a very different language)
@@ -466,10 +443,10 @@ Do a comparison with libp2p
 ![](https://miro.medium.com/max/2000/1*QDUHOeqahBdSnFGh22AxzA.jpeg)
 
 Note:
-- My initial view was I wanted to stear clear from libp2p
-- But as I made progress, my framework started to feel more and more like libp2p
-- The modularity is definitly inspired but libp2p is even more modulae (at the cost of ease of use)
-- They don't simply have one approach to transport, discovery, peer routing and conten routung but several...
+- My initial view was I wanted to steer clear from libp2p
+- As I made progress, my framework started to feel more and more like libp2p
+- Modularity is definitely inspired by libp2p
+- Several implementations of transport, discovery, peer routing and content routing to chose from
 
 ---
 ## Acknowledgements
@@ -477,29 +454,13 @@ Note:
 - Adam (of course)
 - libp2p project
 
+Note:
+- Adam - helpful and support + I've really liked the fact that we've had lots of interaction
+- libp2p
+  - providing high quality resources
+  - effort to improve the overall field of peer-to-peer systems
+
 <!-- Extra-stuff for completeness -->
-
----
-##### Persistent storage 6
-
-- By default, groups try and maintain information across 3 participants
-- If the information is deemed important by the network i.e. frequently queried (as determined by the group)
-- Then the group seeks to maintain the information across more participants
-- This has the added benefit of increasing the performance of information retrieval (higher probability of encountering a node that contains the information you are looking for)
-
----
-<!-- .slide: style="text-align: left;" -->
-##### Information retrieval 1 - Chunking
-- When information is added, a hash of that information is created, and it is broken down into 4kb chunks
-- An id for information is generated via the hash and nb. of chunks
-- When you query the network you attempt to find any node that is holding the hash of the information regardless of the specific chunk
-- Once you have intercepted a first chuck you are aware of all the other chucks (as the nb of chunks is stored as metadata in the chunk)
-- So you can query for the remaining data in parallel
-
----
-##### Information retrieval
-
-<img src="Screenshot from 2022-03-15 17-11-59.png" width="750"/>
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -551,8 +512,56 @@ Note:
 - Explain from the main function down
   1. first a node is created (define a port and allocate memory the node can use)
   2. Associate the app specific behaviours with the node e.g. if a node receives a request to recho-message, it will reverse the message and return it
-  3. Define a high level node, termed overlay node which gives the developer the ability to add extra functionality to a node such as storage for persistency (you'll see later)
+  3. Define a high level node, termed overlay node which gives the developer the ability to add extra functionality to a node
   4. Spawn the node into the butter network
-    1. Launches the startup sequence (peer discovery)
-    2. Node learns bout the network to form its partial view
-    3. Node starts listening and handling requests and interacts with the rest of the network
+  5. Launches the startup sequence (peer discovery)
+  6. Node learns bout the network to form its partial view
+  7. Node starts listening and handling requests and interacts with the rest of the network
+
+---
+##### Persistent storage extra
+
+- By default, groups try and maintain information across 3 participants
+- If the information is deemed important by the network i.e. frequently queried (as determined by the group)
+- Then the group seeks to maintain the information across more participants
+- This has the added benefit of increasing the performance of information retrieval (higher probability of encountering a node that contains the information you are looking for)
+
+---
+<!-- .slide: style="text-align: left;" -->
+##### Information retrieval extra 2 - Chunking
+- When information is added, a hash of that information is created, and it is broken down into 4kb chunks
+- An id for information is generated via the hash and nb. of chunks
+- When you query the network you attempt to find any node that is holding the hash of the information regardless of the specific chunk
+- Once you have intercepted a first chuck you are aware of all the other chucks (as the nb of chunks is stored as metadata in the chunk)
+- So you can query for the remaining data in parallel
+
+---
+##### Information retrieval extra 3
+
+```pseudocode
+PROCEDURE QueryNetwork(infoId):
+  IF infoId is stored locally:
+    RETURN localStorage[infoId]
+  ELSE:
+    TRY:
+      RBFS(infoId, TTL)
+    ELSE:
+      BFS(infoId, TTL)
+  END
+```
+
+<!-- ```pseudocode
+PROCEDURE BFS(infoId):
+  QUEUE = [Self]
+  VISITED = []
+  WHILE QUEUE != []:
+    NODE = QUEUE.pop()
+    IF NODE[infoId] != None:
+      RETURN NODE[infoId]
+    ELSE:
+      FOR NODE in NODE.neighbors:
+        IF NODE not in VISITED:
+          QUEUE.append(NODE)
+          VISITED.append(NODE)
+  RETURN None
+``` -->
