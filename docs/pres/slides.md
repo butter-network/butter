@@ -38,9 +38,9 @@ Note:
 
 - Introducing the problems
 - Butter's approach
-  - The goal
+  <!-- - The goal -->
   <!-- - Core design philosophies -->
-  - Solutions
+  <!-- - Solutions -->
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -68,17 +68,6 @@ Note:
 - At the end of the day, it allows the application service to be delivered, in a decentralised fashion, with minimum friction
 
 ---
-<!-- .slide: style="text-align: left;" -->
-### Related works
-
-- [libp2p.io](https://libp2p.io/)
-- [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
-- [BitTorrent](https://www.bittorrent.com/)
-
-Note:
-- (really only `libp2p` applies directly - because its is a framework)
-
----
 ![](distributedSystemsTaxonomy.png)
 
 Note:
@@ -89,6 +78,17 @@ Note:
   - Less well adapted for a high churn rate (that is nodes frequently joining and leaving the network)
   <!-- - In addition, bootstrapping feels somewhat centralised, you need to know of another node before being able to join the network (libp2p) -->
 - We'll see more of this in the persistent storage and information retrieval section of the presentation
+
+---
+<!-- .slide: style="text-align: left;" -->
+### Related works
+
+- [libp2p.io](https://libp2p.io/)
+- [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
+- [BitTorrent](https://www.bittorrent.com/)
+
+Note:
+- (really only `libp2p` applies directly - because its is a framework)
 
 ---
 ### Motivations
@@ -158,15 +158,6 @@ Note:
 
 ---
 ### Butter's approach
-
----
-#### Goal
-
-Efficient and decentralised while not compromising information availability
-
-Note:
-- Reminiscent of the project's title 'efficient decentralised' as well as the motivations
-- As I improved my knowledge of distributed systems I started to think of Butter through the lens of dependability and fault-tolerance
 
 ---
 #### Solutions
@@ -330,7 +321,7 @@ Note:
 Note:
 - Here we are looking at only half of peers at random 
 - Decreases the avg nb of generated message per query by a factor of 5
-- Yet we can still retrieve the document about 60% of the time
+- Yet we can still retrieve the document just under 60% of the time
 
 ---
 ## Part 3: How we got here
@@ -350,31 +341,28 @@ Started learning about blockchains, IPFS, libp2p, Chord and Kademlia DHTs
 
 ---
 #### Term 1
-- Getting to grip with distributed systems, specifically decentralised (peer-to-peer architecture) systems
+- Getting to grip with distributed (decentralised) systems
 - Learning about Rust and systems/network programming
-- Reading academic literature on Information Retrieval in unstructured distributed architectures
+- Reading academic literature on Information Retrieval in unstructured architectures
 - Completion of the Discovery and Wider discovery packages
 - Implementation of trivial Known host management, and Persistent storage packages
 
 Note:
 - The obvious challenge with this project is it is impossible to do anything until you have at least a trivial 
 implementation of all the necessary components
+- Challenge of a distributed system's project is that the system only really works when you have all the components
 
 ---
 #### Christmas break
-- Lots more academic literature on IR in distributed systems
 - Implementation of IR using BFS
 - Switch from Rust to Go
 - Starting to write up project documentation
 
 ---
 #### Term 2
-- Reading literature on fault-tolerance
-- Shift in focus as we start to look at project from a fault-tolerance perspective
 - Reading literature on persistence storage on high churn unstructured p2p systems
 - Implementation of intelligent known host management optimising for diversity
 - Implementation of persistent storage based on PCG overlay
-- Preparing presentation
 
 ---
 Throughout weekly meetings with Adam
@@ -453,6 +441,15 @@ Note:
   - effort to improve the overall field of peer-to-peer systems
 
 <!-- Extra-stuff for completeness -->
+
+---
+#### Goal
+
+Efficient and decentralised while not compromising information availability
+
+Note:
+- Reminiscent of the project's title 'efficient decentralised' as well as the motivations
+- As I improved my knowledge of distributed systems I started to think of Butter through the lens of dependability and fault-tolerance
 
 ---
 <!-- .slide: style="text-align: left;" -->
