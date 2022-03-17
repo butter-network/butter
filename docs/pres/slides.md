@@ -73,9 +73,11 @@ Note:
 Note:
 - In the taxonomy of distributed systems, it lies here...
 - Unstructured - each node is atomic and is indistinguishable from any other node
-- Why unstructured p2p?
-  - Structured p2p more of an overhead when a node is joining and leaving the network - less well adapted for a high churn rate (that is nodes frequently joining and leaving the network)
-  - Bootstrapping feels somewhat centralised, you need to know of another node before being able to join the network - so that they can maintain the structure - this is one of my issues with lip2p originally (see later)
+- Why unstructured vs structured?
+  - Structured p2p more of an overhead when a node is joining and leaving the network, this is called bootstrapping (network figures out how to maintain its structure with the new node)
+  - Less well adapted for a high churn rate (that is nodes frequently joining and leaving the network)
+  - In addition, bootstrapping feels somewhat centralised, you need to know of another node before being able to join the network (libp2p)
+  - Some SuperPeers are responsible for maintaining the structure in the network
 - We'll see more of this in the persistent storage and information retrieval section of the presentation
 
 ---
@@ -102,15 +104,34 @@ Note:
 
 ---
 <!-- .slide: style="text-align: left;" -->
-### Demo - Wiki dapp
+### Demo 1
 
-(The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) has lots more examples)
+The project GitHub page [github.com/a-shine/butter](https://github.com/a-shine/butter) has lots of examples
 
 Note:
-- So the title of the project was efficient decentralised network with case studies - I chose to show you the wiki as I think it is one of the nest use cases for Butter and decentralised architecture more generally
-- Note that there is no central server here, the information isn't stored in a database but remains persistent in the network
-- Show a few edge case i.e. kill a node show data persists
-- I really like this demo because I think a community driven wiki is a perfect use case for a decentralised application - the information is community driven, so it would be particularly cool to have the infrastructure community hosted as well
+- Title was efficient decentralised network with case studies
+- I chose to show you the wiki as I think it is a very pertinent example for a dapp
+- In a wiki in which the information is community driven, it would make sense to have community hosted infrastructure 
+
+---
+### Demo 2 - Wiki dapp
+
+Note:
+1. Start node with browser interface
+2. Start node with CLI interface
+3. Have them side by side
+4. Add information `<h1>Strawberries 🍓</h1>` to CLI
+5. Retrieve on browser
+   - Note that there is no central server here, the information isn't stored in a database
+   - The 2 nodes have never been *explicitly* made aware of each other
+   - Yet one node has been able to find information that was added by another node
+   - This is all well and good, but it would be terrible if the information was intrinsically tied to the CLI node
+6. Kill CLI node
+7. Retrieve on browser once more - data has persisted beyond the existence of the CLI node
+8. Create a new CLI node
+9. Kill browser node
+10. Retrieve data once more
+    - The two original nodes have died, yet the data persists - this is really cool!
 
 ---
 ## Part 2: Getting technical
