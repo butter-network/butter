@@ -1,6 +1,7 @@
 package retrieve
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 
@@ -16,9 +17,13 @@ func retrieve(overlay node.Overlay, query []byte) []byte {
 		return append([]byte("found/"), block.Data()...)
 	}
 
-	hostsStruct := persistOverlay.Node().KnownHostsStruct()
-	knownHostsJson := hostsStruct.JsonDigest()
-	return append([]byte("try/"), knownHostsJson...)
+	addrs := make([]utils.SocketAddr, 0)
+	// Add all my known hosts to the queue
+	for host := range overlay.Node().KnownHosts() {
+		addrs = append(addrs, host)
+	}
+	addrsJson, _ := json.Marshal(addrs)
+	return append([]byte("try/"), addrsJson...)
 }
 
 //func rbfsretrieve(overlay node.Overlay, payload []byte) []byte {

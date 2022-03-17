@@ -51,10 +51,6 @@ func (node *Node) KnownHosts() map[utils.SocketAddr]HostQuality {
 	return node.knownHosts.Addrs()
 }
 
-func (node *Node) KnownHostsStruct() KnownHosts {
-	return node.knownHosts
-}
-
 func (node *Node) StorageMemoryCap() uint64 {
 	return node.storageMemoryCap
 }

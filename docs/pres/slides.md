@@ -4,22 +4,17 @@
 <!-- Don't waffle be quick on each slide -->
 <!-- Use chrome for presentation -->
 
-# Butter
+<!-- .slide: data-background="white" -->
+![](https://github.com/a-shine/butter/blob/main/butterLogo.png?raw=true)
 
 A decentralised application (dapp) framework
 
 Note:
-- This is it! Culmination of a year work - I'm quite proud of it, and I have fallen in love with distributed and decentralised systems
-- I'm excited to show you guys
-- Project title was 'efficient decentralised network with case studies' - resulted in the creation of Butter
-
----
-
-<!-- .slide: data-background="white" -->
-![](https://github.com/a-shine/butter/blob/main/butterLogo.png?raw=true)
-
-Note:
-- First and foremost, we have a nice logo - most important factor for any good framework :)
+- I present to you...
+- Culmination of a year work - I'm quite proud of it, and I have fallen in love with distributed and decentralised systems
+- So, I'm excited to share that with you
+- Project title was 'efficient decentralised network with case studies' - resulted in the creation of the framework
+- Note, we have a nice logo - important for any good framework
 
 ---
 ## Outline
@@ -245,9 +240,9 @@ Note:
 
 Note:
 - No real decentralised solution for NAT traversal
-- Best current approachs still require some form of centralised index
+- Current approach's still require some form of centralised index
 - What did I come up with?
-- So this is what Butter does...
+- Caveat: ambassadors do have to know other ambassadors from different subnetworks - going to need to centralised index of ambassadors
 
 ---
 ##### Persistent storage 1
@@ -519,12 +514,36 @@ Note:
   7. Node starts listening and handling requests and interacts with the rest of the network
 
 ---
-##### Persistent storage extra
+##### Persistent storage extra 1
 
 - By default, groups try and maintain information across 3 participants
 - If the information is deemed important by the network i.e. frequently queried (as determined by the group)
 - Then the group seeks to maintain the information across more participants
 - This has the added benefit of increasing the performance of information retrieval (higher probability of encountering a node that contains the information you are looking for)
+
+---
+##### Persistent storage extra 2 - tests
+
+| Chance to fail | % Groups maintained |
+|----------------|---------------------|
+| 1 in 20        | 30                  |
+| 1 in 200       | 70                  |
+| 1 in 500       | 100                 |
+
+Carried out on 1000 nodes in a high churn simulated environment
+
+---
+##### Information retrieval extra 1 - explaining BFS
+
+- A node $i$ generates a $query$ message which is propagated to all of its neighbors (known hosts)
+- When a node $j$ receives a $query$ request, it first checks in its local repository if it has the information being queried
+  - If it does, it returns the information with a $queryHit$ message
+  - Else, it returns a list of its own known hosts to node $i$
+- Node $i$ stops querying the network if it received the returned information from node $j$ and a $queryHit$, or it adds the known hosts of node $j$ to his queue
+
+Note:
+- Keep a cash of the nodes you've visited (so don't create cycles in the graph search)
+
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -549,19 +568,3 @@ PROCEDURE QueryNetwork(infoId):
       BFS(infoId, TTL)
   END
 ```
-
-<!-- ```pseudocode
-PROCEDURE BFS(infoId):
-  QUEUE = [Self]
-  VISITED = []
-  WHILE QUEUE != []:
-    NODE = QUEUE.pop()
-    IF NODE[infoId] != None:
-      RETURN NODE[infoId]
-    ELSE:
-      FOR NODE in NODE.neighbors:
-        IF NODE not in VISITED:
-          QUEUE.append(NODE)
-          VISITED.append(NODE)
-  RETURN None
-``` -->
