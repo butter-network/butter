@@ -27,8 +27,8 @@ Note:
 ### Part 1: An overview of the project 
 
 - What is Butter?
-- Motivations
 - Related works
+- Motivations
 <!-- Review of the research & literature? -->
 - Demo
 
@@ -39,7 +39,7 @@ Note:
 - Introducing the problems
 - Butter's approach
   - The goal
-  - Core design philosophies
+  <!-- - Core design philosophies -->
   - Solutions
 
 ---
@@ -68,6 +68,17 @@ Note:
 - At the end of the day, it allows the application service to be delivered, in a decentralised fashion, with minimum friction
 
 ---
+<!-- .slide: style="text-align: left;" -->
+### Related works
+
+- [libp2p.io](https://libp2p.io/)
+- [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
+- [BitTorrent](https://www.bittorrent.com/)
+
+Note:
+- (really only `libp2p` applies directly - because its is a framework)
+
+---
 ![](distributedSystemsTaxonomy.png)
 
 Note:
@@ -76,8 +87,7 @@ Note:
 - Why unstructured vs structured?
   - Structured p2p more of an overhead when a node is joining and leaving the network, this is called bootstrapping (network figures out how to maintain its structure with the new node)
   - Less well adapted for a high churn rate (that is nodes frequently joining and leaving the network)
-  - In addition, bootstrapping feels somewhat centralised, you need to know of another node before being able to join the network (libp2p)
-  - Some SuperPeers are responsible for maintaining the structure in the network
+  <!-- - In addition, bootstrapping feels somewhat centralised, you need to know of another node before being able to join the network (libp2p) -->
 - We'll see more of this in the persistent storage and information retrieval section of the presentation
 
 ---
@@ -90,17 +100,6 @@ Note:
 
 Note:
 - We navigate information as human probabilistically, I think there are some interesting lessons to be learnt from this
-
----
-<!-- .slide: style="text-align: left;" -->
-### Related works
-
-- [libp2p.io](https://libp2p.io/)
-- [Gnutella](https://www.gnu.org/philosophy/gnutella.en.html)
-- [BitTorrent](https://www.bittorrent.com/)
-
-Note:
-- (really only `libp2p` applies directly - because its is a framework)
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -141,7 +140,7 @@ Note:
 
 - **Peer discovery** (cold start problem)
 - **Known host management**
-- **NAT traversal**
+- **Wider discovery (bridging subnetworks)**
 - Persistent information
     - **Storage**
     - **Retrieval** (IR)
@@ -151,7 +150,9 @@ Note:
 - How familiar are you with these problems? I am happy to explain them further if unfamiliar...
 - Cold start - a cold start is when a node is first spawned, it is not aware of any other nodes and hence can't participate in the network
 - Known host management - maintain a balance between known hosts so that the network is sufficiently connected to function, but nodes are not using too many resources maintaining their connections
-- NAT traversal - NAT traversal is a problem that occurs due to the limitations of IPv4 (not enough unique addresses), so we have subnetworks. We have to translate the addresses so that it is meaningful from one subnetwork to another
+- Wider discovery 
+  - NAT traversal (i.e. how to be accessible publicly) - (Network Address Translation) traversal is a problem that occurs due to the limitations of IPv4 (not enough unique addresses), so we have subnetworks behind routers. We have to translate the addresses so that it is meaningful from one subnetwork to another
+  - Finding public nodes to bridge subnetworks
 - Persistent storage - how can we make information persist beyond a specific instance of a node?
 - Information retrieval - how can we find information quickly and efficiently?
 
@@ -168,33 +169,15 @@ Note:
 - As I improved my knowledge of distributed systems I started to think of Butter through the lens of dependability and fault-tolerance
 
 ---
-<!-- .slide: style="text-align: left;" -->
-#### Core design philosophies
-
-- Simplicity
-- Modularity
-- Memory greedy
-- Avoid panicking (fault-tolerant approach - manage faulty states)
-- Diversity
-
-Note:
-- First lets consider the way Butter was designed (determine how we solve the problems) and how the philosophies align with the goal
-- Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
-- Modularity - you can pick and choose which aspects of the framework you want and re-implement others
-- Memory greedy - use as much memory as you have been allowed to use
-- Avoid panicking - avoid nodes failing and shutting down - a node in a faulty state is still more valuable to the network than no node at all (fault-tolerant as apposed to fail-safe approach)
-- Diversity - accommodate all types of nodes (flexible to different resources)
-
----
 #### Solutions
 
-| Problem               | Solution                     |
-|-----------------------|------------------------------|
-| Discovery             | Multicast                    |
-| Known host management | Known host quality cache     |
-| NAT Traversal         | (Imperfect) Ambassador nodes |
-| Persistent storage    | PCG overlay                  |
-| IR                    | Random TTL BFS               |
+| Problem               | Solution                      |
+|-----------------------|-------------------------------|
+| Discovery             | Multicast                     |
+| Known host management | Known host quality cache      |
+| Wider discovery       | Port forwarding & Ambassadors |
+| Persistent storage    | PCG overlay                   |
+| IR                    | Random TTL BFS                |
 
 Note:
 - Bearing these problems in mind (and the design philosophies) we can go about designing a framework to solve them
@@ -206,7 +189,7 @@ Note:
 PROCEDURE Ping:
   WHILE no known hosts:
     Send a ping message along a UDP multicast channel
-    Wait for a response
+    Pause for a response
     IF response THEN:
       Add remote node to list of known hosts
       BREAK
@@ -226,6 +209,10 @@ PROCEDURE Listen:
   END
 ```
 
+Note:
+- Multicast is group communication where data transmission is addressed to a group of destination computers simultaneously
+- Now tends to be used over broadcasting as it floods the network less
+
 ---
 ##### Known host management 1
 
@@ -233,7 +220,7 @@ PROCEDURE Listen:
 - Intuitively, we want to optimise for nodes with high uptime, lots of available storage that know lots of other nodes
 - Edge cases
     - New node joining the network - how would they get themselves known?
-    - e.g. If 3 nodes and all have max node capacity 1
+    <!-- - e.g. If 3 nodes and all have max node capacity 1 -->
 
 ---
 ##### Known host management 2
@@ -252,18 +239,18 @@ Note:
 - Reminiscent of the AI optimisation algorithms we learnt last year - known host list state, permutations either improves the state or not...
 
 ---
-##### NAT Traversal 1
+##### Wider discovery 1
 
 - As a user, you can specify if you want your node to be an Ambassador (on the condition it is accessible publicly)
-- If it is an Ambassador, it appends an Ambassador flag to its host quality metric
-- As an Ambassador, the node has an inbuilt behaviour to store a list of nodes that want to bridge subnetworks
-- His job is to find two nodes on separate subnetworks and introduce them
+  - Appends an Ambassador flag to its host quality metric
+  - Inbuilt behaviour to maintain a public index table of publicly available nodes that could bridge subnetworks 
+  <!-- - find nodes on separate subnetworks and introduce them -->
 
 Note:
-- No real decentralised solution for NAT traversal
-- Current approach's still require some form of centralised index
-- What did I come up with?
-- Caveat: ambassadors do have to know other ambassadors from different subnetworks - going to need to centralised index of ambassadors
+- For NAT traversal i.e. how to become publicly accessible behind a router
+- Solution: I am operating on the assumption that users will have to port forward to be publicly available (not be hidden behind NAT)
+- Still have problem of finding other peers on the wider internet - can't just multicast!
+- Current approach's still require some form of centralised index - ambassadors
 
 ---
 ##### Persistent storage 1
@@ -272,17 +259,17 @@ Note:
 <img src="pcgPaper.png" width="430"/>
 
 Note:
-- I started by looking at the classic approach - Chord and Kademlia DHTs - produce structured overlay networks for persistent information
-- The majority of popular P2P networks include structured elements such as lookup tables, super-peers or Distributed Hash Tables. These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some primary pitfalls of the centralised client-server model e.g. DHTs a known bootstrap node, BitTorrent requires super-peers (it calls trackers) that have lockup tables - that sounds fairly centralised to me
+- I started by looking at the classic approach used in most p2p projects - Chord and Kademlia DHTs - structured networks for persistent information
+- But these have lookup tables, super-peers or Distributed Hash Tables. These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some primary pitfalls of the centralised client-server model e.g. DHTs a known bootstrap node, BitTorrent requires super-peers (it calls trackers) that have lockup tables - that sounds fairly centralised to me
 - Therefor I knew I wanted to implement an entirely unstructured P2P network
 - I found 2 papers that gave me an idea - I didn't necessarily implement them but rather based my implementation on them
 
 ---
 ##### Persistent storage 2
 
-- Having persistent information is fairly trivial when there is no node/link failure - just introduce a graceful exit procedure for nodes leaving the network (offload the information to their known hosts)
+- Fairly trivial when there is no node/link failure - just introduce a graceful exit procedure for nodes leaving the network (offload the information to their known hosts)
 - But how do you deal with the possibility of node failure/link failure (specially relevant on high churn networks)? - redundancy
-- But if you introduce redundancy, how do you efficiently manage redundant information?
+- If you introduce redundancy, how do you efficiently manage redundant information?
 
 Note:
 - This is where the "Reliable content distribution based on peer groups" paper was really helpful
@@ -341,7 +328,9 @@ Note:
 *Credit: Demetrios Zeinalipour-Yazti, Dimitrios Gunopulos*
 
 Note:
-- Decrease the avg nb of generated message per query by a factor of 5
+- Here we are looking at only half of peers at random 
+- Decreases the avg nb of generated message per query by a factor of 5
+- Yet we can still retrieve the document about 60% of the time
 
 ---
 ## Part 3: How we got here
@@ -364,7 +353,7 @@ Started learning about blockchains, IPFS, libp2p, Chord and Kademlia DHTs
 - Getting to grip with distributed systems, specifically decentralised (peer-to-peer architecture) systems
 - Learning about Rust and systems/network programming
 - Reading academic literature on Information Retrieval in unstructured distributed architectures
-- Completion of the Discovery and NAT Traversal packages
+- Completion of the Discovery and Wider discovery packages
 - Implementation of trivial Known host management, and Persistent storage packages
 
 Note:
@@ -464,6 +453,24 @@ Note:
   - effort to improve the overall field of peer-to-peer systems
 
 <!-- Extra-stuff for completeness -->
+
+---
+<!-- .slide: style="text-align: left;" -->
+#### Core design philosophies
+
+- Simplicity
+- Modularity
+- Memory greedy
+- Avoid panicking (fault-tolerant approach - manage faulty states)
+- Diversity
+
+Note:
+- First lets consider the way Butter was designed (determine how we solve the problems) and how the philosophies align with the goal
+- Simplicity - needs to make building dapps easy and feel similar to existing backend web frameworks
+- Modularity - you can pick and choose which aspects of the framework you want and re-implement others
+- Memory greedy - use as much memory as you have been allowed to use
+- Avoid panicking - avoid nodes failing and shutting down - a node in a faulty state is still more valuable to the network than no node at all (fault-tolerant as apposed to fail-safe approach)
+- Diversity - accommodate all types of nodes (flexible to different resources)
 
 ---
 <!-- .slide: style="text-align: left;" -->
