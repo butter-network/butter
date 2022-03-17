@@ -125,7 +125,7 @@ Note:
    - Note that there is no central server here, the information isn't stored in a database
    - The 2 nodes have never been *explicitly* made aware of each other
    - Yet one node has been able to find information that was added by another node
-   - This is all well and good, but it would be terrible if the information was intrinsically tied to the CLI node
+   - This is all well and good, but it would be terrible if the information for strawberries was intrinsically tied to the CLI node
 6. Kill CLI node
 7. Retrieve on browser once more - data has persisted beyond the existence of the CLI node
 8. Create a new CLI node
@@ -151,7 +151,7 @@ Note:
 - How familiar are you with these problems? I am happy to explain them further if unfamiliar...
 - Cold start - a cold start is when a node is first spawned, it is not aware of any other nodes and hence can't participate in the network
 - Known host management - maintain a balance between known hosts so that the network is sufficiently connected to function, but nodes are not using too many resources maintaining their connections
-- NAT traversal - NAT traversal is a problem that occurs due to the limitations of IPv4 (not enough unique addresses), so w have subnetworks. We have to translate the addresses so that it is meaningful from one subnetwork to another
+- NAT traversal - NAT traversal is a problem that occurs due to the limitations of IPv4 (not enough unique addresses), so we have subnetworks. We have to translate the addresses so that it is meaningful from one subnetwork to another
 - Persistent storage - how can we make information persist beyond a specific instance of a node?
 - Information retrieval - how can we find information quickly and efficiently?
 
@@ -309,17 +309,6 @@ Note:
 - Heartbeat message complexity could be improved by using gossiping - will be implemented as a future development of the framework
 
 ---
-<!-- .slide: style="text-align: left;" -->
-##### Persistent storage 5
-A group can be in one of three states
-  - **Cold** - not enough members to ensure that the information is available (high probability of information loss)
-  - **Goldilocks** - enough members to ensure that the information is available (low probability of information loss)
-  - **Hot** - too many members (no effect on availability but rather to efficiently managing the group in terms of time, storage, message complexity)
-  
-Note:
-- The hot state is usually as a result of subnetworks merging
-
----
 ##### Information retrieval 1
 
 <img src="Screenshot from 2022-03-15 17-16-59.png" width="750"/>
@@ -360,8 +349,11 @@ Note:
 ---
 ### The path
 
+Incremental software development methodology
+
 Note:
-- Started with an intention of being quite Agile but actually was more of an incremental approach - as I read the literature and become more familiar with a problem, I implemented a solution
+- Started with an intention of being quite Agile but in practice was more of an incremental approach - as I read the literature and become more familiar with a problem, I implemented a solution
+- Incremental Model is a process of software development where requirements are broken down into multiple standalone modules of software development cycle. Incremental development is done in steps from analysis design, implementation, testing/verification, maintenance.
 
 ---
 #### Summer 2021
@@ -399,7 +391,7 @@ implementation of all the necessary components
 Throughout weekly meetings with Adam
 
 Note:
-who's been really helpful and supportive (as well as challenging might I add)
+who's been really helpful and supportive throughout
 
 ---
 ### Unforeseen problems
@@ -433,12 +425,9 @@ programming as well as a very different language)
     - Too many assumptions
 - Lack of papers on unstructured peer-to-peer architectures
 
-**Solution**: Added challenge to the project in formalising a lot of the terminology and coming up with new creative 
-solutions and protocols to the problems
-
 Note:
-- This is a criticism that Tanenbaum raises in his distributed systems textbook - so I use the terminology consistent 
-with his
+- This is a criticism that Tanenbaum raises in his distributed systems textbook
+- No real solution but added an extra challenge
 
 ---
 ### What's to come...
@@ -450,9 +439,7 @@ with his
 - Possibility of collaborating on a paper with Adam - summative review + formalisation of PCG and Known Host Management techniques
 
 Note:
-Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
-hopefully working towards a more unstructured architectural design
-Do a comparison with libp2p
+- Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
 
 ---
 ### Butter vs. libp2p
@@ -552,6 +539,17 @@ Note:
 | 1 in 500       | 100                 |
 
 Carried out on 1000 nodes in a high churn simulated environment
+
+---
+<!-- .slide: style="text-align: left;" -->
+##### Persistent storage extra 3
+A group can be in one of three states
+- **Cold** - not enough members to ensure that the information is available (high probability of information loss)
+- **Goldilocks** - enough members to ensure that the information is available (low probability of information loss)
+- **Hot** - too many members (no effect on availability but rather to efficiently managing the group in terms of time, storage, message complexity)
+
+Note:
+- The hot state is usually as a result of subnetworks merging
 
 ---
 ##### Information retrieval extra 1 - explaining BFS
