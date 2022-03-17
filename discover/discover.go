@@ -5,6 +5,7 @@
 package discover
 
 import (
+	"encoding/json"
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/utils"
 	"log"
@@ -15,17 +16,26 @@ import (
 const (
 	pingRoute       = "ping/"
 	pongRoute       = "pong/"
+	aliveRoute      = "alive/"
 	addrGroup       = "224.0.0.1:9999" // Multicast address for all nodes
 	maxDatagramSize = 8192
 )
 
+func alive(overlay node.Overlay, addr []byte) []byte {
+	return []byte("ok")
+}
+
 func pingReceived(overlay node.Overlay, addr []byte) []byte {
 	remoteAddr, _ := utils.AddrFromJson(addr)
 	overlay.Node().AddKnownHost(remoteAddr)
-	socketAddr := overlay.Node().SocketAddr()
-	nodeAddr, _ := socketAddr.ToJson()
+	addrs := make([]utils.SocketAddr, 0)
+	addrs = append(addrs, overlay.Node().SocketAddr())
+	for addr := range overlay.Node().KnownHosts() {
+		addrs = append(addrs, addr)
+	}
+	knownHostsJson, _ := json.Marshal(addrs)
 	uri := []byte("pong/")
-	_, err := utils.Request(remoteAddr, uri, nodeAddr)
+	_, err := utils.Request(remoteAddr, uri, knownHostsJson)
 	if err != nil {
 		return []byte("")
 	}
@@ -33,12 +43,19 @@ func pingReceived(overlay node.Overlay, addr []byte) []byte {
 }
 
 func pongReceived(overlay node.Overlay, addr []byte) []byte {
-	remoteAddr, err := utils.AddrFromJson(addr)
+	addrs := make([]utils.SocketAddr, 0)
+	err := json.Unmarshal(addr, &addrs)
+	//remoteAddr, err := utils.AddrFromJson(addr)
 	if err != nil {
 		log.Printf("pongReceived: %s", err)
 		return nil
 	}
-	overlay.Node().AddKnownHost(remoteAddr)
+	for _, addr := range addrs {
+		if addr != overlay.Node().SocketAddr() {
+			overlay.Node().AddKnownHost(addr)
+		}
+	}
+	//overlay.Node().AddKnownHost(remoteAddr)
 	return []byte("/successful-introduction/")
 }
 
@@ -46,7 +63,10 @@ func Discover(overlay node.Overlay) {
 	overlay.Node().RegisterServerBehaviour(pingRoute, pingReceived)
 	overlay.Node().RegisterServerBehaviour(pongRoute, pongReceived)
 
+	overlay.Node().RegisterServerBehaviour(aliveRoute, alive)
+
 	go ListenForMulticasts(overlay)
+	go checkImStillConnected(overlay)
 	PingLAN(overlay)
 
 }
@@ -97,6 +117,24 @@ func ListenForMulticasts(overlay node.Overlay) {
 		srcAddrString := src.String()
 		if srcAddrString != myPingAddr {
 			foundNode(src, n, b, overlay)
+		}
+	}
+}
+
+func checkImStillConnected(overlay node.Overlay) {
+	for {
+		time.Sleep(20 * time.Second)
+		for addr := range overlay.Node().KnownHosts() {
+			_, err := utils.Request(addr, []byte("alive/"), nil)
+			if err != nil {
+				overlay.Node().RemoveKnownHost(addr) // This is also being done in the known host update function - should I have it twice?
+			}
+		}
+		if len(overlay.Node().KnownHosts()) == 0 {
+			//fmt.Println("No known hosts, restarting")
+			PingLAN(overlay)
+		} else {
+			//fmt.Println("Yay, I'm connected!")
 		}
 	}
 }
