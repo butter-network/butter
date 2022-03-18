@@ -250,8 +250,8 @@ Note:
 <img src="pcgPaper.png" width="430"/>
 
 Note:
-- I started by looking at the classic approach used in most p2p projects - Chord and Kademlia DHTs - structured networks for persistent information
-- But these have lookup tables, super-peers or Distributed Hash Tables. These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some primary pitfalls of the centralised client-server model e.g. DHTs a known bootstrap node, BitTorrent requires super-peers (it calls trackers) that have lockup tables - that sounds fairly centralised to me
+- Most popular p2p projects still use lookup tables, super-peers or Distributed Hash Tables (introduce structured elements) - primarily to improve network performance by reducing message complexity.
+- However, this then reintroduces some primary pitfalls of the centralised client-server model e.g. DHTs a known bootstrap node, BitTorrent requires super-peers (it calls trackers) that have lockup tables - that sounds fairly centralised to me
 - Therefor I knew I wanted to implement an entirely unstructured P2P network
 - I found 2 papers that gave me an idea - I didn't necessarily implement them but rather based my implementation on them
 
@@ -419,16 +419,6 @@ Note:
 - Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
 
 ---
-### Butter vs. libp2p
-![](https://miro.medium.com/max/2000/1*QDUHOeqahBdSnFGh22AxzA.jpeg)
-
-Note:
-- My initial view was I wanted to steer clear from libp2p
-- As I made progress, my framework started to feel more and more like libp2p
-- Modularity is definitely inspired by libp2p
-- Several implementations of transport, discovery, peer routing and content routing to chose from
-
----
 ## Acknowledgements
 
 - Adam (of course)
@@ -441,6 +431,16 @@ Note:
   - effort to improve the overall field of peer-to-peer systems
 
 <!-- Extra-stuff for completeness -->
+
+---
+### Butter vs. libp2p
+![](https://miro.medium.com/max/2000/1*QDUHOeqahBdSnFGh22AxzA.jpeg)
+
+Note:
+- My initial view was I wanted to steer clear from libp2p
+- As I made progress, my framework started to feel more and more like libp2p
+- Modularity is definitely inspired by libp2p
+- Several implementations of transport, discovery, peer routing and content routing to chose from
 
 ---
 #### Goal
