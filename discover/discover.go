@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+const pingInterval = 1
+const checkConnected = 5
+
 const (
 	pingRoute       = "ping/"
 	pongRoute       = "pong/"
@@ -85,7 +88,7 @@ func PingLAN(overlay node.Overlay) {
 	socketAddress, _ := socketAddr.ToJson()
 	for {
 		c.Write(append(uri, socketAddress...))
-		time.Sleep(1 * time.Second)
+		time.Sleep(pingInterval * time.Second)
 
 		// If I know a peer, I do not need to continue pinging the LAN
 		if len(overlay.Node().KnownHosts()) > 0 {
@@ -123,7 +126,7 @@ func ListenForMulticasts(overlay node.Overlay) {
 
 func checkImStillConnected(overlay node.Overlay) {
 	for {
-		time.Sleep(20 * time.Second)
+		time.Sleep(checkConnected * time.Second)
 		for addr := range overlay.Node().KnownHosts() {
 			_, err := utils.Request(addr, []byte("alive/"), nil)
 			if err != nil {

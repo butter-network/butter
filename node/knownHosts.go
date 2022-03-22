@@ -158,9 +158,9 @@ func (knownHosts *KnownHosts) avgKnownHosts() uint64 {
 func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.SocketAddr) {
 	// OPTIMISATION - these can be cached as part of a KnownHosts struct, i.e. if we recently ran the above functions, we can assume that the distribution has not changed much and just skip to making the decision as to if we should add the known host or not
 
-	if time.Since(knownHosts.lastUpdate) > time.Minute*2 {
-		knownHosts.update()
-	}
+	//if time.Since(knownHosts.lastUpdate) > time.Minute*2 {
+	//	knownHosts.update()
+	//}
 
 	avgUptime := knownHosts.avgUptime()
 	avgStorage := knownHosts.avgStorage()

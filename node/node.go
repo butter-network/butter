@@ -18,6 +18,8 @@ import (
 	"github.com/pbnjay/memory"
 )
 
+const updateKnownHostsInterval = 10
+
 // Overlay interface describes what an implemented Overlay struct should look like
 type Overlay interface {
 	Node() *Node
@@ -259,6 +261,6 @@ func (node *Node) uptime() time.Duration {
 func updateKnownHosts(overlay Overlay) {
 	for {
 		overlay.Node().knownHosts.update() // updates host metadata + removes dead hosts
-		time.Sleep(time.Second * 120)
+		time.Sleep(time.Second * updateKnownHostsInterval)
 	}
 }

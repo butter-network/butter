@@ -6,6 +6,7 @@ import (
 	"github.com/a-shine/butter/node"
 	"github.com/a-shine/butter/persist"
 	"github.com/a-shine/butter/retrieve"
+	"github.com/a-shine/butter/tracker"
 	"github.com/a-shine/butter/traverse"
 	"os"
 	"os/signal"
@@ -15,20 +16,23 @@ import (
 // Spawn node into the network (the node serves as an entry-point to the butter network). You can also do this manually
 // to have more control over the specific protocols used in your dapp. This function presents a simple abstraction with
 // the included default butter protocols.
-func Spawn(overlay node.Overlay, traverseFlag bool) {
+func Spawn(overlay node.Overlay, public bool, track bool) {
 	n := overlay.Node()
 	setupLeaveHandler(n)
 	go discover.Discover(overlay)
-	if traverseFlag {
+	if track {
+		go tracker.Track(overlay)
+	}
+	if public {
 		go traverse.Traverse(n)
 	}
 	n.Start(overlay)
 }
 
-func SpawnDefaultOverlay(node *node.Node, traverseFlag bool) {
+func SpawnDefaultOverlay(node *node.Node, public bool, track bool) {
 	overlay := persist.NewOverlay(node) // Creates a new overlay network
 	retrieve.AppendRetrieveBehaviour(overlay.Node())
-	Spawn(&overlay, traverseFlag)
+	Spawn(&overlay, public, track)
 }
 
 // setupLeaveHandler creates a listener on a new goroutine which will notify the program if it receives an interrupt

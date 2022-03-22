@@ -90,5 +90,5 @@ func main() {
 	butterNode.RegisterClientBehaviour(clientBehaviour)
 
 	// Spawn your node into the butter network
-	butter.Spawn(&OverlayNode{node: butterNode}, false) // Blocking
+	butter.Spawn(&OverlayNode{node: butterNode}, false, true) // Blocking
 }
