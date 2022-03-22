@@ -1,0 +1,49 @@
+<p><strong>Keywords:</strong> Networks, Decentralised, Unstructured peer-to-peer, Information retrieval, Persistent data</p>
+<h1 id="introduction">Introduction</h1>
+<h1 id="motivations">Motivations</h1>
+<h1 id="background">Background</h1>
+<p>This taxonomy clears up a lot of the confusion for me centralised systems e.g. a conventional web app with database, data processing backend and frontend is a distributed system but it is centralised as if the database becomes unavailable the app ceases to deliver any data. A centralised distributed system architecture is powerful because it decauples function into its logical components but create precarious systems with inherent interdependability. Figure <a href="#fig:dis-taxonomy" data-reference-type="ref" data-reference="fig:dis-taxonomy">[fig:dis-taxonomy]</a> is not exaustive for example Distributed hash tables are not the sole means of designing overlay networks (wrappers around the network that allow the user to interface with it) but serves to give a general overview of distributed systems.</p>
+<h2 id="subsec:establishing-a-common-language">Establishing a common language</h2>
+<p>The definition for distributed system is given to use by Tannenbaum and Van Steen in "Distributed systems Principles and Paradigms". They also make allusion to the general poor quality of definitions and lack of concensus so we use their loose characterization: "A distributed system is a collection of independent computers that appear to its user as a single coherent system." There are two important aspects to this definition, first that a distributed systems consist of components that are autonomous and secondly that the user (person or program) view the system as a single coherent system (overlay network). The autonomous layer of the distributed system requires collaboration and establising that collaboration is the crux of designing any form of distributed system.</p>
+<p>There are a few notable characteristics of distributed systems, given the defition - "teh difference between the various computers and the way in which communicate are mostly hidden from the user" - the user is not aware of the underlying architecture/organisation of the system - "the user and application and applications can interact with a distributed system in a continous and uniform way, regardless of when and where the interactions take place This is what makes distributed systems so powerful and such a good design for critical applications available over the internet - as a "distributed system should normally be contiously available" it should be detached from the underlying use/data it handles.</p>
+<p>In order to support all manner of computers and networks while offering a single coherent interface for the system, distributed systems are typically organised into logical layers - with a high-level user and application layer, a low level operating system and basic commuinication layer - the distributed behaviour lies in-bitween hence is often reffered to as the distributed behaviour middleware.</p>
+<figure>
+<img src="imgs/Screenshot from 2022-01-17 17-13-57.png" alt="Example of a distributed system with three logical layers" id="fig:example-distributed-system-layers" style="width:80.0%" /><figcaption>Example of a distributed system with three logical layers<span label="fig:example-distributed-system-layers"></span></figcaption>
+</figure>
+<p>The figure<a href="#fig:example-distributed-system-layers" data-reference-type="ref" data-reference="fig:example-distributed-system-layers">1</a>, taken from the Tanenbaum Steen book, shows four network connected computers, the distributed behaviour middleware (provided as a consistent interface between the operating systems and applications) and the top level application layer. Where application B is shared across computers 2 and 3.</p>
+<p>stributed systen architectures - decentralised architecture: structured and unstructured peer-to-peer architectures</p>
+<p>This whole section is taken from the Tanenbaum Steen book<span class="citation" data-cites="tanenbaumSteen"></span>.</p>
+<p>This is an aggregation of all the common terminology that may be required when discussing decentralised systems.</p>
+<ul>
+<li><p>A ’server’ becomes a ’listener’</p></li>
+<li><p>A ’client’ becomes a ’caller’</p></li>
+<li><p>A node is an entity on the network that can both call and listen (expressed as a vertec)</p></li>
+<li><p>A peer is a node connected to other nodes on the network (expressed as a vertex with at least one connection)</p></li>
+<li><p>Peers are two or more connected nodes</p></li>
+<li><p>Each peer has a list of known peers</p></li>
+<li><p>A first-degree peer is one that a peer has in his list (expreesed as as edge)</p></li>
+</ul>
+<h1 id="literature-reviewsurvey">Literature review/survey</h1>
+<h1 id="survey-of-current-and-past-decentralised-platform-project">Survey of current and past decentralised platform project</h1>
+<h1 id="design">Design</h1>
+<p>Problem centric design to buidding a sitributed system with as decentralised unstructured peer-to-peer architecyure There are some problems specific to pure unstructure peer-to-peer architecture - where choosing known hosts, information retrieval and fault-tolerant persistent data storage become non-trivial problems.</p>
+<p>Figure <a href="#fig:butter-platform-taxonomy" data-reference-type="ref" data-reference="fig:butter-platform-taxonomy">[fig:butter-platform-taxonomy]</a> neatly shows how teh platform lies in the wider network stack. The top layer is a user defined application and the developer interacts with a butter node - this abstracts away all teh underlying behaviour that handles the distributed aspects of the system.</p>
+<h2 id="peer-discovery">Peer discovery</h2>
+<h2 id="nat-traversal">NAT traversal</h2>
+<h2 id="information-retrieval-in-a-pure-unstructured-network">Information retrieval in a pure unstructured network</h2>
+<h2 id="information-distribution-in-a-pure-unstructured-network">Information distribution in a pure unstructured network</h2>
+<h2 id="known-host-selection-in-a-pure-unstructured-network">Known host selection in a pure unstructured network</h2>
+<h1 id="testing">Testing</h1>
+<h1 id="results">Results</h1>
+<h1 id="evaluation">Evaluation</h1>
+<h1 id="project-management-methodology">Project management methodology</h1>
+<p>Poor choice of language to start with. At the beginning stages of the project the main focus should have been on designing the underlying algorithms for the purely unstructured peer-to-peer network. By starting in Rust, prototyping was slow and reasoning was more difficult as syntax an memory management got in the way of the design work. After switching to Go (which was done a little late in the projects life-cycle) the rate of progress increased massively.</p>
+<h1 id="future-work">Future work</h1>
+<h1 id="legal-social-and-ethical-discussion">Legal, social and ethical discussion</h1>
+<p>On a personal note, I find a centralised internet a worrying place. There is a fragility to it and opportunities for abuse (maybe sometimes not conciously). This is why I feel so strongly about building on decentralised systems. Here individuals are protected not by rules or regulations (that may not always be enforced) but rather by the inherent design of the system. It is self-maintaining and open in its very nature. There is also a robustness to decentralised systems as we are avoiding single points of failure be it from a technology standpoint or a high level company/service standpoint</p>
+<h1 id="self-reflection">Self-reflection</h1>
+<h1 id="acknowledgements">Acknowledgements</h1>
+<h1 id="conclusion">Conclusion</h1>
+<p>Design philosphy never have fatal errrors - you want to maximise node availability (fail-live?) If there is an error shrug it off and try something else</p>
+<p>Despite the benefits of a decentralised approach, the majority of popular P2P networks include structured elements such as lookup tables, super-peers<span class="citation" data-cites="super_peers"></span> or DHTs(Distributed Hash Tables). These are introduced primarily to improve network performance by reducing message complexity. However, this then reintroduces some of the primary pitfalls of the client-server model. Therefore, the implementation of an entirely unstructured P2P network service designed for information availability and fault tolerance can have significant benefits. (this last sentence needs improving)</p>
+<p>https://www.cl.cam.ac.uk/research/dtg/www/files/publications/public/mp431/ieee-survey.pdf</p>
