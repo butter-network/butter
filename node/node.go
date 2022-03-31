@@ -18,6 +18,8 @@ import (
 	"github.com/pbnjay/memory"
 )
 
+// IDEA: Instead od using hardcoded intervals for heartbeats and known host updating etc... we could have a random interval between 1 and 10s - this might make the network (particularly in simulation work much better)
+
 const updateKnownHostsInterval = 10
 
 // Overlay interface describes what an implemented Overlay struct should look like

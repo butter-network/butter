@@ -8,6 +8,9 @@ import (
 	"github.com/a-shine/butter/utils"
 )
 
+// IDEA: A different protocol for known host management could be to just accept a known host until memory capacity is full
+// and then have a certain probability of a new known host being added and random old one being dropped.
+
 type HostQuality struct {
 	Uptime           uint64
 	AvailableStorage uint64
