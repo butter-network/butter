@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/a-shine/butter/persist"
+	"github.com/butter-network/butter/persist"
 )
 
 // NaiveStore stores information on the network naively by simply placing it on the local node. It generate a UUIS for

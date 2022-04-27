@@ -2,7 +2,7 @@ package traverse
 
 import (
 	"fmt"
-	"github.com/a-shine/butter/node"
+	"github.com/butter-network/butter/node"
 	"gitlab.com/NebulousLabs/go-upnp"
 	"log"
 )

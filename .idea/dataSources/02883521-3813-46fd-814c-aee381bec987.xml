@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="PostgreSQL - world@localhost">
-  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.32">
+  <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.38">
     <root id="1">
       <DateStyle>mdy</DateStyle>
       <IntrospectionStateNumber>1031</IntrospectionStateNumber>
@@ -4860,16 +4860,16 @@ true posixrules
       <TypeId>1114</TypeId>
     </column>
     <index id="268" parent="263" name="nodes_pkey">
-      <ClassIds>3126</ClassIds>
       <ColNames>addr</ColNames>
-      <CollationIds>100</CollationIds>
-      <CollationNames>default</CollationNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16409</ObjectId>
       <Primary>1</Primary>
       <StateNumber>1029</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
+      <ClassIds>3126</ClassIds>
+      <CollationNames>default</CollationNames>
+      <CollationIds>100</CollationIds>
     </index>
     <key id="269" parent="263" name="nodes_pkey">
       <ColNames>addr</ColNames>

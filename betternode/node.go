@@ -1,7 +1,7 @@
 package betternode
 
 import (
-	"github.com/a-shine/butter/node"
+	"github.com/butter-network/butter/node"
 	uuid "github.com/nu7hatch/gouuid"
 	"time"
 )

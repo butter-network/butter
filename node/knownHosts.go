@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/utils"
 )
 
 // IDEA: A different protocol for known host management could be to just accept a known host until memory capacity is full

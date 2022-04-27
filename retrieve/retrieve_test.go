@@ -2,9 +2,9 @@ package retrieve
 
 import (
 	"fmt"
-	"github.com/a-shine/butter"
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/store"
+	"github.com/butter-network/butter"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/store"
 	"testing"
 	"time"
 )

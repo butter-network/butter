@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/persist"
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/persist"
+	"github.com/butter-network/butter/utils"
 )
 
 func retrieve(overlay node.Overlay, query []byte) []byte {

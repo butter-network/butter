@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/utils"
 )
 
 // The Ambassador is a means of overcoming the NAT traversal problem. It bridges different subnetworks together by

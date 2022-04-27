@@ -2,12 +2,12 @@ package butter
 
 import (
 	"fmt"
-	"github.com/a-shine/butter/discover"
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/persist"
-	"github.com/a-shine/butter/retrieve"
-	"github.com/a-shine/butter/tracker"
-	"github.com/a-shine/butter/traverse"
+	"github.com/butter-network/butter/discover"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/persist"
+	"github.com/butter-network/butter/retrieve"
+	"github.com/butter-network/butter/tracker"
+	"github.com/butter-network/butter/traverse"
 	"os"
 	"os/signal"
 	"syscall"

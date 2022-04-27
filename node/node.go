@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/utils"
 	"github.com/pbnjay/memory"
 )
 

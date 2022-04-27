@@ -6,8 +6,8 @@ package discover
 
 import (
 	"encoding/json"
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/utils"
 	"log"
 	"net"
 	"time"

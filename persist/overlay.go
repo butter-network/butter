@@ -5,10 +5,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter/utils"
 	"strconv"
 
-	"github.com/a-shine/butter/node"
+	"github.com/butter-network/butter/node"
 )
 
 // TODO: Overlay not working properly
