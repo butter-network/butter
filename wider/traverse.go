@@ -1,4 +1,4 @@
-package traverse
+package wider
 
 import (
 	"fmt"

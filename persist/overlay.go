@@ -1,3 +1,5 @@
+// Package persist is one of the Butter persist overlay implementations. Other are available on the butter-network
+// GitHub repository.
 package persist
 
 import (
@@ -11,8 +13,7 @@ import (
 	"github.com/butter-network/butter/node"
 )
 
-// TODO: Overlay not working properly
-
+// Overlay that complies with the Butter persist interface
 type Overlay struct {
 	node       *node.Node
 	storageCap uint64
@@ -77,10 +78,9 @@ func NewOverlay(node *node.Node) Overlay {
 
 func (o *Overlay) AddInformation(keywords []string, data []byte) string {
 	hash := sha256.Sum256(data)
-	// append the part nb to the hash - so once we have found one block, we can
-	// determall the other hashes we need to find - allows us to parallelise
-	// cause we don't need to wait for a block to find the next one
-	// finding all the blocks we need to find
+	// Append the part nb to the hash - so once we have found one block, we can determine the other hashes we need to
+	// find - allows us to parallelize because we don't need to wait for a block to find the next one finding all the
+	// blocks we need to find
 	chunks := chunking(data)
 	keywordsFormatted := naiveProcessKeywords(keywords)
 	for i, chunk := range chunks {
@@ -91,6 +91,7 @@ func (o *Overlay) AddInformation(keywords []string, data []byte) string {
 	return fmt.Sprintf("%x", hash) // encode the hash as hex string
 }
 
+// chunking information into smaller pieces that can be maintained by Blocks
 func chunking(data []byte) [][4096]byte {
 	var chunks [][4096]byte
 	for i := 0; i < len(data); i += 4096 {
@@ -110,5 +111,3 @@ func chunking(data []byte) [][4096]byte {
 
 	return chunks
 }
-
-// when trying to find participants for a block, try and find ones that have different geolocations if possible

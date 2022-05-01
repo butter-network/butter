@@ -1,6 +1,7 @@
 {
-    "editor.formatOnSave": true,
-    "[latex]": {
-        "editor.wordWrap": "on"
-    }
+  "editor.formatOnSave": true,
+  "[latex]": {
+    "editor.wordWrap": "on"
+  },
+  "cSpell.language": "en,en-GB"
 }

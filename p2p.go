@@ -7,7 +7,7 @@ import (
 	"github.com/butter-network/butter/persist"
 	"github.com/butter-network/butter/retrieve"
 	"github.com/butter-network/butter/tracker"
-	"github.com/butter-network/butter/traverse"
+	"github.com/butter-network/butter/wider"
 	"os"
 	"os/signal"
 	"syscall"
@@ -24,7 +24,7 @@ func Spawn(overlay node.Overlay, public bool, track bool) {
 		go tracker.Track(overlay)
 	}
 	if public {
-		go traverse.Traverse(n)
+		go wider.Traverse(n)
 	}
 	n.Start(overlay)
 }
@@ -52,9 +52,10 @@ func setupLeaveHandler(node *node.Node) {
 // connections across subnetworks. To be an ambassador a node inherently needs to be available publicly (must port
 // forward either manually or via UPNP and have a public IP address). The added ambassadorial behaviours allows the node
 // to share the public addresses of other traversed (i.e. public) nodes between each other.
-//func SpawnAmbassador(node *node.Node) {
-//	go discover.Discover(node)
-//	go traverse.Traverse(node)
-//	//go traverse.AppendAmbassadorBehaviour(node) // the node keeps track of ambassador so if someone needs an ambassador they can find them dynamically (improvement on bootstrapping)
-//	node.Start()
-//}
+func SpawnAmbassador(node *node.Node, public bool, track bool) {
+	overlay := persist.NewOverlay(node)                     // Creates a new overlay network
+	go wider.StartAmbassador(int16(node.SocketAddr().Port)) // the node keeps track of ambassador so if someone needs an ambassador they can find them dynamically (improvement on bootstrapping)
+	go discover.Discover(&overlay)
+	go wider.Traverse(node)
+	Spawn(&overlay, public, track)
+}

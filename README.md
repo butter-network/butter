@@ -1,4 +1,4 @@
-# ![](butterLogo.png)
+# ![](graphics/butterLogo.png)
 
 > The network that spreads! 🧈
 
@@ -9,7 +9,7 @@
 
 `butter` is a networking stack and framework for building decentralised applications (dapps). The goal of the project is to design an *efficient decentralised framework* that is as close as possible to being fully decentralised (no single controlling entity or point of failure). The result is a distributed network with an unstructured peer-to-peer architecture.
 
-Please see the full [project documentation](https://a-shine.github.io/butter/) for more information.
+[//]: # (Please see the full [project documentation]&#40;https://a-shine.github.io/butter/&#41; for more information.)
 
 **Understanding what is meant by *efficient decentralised framework*:**
 
@@ -34,18 +34,18 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
 
 1. From within your Go project, run the following command:
    ```bash
-   go get github.com/a-shine/butter
+   go get github.com/butter-network/butter
    ```
    This will download the library and configure your `go.mod` file.
 2. Import the package into your project source:
    ```go
    package main
-   import "github.com/a-shine/butter"
+   import "github.com/butter-network/butter"
    ```
 
 ### Working with the framework
 Butter is designed to be modular. It provides an inbuilt overlay (implementation of the Overlay interface) called persist (which is what allows for the inbuilt storage and retrieval packages to work) but if you wish to implement your own overlay network that is possible too. You can implement your own version of the Overlay struct.
-For ease of use you can use the default overlay network using the `butter.SpawnDefaultOverlay` function. but yu have the lexibiluty to pick and chose what component packahes you would like to use from the frameowkr.
+For ease of use you can use the default overlay network using the `butter.SpawnDefaultOverlay` function.
 
 ### Examples
 Take a look the examples in the [examples/](./examples) directory.
@@ -55,15 +55,6 @@ To run one of the included examples, from the root of the project type:
 go run examples/<example_name>/main.go
 (e.g. go run examples/ohce/main.go)
 ```
-
-#### Non-persistent data (Chat application)
-```go
-// TODO: Add commented example code
-```
-#### Persistent data (Wiki application)
-```go
-// TODO: Add commented example code
-````
 
 ## Contributing
 
@@ -78,12 +69,12 @@ Making a functional peer-to-peer system can be broken down into several componen
 
 1. Defining the node behaviour and maintaining the network by managing known hosts (`node/`)
 2. Discovery (`discover/`)
-3. NAT traversal (`traverse/`)
+3. NAT traversal and Internet discovery (`wider/`)
 4. Persistent overlay network (`persist/`)
    1. (Persistent) information storage (`store/`)
    2. (Persistent) information retrieval (`retrieve/`)
 
-These are reflected in the project package structure
+These are reflected in the project package structure.
 
 ### Testing
 

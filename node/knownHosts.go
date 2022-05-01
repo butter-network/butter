@@ -8,9 +8,7 @@ import (
 	"github.com/butter-network/butter/utils"
 )
 
-// IDEA: A different protocol for known host management could be to just accept a known host until memory capacity is full
-// and then have a certain probability of a new known host being added and random old one being dropped.
-
+// HostQuality metric for a host
 type HostQuality struct {
 	Uptime           uint64
 	AvailableStorage uint64
@@ -21,10 +19,12 @@ type KnownHosts struct {
 	mu  sync.Mutex
 	cap uint
 
+	// Cached information to maintain the list of known hosts
 	uptimeTally     uint64
 	storageTally    uint64
 	knownHostsTally uint64
 
+	// Hosts are a map of hostname to HostQuality
 	Hosts map[utils.SocketAddr]HostQuality
 
 	highUptimeHighStorageHighKH uint
@@ -43,6 +43,11 @@ func (knownHosts *KnownHosts) count() uint {
 	return uint(len(knownHosts.Hosts))
 }
 
+func (knownHosts *KnownHosts) Addrs() map[utils.SocketAddr]HostQuality {
+	return knownHosts.Hosts
+}
+
+// Return the quality of the node when queried by a remote host
 func hostQuality(overlay Overlay, _ []byte) []byte {
 	var hostQuality HostQuality
 
@@ -55,21 +60,18 @@ func hostQuality(overlay Overlay, _ []byte) []byte {
 	json, _ := json.Marshal(hostQuality)
 
 	return json
-
-}
-
-func (knownHosts *KnownHosts) Addrs() map[utils.SocketAddr]HostQuality {
-	return knownHosts.Hosts
 }
 
 func AppendHostQualityServerBehaviour(node *Node) {
 	node.RegisterServerBehaviour("host-quality/", hostQuality)
 }
 
+// Update known host information
 func (knownHosts *KnownHosts) update() {
 	knownHosts.mu.Lock()
 	defer knownHosts.mu.Unlock()
 
+	// Reset cached information
 	knownHosts.uptimeTally = 0
 	knownHosts.storageTally = 0
 	knownHosts.knownHostsTally = 0
@@ -95,6 +97,7 @@ func (knownHosts *KnownHosts) update() {
 	knownHosts.lastUpdate = time.Now()
 }
 
+// Remove host from known hosts
 func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
 	knownHosts.mu.Lock()
 	defer knownHosts.mu.Unlock()
@@ -110,7 +113,7 @@ func (knownHosts *KnownHosts) Remove(host utils.SocketAddr) {
 	delete(knownHosts.Hosts, host)
 }
 
-// Also prioritise adding a host that is not known by anyone else - don't want the scenario where 3 nodes are at capacity and a new node hosts and can be added to the network
+// Add host to known hosts
 func (knownHosts *KnownHosts) Add(host utils.SocketAddr) {
 	knownHosts.mu.Lock()
 	defer knownHosts.mu.Unlock()
@@ -159,7 +162,9 @@ func (knownHosts *KnownHosts) avgKnownHosts() uint64 {
 }
 
 func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.SocketAddr) {
-	// OPTIMISATION - these can be cached as part of a KnownHosts struct, i.e. if we recently ran the above functions, we can assume that the distribution has not changed much and just skip to making the decision as to if we should add the known host or not
+	// OPTIMISATION: these can be cached as part of a KnownHosts struct, i.e. if we recently ran the above functions,
+	// we can assume that the distribution has not changed much and just skip to making the decision as to if we should
+	// add the known host or not
 
 	//if time.Since(knownHosts.lastUpdate) > time.Minute*2 {
 	//	knownHosts.update()
@@ -182,12 +187,14 @@ func (knownHosts *KnownHosts) intelligentAddKnownHost(potentialHost utils.Socket
 	} else {
 		//remove host from the biggest class
 		knownHosts.removeFromBiggestClass()
-		// and add the new host to his class (smallest class)
+		// and add the new host to his class (the smallest class)
 		knownHosts.Add(potentialHost)
 	}
-	//else remove a known host in the category with teh highesr frequency and add in the known host to the category with the least frequency
+	//else remove a known host in the category with teh higher frequency and add in the known host to the category with
+	// the least frequency
 }
 
+// remove host from the biggest class to make room for a new host in the smallest class
 func (knownHosts *KnownHosts) removeFromBiggestClass() {
 	biggestClass := knownHosts.biggestClass()
 	avgUptime := knownHosts.avgUptime()
@@ -201,6 +208,7 @@ func (knownHosts *KnownHosts) removeFromBiggestClass() {
 	}
 }
 
+// Determine which is the biggest class of host type
 func (knownHosts *KnownHosts) biggestClass() string {
 	// return the biggest class name
 	classes := make(map[string]uint)
@@ -223,6 +231,7 @@ func (knownHosts *KnownHosts) biggestClass() string {
 	return biggestClass
 }
 
+// Classify hosts based on their host quality metric
 func (knownHosts *KnownHosts) classifyHosts() {
 	knownHosts.resetDistribution()
 
@@ -246,6 +255,7 @@ func (knownHosts *KnownHosts) resetDistribution() {
 	knownHosts.lowUptimeLowStorageLowKH = 0
 }
 
+// Increment the host class based on the host quality metric
 func (knownHosts *KnownHosts) incrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) {
 	switch hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts) {
 	case "highUptimeHighStorageHighKH":
@@ -267,6 +277,7 @@ func (knownHosts *KnownHosts) incrementHostClass(hostQuality HostQuality, avgUpt
 	}
 }
 
+// Decrement host class based on the host quality metric
 func (knownHosts *KnownHosts) decrementHostClass(hostQuality HostQuality, avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) {
 	switch hostQuality.hostType(avgUptime, avgStorage, avgKnownHosts) {
 	case "highUptimeHighStorageHighKH":
@@ -288,6 +299,7 @@ func (knownHosts *KnownHosts) decrementHostClass(hostQuality HostQuality, avgUpt
 	}
 }
 
+// Determine the host type based on the node partial view
 func (hostQuality *HostQuality) hostType(avgUptime uint64, avgStorage uint64, avgKnownHosts uint64) string {
 	if hostQuality.Uptime >= avgUptime && hostQuality.AvailableStorage >= avgStorage && hostQuality.NbHostsKnown >= avgKnownHosts {
 		return "highUptimeHighStorageHighKH"
@@ -310,6 +322,7 @@ func (hostQuality *HostQuality) hostType(avgUptime uint64, avgStorage uint64, av
 	}
 }
 
+// JsonDigest of known hosts so they can be communicated with other hosts
 func (knownHosts *KnownHosts) JsonDigest() []byte {
 	digest, _ := json.Marshal(knownHosts)
 	return digest

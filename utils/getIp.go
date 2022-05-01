@@ -5,7 +5,8 @@ import (
 	"net"
 )
 
-func GetIp() (string, error) {
+// GetLocalIp address of the machine based on the preferred (default) networking interface
+func GetLocalIp() (string, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return "", err

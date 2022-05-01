@@ -18,8 +18,6 @@ import (
 	"github.com/pbnjay/memory"
 )
 
-// IDEA: Instead od using hardcoded intervals for heartbeats and known host updating etc... we could have a random interval between 1 and 10s - this might make the network (particularly in simulation work much better)
-
 const updateKnownHostsInterval = 10
 
 // Overlay interface describes what an implemented Overlay struct should look like
@@ -129,7 +127,7 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)
 	maxStorage := maxMemory - knownHostsMemory // remaining memory is used for the storage
 
-	ip, _ := utils.GetIp()
+	ip, _ := utils.GetLocalIp()
 
 	var socketAddr utils.SocketAddr
 	socketAddr.Ip = ip
@@ -183,7 +181,7 @@ func (node *Node) closeListener() {
 // Shutdown gracefully by closing the listener, telling the network the node is leaving and passing on data as required
 func (node *Node) Shutdown() {
 	// TODO: Gracefully shutdown method incomplete
-	// TODO: add shoutdown methoth to overlay network so that it can be called from here - this would allow overlay network designers to implement their own graceful shutdown behaviour
+	// TODO: add shutdown method to overlay network so that it can be called from here - this would allow overlay network designers to implement their own graceful shutdown behaviour
 	node.closeListener()
 }
 
@@ -245,7 +243,6 @@ func (node *Node) RouteHandler(packet []byte, overlay Overlay) []byte {
 		return []byte("invalid-packet/")
 	}
 
-	// TODO: Don't think this works - need to test
 	if response := node.serverBehaviours[string(route)](overlay, payload); response != nil {
 		return response
 	}

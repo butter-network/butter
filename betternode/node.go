@@ -1,3 +1,7 @@
+// Implementation of a 'better' node with an unspecified communication interface (like in libp2p). This node could
+// communicate with varying communication protocols. This will be particularly important to improve the testbed so that
+// pipes can be created for node communication instead of TCP connections. Implementation currently incomplete.
+
 package betternode
 
 import (
@@ -6,7 +10,7 @@ import (
 	"time"
 )
 
-const EOF byte = 26
+const EOF byte = 26 // EOF code
 
 type Conn interface {
 	read()

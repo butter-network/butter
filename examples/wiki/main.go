@@ -5,11 +5,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/a-shine/butter"
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/persist"
-	"github.com/a-shine/butter/retrieve"
-	"github.com/a-shine/butter/store"
+	"github.com/butter-network/butter"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/persist"
+	"github.com/butter-network/butter/retrieve"
+	"github.com/butter-network/butter/store"
 	"os"
 )
 
@@ -81,5 +81,5 @@ func main() {
 	// No need to specify retrieval or storage server behaviours as they are handled by the provided butter storage and
 	//retrieve packages
 	// Spawn your node into the butter network
-	butter.SpawnDefaultOverlay(butterNode, false) // Blocking (spanwn with the default inbuilt overlay network which allows for persistent storage
+	butter.SpawnDefaultOverlay(butterNode, false, false) // Blocking (spanwn with the default inbuilt overlay network which allows for persistent storage
 }

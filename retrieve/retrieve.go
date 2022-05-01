@@ -1,15 +1,18 @@
+// Package retrieve is Butter's inbuilt information retrieval solution. Implements a `naive' BFS, TTL BFS and RBFS
 package retrieve
 
 import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	"github.com/butter-network/butter/node"
 	"github.com/butter-network/butter/persist"
 	"github.com/butter-network/butter/utils"
 )
 
+// When queried through the BFS mechanism
 func retrieve(overlay node.Overlay, query []byte) []byte {
 	persistOverlay := overlay.(*persist.Overlay)
 	block, err := persistOverlay.Block(string(query))
@@ -26,35 +29,26 @@ func retrieve(overlay node.Overlay, query []byte) []byte {
 	return append([]byte("try/"), addrsJson...)
 }
 
-//func rbfsretrieve(overlay node.Overlay, payload []byte) []byte {
-//	persistOverlay := overlay.(*persist.Overlay)
-//	// separate the payload into the random node param and the query
-//	param, query, _ := utils.ParsePacket(payload)
-//	block, err := persistOverlay.Block(string(query))
-//	if err == nil {
-//		return append([]byte("found/"), block.Data()...)
-//	}
-//
-//	// TODO: make a random selection of known hosts and return those
-//	randomHosts := randomNodes(param*persistOverlay.Node().KnownHostsSize(), persistOverlay.Node().KnownHosts())
-//	hostsStruct := persistOverlay.Node().KnownHostsStruct()
-//	knownHostsJson := hostsStruct.JsonDigest()
-//	return append([]byte("try/"), knownHostsJson...)
-//}
+// When queried through the RBFS mechanism
+func rbfsretrieve(overlay node.Overlay, payload []byte) []byte {
+	persistOverlay := overlay.(*persist.Overlay)
+	// Separate the payload into the random node param and the query
+	param, query, _ := utils.ParsePacket(payload)
+	block, err := persistOverlay.Block(string(query))
+	if err == nil {
+		return append([]byte("found/"), block.Data()...)
+	}
 
-func found(node *node.Node, query []byte) []byte {
-	return query
-}
-
-func try(node *node.Node, query []byte) []byte {
-	return query
+	// Make a random selection of known hosts and return those
+	rand, _ := strconv.ParseFloat(string(param), 32)
+	randomHosts := randomNodes(int(float32(rand)*float32(len(overlay.Node().KnownHosts()))), overlay.Node().KnownHosts())
+	jsonHosts, _ := json.Marshal(randomHosts)
+	return append([]byte("try/"), jsonHosts...)
 }
 
 func AppendRetrieveBehaviour(node *node.Node) {
 	node.RegisterServerBehaviour("retrieve/", retrieve)
-	//node.RegisterServerBehaviour("random-bfs-retrieve/", rbfsretrieve)
-	//node.RegisterServerBehaviour("found/", found)
-	//node.RegisterServerBehaviour("try/", try)
+	node.RegisterServerBehaviour("random-bfs-retrieve/", rbfsretrieve)
 }
 
 // NaiveRetrieve High level entrypoint for searching for a specific piece of information on the network
@@ -99,9 +93,6 @@ func bfs(overlay persist.Overlay, query string) []byte {
 	return []byte("Information is not on the network")
 }
 
-// TODO: Add time to live field to the query
-// modify BFS to random BFS serach meahcnism i.e. selction n% random nodes per node to query - this algorithm is probabilistic but significantly reduces the message complexity
-
 func ttlBfs(overlay persist.Overlay, query string, ttl int) []byte {
 	// Initialise an empty queue
 	queue := make([]utils.SocketAddr, 0)
@@ -132,43 +123,47 @@ func ttlBfs(overlay persist.Overlay, query string, ttl int) []byte {
 	return []byte("Information is not on the network")
 }
 
-//func randomBfs(overlay persist.Overlay, query string, ttl int, prop float32) []byte {
-//	// Initialise an empty queue
-//	queue := make([]utils.SocketAddr, 0)
-//	// Add all my known hosts to the queue
-//	queue = append(queue, randomNodes(prop*overlay.Node().KnownHostsSize(), overlay.Node().KnownHosts()))
-//	for len(queue) > 0 || ttl == 0 {
-//		// Pop the first element from the queue
-//		host := queue[0]
-//		queue = queue[1:]
-//		// Start a connection to the host, Ask host if he has data, receive response
-//		response, _ := utils.Request(host, []byte("retrieve/"), []byte(query))
-//		route, payload, err := utils.ParsePacket(response)
-//		if err != nil {
-//			fmt.Println("unable to parse packet")
-//		}
-//		// If the returned packet is success + the data then return it
-//		// else add the known hosts of the remote node to the end of the queue
-//		if string(route) == "found/" {
-//			return payload
-//		}
-//		// failed but gave us their known hosts to add to queue
-//		remoteKnownHosts, _ := utils.AddrSliceFromJson(payload)
-//		queue = append(queue, remoteKnownHosts...) // add the remote hosts to the end of the queue
-//		ttl--
-//	}
-//	return []byte("Information is not on the network")
-//}
+func randomBfs(overlay persist.Overlay, query string, ttl int, prop float32) []byte {
+	// Initialise an empty queue
+	queue := make([]utils.SocketAddr, 0)
+	// Add all my known hosts to the queue
+	queue = append(queue, randomNodes(int(prop*float32(len(overlay.Node().KnownHosts()))), overlay.Node().KnownHosts())...)
+	for len(queue) > 0 || ttl == 0 {
+		// Pop the first element from the queue
+		host := queue[0]
+		queue = queue[1:]
+		// Start a connection to the host, Ask host if he has data, receive response
+		response, _ := utils.Request(host, []byte("retrieve/"), []byte(query))
+		route, payload, err := utils.ParsePacket(response)
+		if err != nil {
+			fmt.Println("unable to parse packet")
+		}
+		// If the returned packet is success + the data then return it
+		// else add the known hosts of the remote node to the end of the queue
+		if string(route) == "found/" {
+			return payload
+		}
+		// failed but gave us their known hosts to add to queue
+		remoteKnownHosts, _ := utils.AddrSliceFromJson(payload)
+		queue = append(queue, remoteKnownHosts...) // add the remote hosts to the end of the queue
+		ttl--
+	}
+	return []byte("Information is not on the network")
+}
 
-func randomNodes(n int, hosts []utils.SocketAddr) []utils.SocketAddr {
+// Return random set of nodes from KnownHosts
+func randomNodes(n int, hosts map[utils.SocketAddr]node.HostQuality) []utils.SocketAddr {
 	// select n random nodes from the list of hosts
 	// copy to a new list
 	// return the new list
 	newHosts := make([]utils.SocketAddr, n)
+	keys := make([]utils.SocketAddr, n)
+	for key, _ := range hosts {
+		keys = append(keys, key)
+	}
 	for i := 0; i < n; i++ {
-		newHosts[i] = hosts[rand.Intn(len(hosts))]
+		randomIndex := rand.Intn(len(hosts))
+		newHosts[i] = keys[randomIndex]
 	}
 	return newHosts
 }
-
-// add a random get-known host server route

@@ -28,6 +28,7 @@ func alive(overlay node.Overlay, addr []byte) []byte {
 	return []byte("ok")
 }
 
+// pingReceived from remote querying node
 func pingReceived(overlay node.Overlay, addr []byte) []byte {
 	remoteAddr, _ := utils.AddrFromJson(addr)
 	overlay.Node().AddKnownHost(remoteAddr)
@@ -45,6 +46,7 @@ func pingReceived(overlay node.Overlay, addr []byte) []byte {
 	return []byte("ok")
 }
 
+// pongReceived from remote querying node
 func pongReceived(overlay node.Overlay, addr []byte) []byte {
 	addrs := make([]utils.SocketAddr, 0)
 	err := json.Unmarshal(addr, &addrs)
@@ -62,10 +64,10 @@ func pongReceived(overlay node.Overlay, addr []byte) []byte {
 	return []byte("/successful-introduction/")
 }
 
+// Discover module for Butter nodes
 func Discover(overlay node.Overlay) {
 	overlay.Node().RegisterServerBehaviour(pingRoute, pingReceived)
 	overlay.Node().RegisterServerBehaviour(pongRoute, pongReceived)
-
 	overlay.Node().RegisterServerBehaviour(aliveRoute, alive)
 
 	go ListenForMulticasts(overlay)
@@ -76,6 +78,7 @@ func Discover(overlay node.Overlay) {
 
 var myPingAddr string
 
+// PingLAN for other running Butter nodes to connect to
 func PingLAN(overlay node.Overlay) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
@@ -102,6 +105,7 @@ func foundNode(src *net.UDPAddr, n int, b []byte, overlay node.Overlay) {
 	overlay.Node().RouteHandler(packet, overlay)
 }
 
+// ListenForMulticasts from unknown Butter nodes
 func ListenForMulticasts(overlay node.Overlay) {
 	addr, err := net.ResolveUDPAddr("udp", addrGroup)
 	if err != nil {
@@ -124,6 +128,7 @@ func ListenForMulticasts(overlay node.Overlay) {
 	}
 }
 
+// checkImStillConnected to the network by periodically verifying that all known hosts are alive
 func checkImStillConnected(overlay node.Overlay) {
 	for {
 		time.Sleep(checkConnected * time.Second)
@@ -136,8 +141,6 @@ func checkImStillConnected(overlay node.Overlay) {
 		if len(overlay.Node().KnownHosts()) == 0 {
 			//fmt.Println("No known hosts, restarting")
 			PingLAN(overlay)
-		} else {
-			//fmt.Println("Yay, I'm connected!")
 		}
 	}
 }

@@ -1,3 +1,5 @@
+// Package tracker enables nodes to be tracked by the butter-tracker. This is just a means of designing a system that
+// has an overview of the network. Mostly for testing purposes.
 package tracker
 
 import (

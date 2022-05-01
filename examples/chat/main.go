@@ -5,9 +5,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/a-shine/butter"
-	"github.com/a-shine/butter/node"
-	"github.com/a-shine/butter/utils"
+	"github.com/butter-network/butter"
+	"github.com/butter-network/butter/node"
+	"github.com/butter-network/butter/utils"
 	"os"
 )
 
@@ -79,5 +79,5 @@ func main() {
 	butterNode.RegisterClientBehaviour(clientBehaviour)
 
 	// Spawn your node into the butter network
-	butter.Spawn(&OverlayNode{node: butterNode}, false) // Blocking
+	butter.Spawn(&OverlayNode{node: butterNode}, false, false) // Blocking
 }
