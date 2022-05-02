@@ -46,6 +46,7 @@ It is worth noting that not every node port needs to be forwarded, all it takes 
 ### Working with the framework
 Butter is designed to be modular. It provides an inbuilt overlay (implementation of the Overlay interface) called persist (which is what allows for the inbuilt storage and retrieval packages to work) but if you wish to implement your own overlay network that is possible too. You can implement your own version of the Overlay struct.
 For ease of use you can use the default overlay network using the `butter.SpawnDefaultOverlay` function.
+For persistent information use the `pcg-overlay` which is hosted at `www.github.com/butter-network/pcg-overlay`.
 
 ### Examples
 Take a look the examples in the [examples/](./examples) directory.
