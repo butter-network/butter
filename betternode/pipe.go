@@ -1,5 +1,7 @@
 package betternode
 
+// TODO: complete the test node (pipe) - server/client behaviour
+
 import (
 	"bufio"
 	"bytes"

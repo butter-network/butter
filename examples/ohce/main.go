@@ -5,10 +5,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
+
 	"github.com/butter-network/butter"
 	"github.com/butter-network/butter/node"
 	"github.com/butter-network/butter/utils"
-	"os"
 )
 
 type OverlayNode struct {
@@ -90,5 +91,5 @@ func main() {
 	butterNode.RegisterClientBehaviour(clientBehaviour)
 
 	// Spawn your node into the butter network
-	butter.Spawn(&OverlayNode{node: butterNode}, false, true) // Blocking
+	butter.Spawn(&OverlayNode{node: butterNode}, true, true) // Blocking
 }

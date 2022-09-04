@@ -30,7 +30,7 @@ func Track(overlay node.Overlay) {
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	defer db.Close()
 
