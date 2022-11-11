@@ -60,10 +60,13 @@ go run examples/<example_name>/main.go
 ## Contributing
 
 ### What needs to be done?
-- [ ] Integrating Peer Content Groups as the default storage mechanism for Butter
+- [ ] Integrating Peer Content Groups storage logic, persist example and wiki into the main Butter repository
+- [ ] Fix information retrieval (use IR from PCG)
+- [ ] Implement heuristic based Information Retrieval
 - [ ] Decouple Butter node from TCP protocol
 - [ ] Implementing Gossip-based approach to Peer Content Group consensus in order to decrease message complexity maintaining groups
 - [ ] Developing stress testing rig in order to detect how information persists at varying levels of churn
+- [ ] Developing Information Retrieval test rig to test different retrieval algorithm speeds
 - [ ] Cross network communication with some for of NAT traversal technique
 - [ ] Looking at potential immutable datastructures built on top of Butter networks (e.g. blockchains)
 - [ ] Possibly shifting codebase to Rust
