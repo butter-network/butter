@@ -1,0 +1,10 @@
+{{template "base" .}}
+
+{{define "main"}}
+<h2>Add a new wiki entry</h2>
+<form action="/store" method="POST">
+  <span>Article:</span><br>
+  <textarea name="article" required style="width:100%; height: 75px"></textarea>
+  <br><input type="submit">
+</form>
+{{end}}

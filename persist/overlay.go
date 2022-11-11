@@ -86,7 +86,7 @@ func (o *Overlay) AddInformation(keywords []string, data []byte) string {
 	for i, chunk := range chunks {
 		part := i + 1
 		id := Id{hash, part}
-		o.addBlock(id, keywordsFormatted, chunk, len(chunks)) // distribute the blocks across nodes - don't store the entirety of a piece of data on one node but spread it out (like what Adam was saying similar to RAID)
+		o.addBlock(id, keywordsFormatted, chunk, len(chunks)) // distribute the blocks across nodes - don't naiveStore the entirety of a piece of data on one node but spread it out (like what Adam was saying similar to RAID)
 	}
 	return fmt.Sprintf("%x", hash) // encode the hash as hex string
 }

@@ -1,4 +1,4 @@
-# ![](graphics/butterLogo.png)
+# ![](imgs/butterLogoTransparent.png)
 
 > The network that spreads! 🧈
 
@@ -60,6 +60,8 @@ go run examples/<example_name>/main.go
 ## Contributing
 
 ### What needs to be done?
+- [ ] Integrating Peer Content Groups as the default storage mechanism for Butter
+- [ ] Decouple Butter node from TCP protocol
 - [ ] Implementing Gossip-based approach to Peer Content Group consensus in order to decrease message complexity maintaining groups
 - [ ] Developing stress testing rig in order to detect how information persists at varying levels of churn
 - [ ] Cross network communication with some for of NAT traversal technique

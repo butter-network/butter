@@ -1,4 +1,4 @@
-package store
+package naiveStore
 
 import (
 	"github.com/butter-network/butter/persist"
