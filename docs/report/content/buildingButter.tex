@@ -1,0 +1,48 @@
+\chapter{Building Butter}
+\label{ch:buildingButter}
+
+In this chapter we cover the research and technical aspects of building the Butter framework. We shall discuss some general characteristics of the framework and global design decisions that have influence across all the modules. Then we shall dive into the specifics of each module, the problem(s) it seeks to solve, related work, design and implementation. We will then evaluate the module's design based on testing when appropriate.
+
+Butter is a networking stack and framework for building decentralised applications (dapps). Hence, Butter's collection of modules can be used in conjunction to handle all the networking behaviour of a user specified decentralised application. Furthermore, the framework is designed to feel similar in use to other backend web development frameworks such as Django or Express. As a developer, you append extra functionality to a Butter node to describe the user-level application processing and the rest is handled by the framework. In other words, the framework's goal it to allow application services to be delivered, in a decentralised fashion, with minimum friction.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/platformLayers}
+    \caption{Networking stack with Butter}
+    \label{fig:butter-platform-taxonomy}
+\end{figure}
+
+Figure~\ref{fig:butter-platform-taxonomy} shows how the framework lies within the wider networking stack. The top layer is a user-defined application which interacts with the Butter modules. The architecture is similar to that of JXTA as seen in Figure~\ref{fig:jxta_architecture}. Butter provides a high-level API for developers to use, abstracting away the underlying behaviour that handles the distributed aspects of the system.
+
+Like in the Gnutella implementation, Butter nodes perform tasks normally associated with both clients and servers. On one hand, they provide client-side interfaces through which users can query other nodes of the network, while at the same time they also accept queries from nodes and respond based on their partial view of the system. The decentralised design should result in highly fault-tolerant characteristics, as operation of the network will not be interrupted if a subset of nodes goes offline\cite{lua2005survey}.
+
+Before covering the design specific to each module, we introduce the core design themes that run throughout the framework. These are listed bellow:
+
+\begin{itemize}
+    \item \textbf{Simplicity} - The framework should be simple to use and hence make building dapps easy. Interface should be designed in such as way as to make it feel similar to existing backend web frameworks in order make it familiar for developers and to minimise the learning curb.
+    \item \textbf{Modularity} - A core theme of the framework is modularity, each module is independent and self-contained with consistent interfaces defined between the modules. Developers only need to import what they require. In addition, it allows developers to design their own module, specific to their needs and use them within Butter. This theme has another important justification, it allows us to experiment with different protocols implemented by various versions of a module.
+    \item \textbf{Memory greedy} - This is a more difficult design theme to justify. When instantiating a Butter node, a user can specify how much memory to allocate to a node. The performance of the resulting network is greatly improved if nodes have a broader partial view of the network, so in general we tend to use as much memory as has been allocated favouring network performance over lower memory footprint.
+    \item \textbf{Avoid panicking} - The network greatly benefits from having as many nodes as possible, maintaining nodes online in order to maximise data availability. Hence, we take a fault-tolerant approach to design where we prefer to manage faulty states rather than a fail-safe approach where we quickly resort to failing in order to minimise risk. We take a view that a node in a faulty state is still more valuable to the network than no node at all.
+    \item \textbf{Diversity} - We want to accommodate all types of nodes and be flexible to different resources and device.
+\end{itemize}
+
+\begin{table}[ht]
+    \center
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Module}            & \textbf{Core technology}       \\
+        \hline
+        Discovery                  & UDP Multicast                  \\
+        Known host management      & Known host quality metric      \\
+        Wider discovery            & Port forwarding \& Ambassadors \\
+        Persistent storage         & PCG                            \\
+        Information retrieval (IR) & Random TTL BFS                 \\
+        \hline
+    \end{tabular}
+    \caption{Summarising table of Butter modules and the core technology used to implement the solution}
+    \label{tab:butterModules}
+\end{table}
+
+Table~\ref{tab:butterModules} can be used as a quick reference summarising the core technologies used in each module. Greater detail is provided in each of the module sections.
+
+Finally, in order to reason about the module designs, we should stress the importance of message complexity in distributed system. As computer scientists we are used to seeing time and space complexity when assessing the theoretical efficiency of a design, however, in distributed systems there is an extra factor to take into account: message complexity. In the literature, message and communication complexity are used interchangeably to denote the amount of communications required to solve a problem when the input to the problem is distributed among two or more parties, graphically it can be expressed as the maximum number of messages transmitted over any edge\cite{yao2009communication}.

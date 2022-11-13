@@ -1,26 +1,11 @@
-<!-- Don't say uhm! -->
-<!-- Use speaker view (`s`) to keep track of things -->
-<!-- Aim to do part 1 in 5min, part 2 in 10min and part 3 in 3min-->
-<!-- Don't waffle be quick on each slide -->
-<!-- Use chrome for presentation -->
-
 <!-- .slide: data-background="white" -->
 ![](https://github.com/a-shine/butter/blob/main/butterLogo.png?raw=true)
 
+<!-- Butter -->
 A decentralised application (dapp) framework
-
-Note:
-- I present to you...
-- Culmination of a year work - I'm quite proud of it, and I have fallen in love with distributed and decentralised systems
-- So, I'm excited to share that with you
-- Project title was 'efficient decentralised network with case studies' - resulted in the creation of the framework
-- Note, we have a nice logo - important for any good framework
 
 ---
 ## Outline
-
-Note:
-- Like any good story, our presentation is broken down into 3 parts...
 
 ---
 <!-- .slide: style="text-align: left;" -->
@@ -29,7 +14,6 @@ Note:
 - What is Butter?
 - Related works
 - Motivations
-<!-- Review of the research & literature? -->
 - Demo
 
 ---
@@ -38,20 +22,8 @@ Note:
 
 - Introducing the problems
 - Butter's approach
-  <!-- - The goal -->
-  <!-- - Core design philosophies -->
-  <!-- - Solutions -->
 
 ---
-<!-- .slide: style="text-align: left;" -->
-### Part 3: How we got here? <!-- (project management) -->
-
-- The path
-- Unforeseen problems
-- What's to come...
-
-Note:
-- Some project management stuff...
 
 ---
 ## Part 1: An overview of the project
@@ -323,123 +295,20 @@ Note:
 - Decreases the avg nb of generated message per query by a factor of 5
 - Yet we can still retrieve the document just under 60% of the time
 
----
-## Part 3: How we got here
-
----
-### The path
-
-Incremental software development methodology
-
-Note:
-- Started with an intention of being quite Agile but in practice was more of an incremental approach - as I read the literature and become more familiar with a problem, I implemented a solution
-- Incremental Model is a process of software development where requirements are broken down into multiple standalone modules of software development cycle. Incremental development is done in steps from analysis design, implementation, testing/verification, maintenance.
-
----
-#### Summer 2021
-Started learning about blockchains, IPFS, libp2p, Chord and Kademlia DHTs
-
----
-#### Term 1
-- Getting to grip with distributed (decentralised) systems
-- Learning about Rust and systems/network programming
-- Reading academic literature on Information Retrieval in unstructured architectures
-- Completion of the Discovery and Wider discovery packages
-- Implementation of trivial Known host management, and Persistent storage packages
-
-Note:
-- The obvious challenge with this project is it is impossible to do anything until you have at least a trivial 
-implementation of all the necessary components
-- Challenge of a distributed system's project is that the system only really works when you have all the components
-
----
-#### Christmas break
-- Implementation of IR using BFS
-- Switch from Rust to Go
-- Starting to write up project documentation
-
----
-#### Term 2
-- Reading literature on persistence storage on high churn unstructured p2p systems
-- Implementation of intelligent known host management optimising for diversity
-- Implementation of persistent storage based on PCG overlay
-
----
-Throughout weekly meetings with Adam
-
-Note:
-who's been really helpful and supportive throughout
-
----
-### Unforeseen problems
-
-Note:
-- There were 2 key project management decisions that I struggled with
-- The two major turning points in the project
-
----
-#### Problem 1
-
-- Development was taking too long
-- Rust does not yet support easy asynchronous programming
-- Poor tooling (IDE support)
-
-**Solution**: Switch from Rust to Go
-
-Note:
-- By the nature of the project, I had to implement everything at least trivially to start testing and debugging system...
-- While Rust is a great language, it is still a little immature - the tooling is not great yet (just makes debugging a 
-bit harder), the Ownership semantics are quite unique and difficult to get to grip with
-- So will Rust is very performant and lightweight, it was not the right language for this project at least in the 
-context of the limited timeframe and also my limitations (I couldn't learn about systems, network, distributed 
-programming as well as a very different language)
-
----
-#### Problem 2
-
-- Poor quality of papers in peer-to-peer systems
-    - Lack of consistent terminology
-    - Too many assumptions
-- Lack of papers on unstructured peer-to-peer architectures
-
-Note:
-- This is a criticism that Tanenbaum raises in his distributed systems textbook
-- No real solution but added an extra challenge
 
 ---
 ### What's to come...
 
 - Continued development of the project
 - Focus on building a testing framework for peer-to-peer systems in Go
-- Reviewed scepticism of libp2p
 - Integrate a Butter with a browser - idea that as you use the internet you contribute resources to it
-- Possibility of collaborating on a paper with Adam - summative review + formalisation of PCG and Known Host Management techniques
 
-Note:
-- Having been sceptical of libp2p, I have a much better appreciation for its design, I would like to contribute to it
-
----
-## Acknowledgements
-
-- Adam (of course)
-- libp2p project
-
-Note:
-- Adam - helpful and support + I've really liked the fact that we've had lots of interaction
-- libp2p
-  - providing high quality resources
-  - effort to improve the overall field of peer-to-peer systems
-
-<!-- Extra-stuff for completeness -->
 
 ---
 ### Butter vs. libp2p
 ![](https://miro.medium.com/max/2000/1*QDUHOeqahBdSnFGh22AxzA.jpeg)
 
 Note:
-- My initial view was I wanted to steer clear from libp2p
-- As I made progress, my framework started to feel more and more like libp2p
-- Modularity is definitely inspired by libp2p
 - Several implementations of transport, discovery, peer routing and content routing to chose from
 
 ---

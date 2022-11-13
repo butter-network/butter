@@ -60,7 +60,7 @@ go run examples/<example_name>/main.go
 ## Contributing
 
 ### What needs to be done?
-- [ ] Integrating Peer Content Groups storage logic, persist example and wiki into the main Butter repository
+- [x] Integrating Peer Content Groups storage logic, persist example and wiki into the main Butter repository
 - [ ] Fix information retrieval (use IR from PCG)
 - [ ] Implement heuristic based Information Retrieval
 - [ ] Decouple Butter node from TCP protocol

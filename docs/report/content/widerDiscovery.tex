@@ -1,0 +1,61 @@
+\newpage
+
+
+\section{Wider discovery}
+\label{sec:widerdiscovery}
+
+% Problem statement
+For peers to communicate over the internet they need to be accessible publicly, so that others can query them, i.e.\ so that they can serve requests. Once available publicly, they also need to be known by other peers on different subnetworks. This module was designed to address both those problems, referred to here as NAT traversal and Internet discovery respectively.
+
+\subsubsection{NAT}
+
+Network Address Translation (NAT) is the process of translating an IP address so that it makes sense from one subnetwork to another. It is necessary, as there are not enough addresses, when using IPv4, to uniquely identify every device on a large network. Instead, devices on a subnetwork lie behind a router which acts as an endpoint, routing packets to the appropriate device on the local area network. This solution makes it difficult for peers to `listen' to incoming connections behind a router.
+
+When making a request a temporary port is opened in the router enabling the server to communicate with the device making the request. However, if a peer wishes to communicate with a peer on another subnetwork, i.e.\ it wishes to be served by another peer, it cannot uniquely identify that node as all it knows is the IP address of the subnetwork (i.e.\ that of the router), not that of the individual machine that could serve the request. A solution to this is provided by the IPv6 protocol, which introduces a significantly larger namespace, enabling unique identification of all internet connected devices. However, for security reasons many Internet Service Providers have not enabled IPv6 and hence the technology is not yet ubiquitous. The process of establishing and maintaining connections across gateways that implement network address translation is called NAT traversal, and it is requirement for peers to be able to serve each other.
+
+% This is necessary as to efficiently use IP addresses they need to be allocated dynamically. IPv4 was conceived before the internet grew to the extent it is now. There are not sufficient IPv4 address to uniquely identify every internet connected machine so we use dynamic IP address and network address translation to assign IP addresses unique to a subnetwork - this gives rise to the notion of many private IPs being hidden behind 1 public IP adress. TWhile this solution works it makes it makes it very difficuly for peers to listen for incoming connections behind a router carrying out network address translation. When making a request a temporary port is opened in the router enabling the server to communicate with the device making the request. Hoever, if a peer whichs to communicate with another device on another subnetwork, it cannot unquely identify that device - all it knows os the ip address of the subnetwork (i.e. that of the oruter) not that of the individual machine on the subnetwork. A solution to this is was provided by the IPv6 protocol which introduces a significantly larger namespace, hoever since the introduction of IPv4 we have used the limitation of IPv4 as a security mechanism. Essentially, NAT is used much in the same way as a firewall, where local machines are hidden behind and hence ptotecte from the internet by a router. For this reason ISPs and network designers are un-inclined to enable IPv6 protocols on their networks so we for the moment we reamain on IPv4.
+
+\subsubsection{Internet discovery}
+
+Consider the problem of locating a service. In a local area network, a process can simply broadcast a message to every machine, asking if it is running the service it needs. This may be inefficient but LAN links enable this behaviour. Only the machines that are running service respond, each providing its network address in the reply message. Such a location scheme is not possible in a wider network such as the internet. Instead, special location services need to be designed.\cite{tanenbaum2007distributed}
+
+\subsection{Related work}
+
+\subsubsection{NAT traversal}
+
+% UPNP, Hole-punching, STUN
+Firstly, you can avoid the need for NAT traversal entirely by port forwarding, i.e.\ allocating a router port that directs incoming router requests to the desired machine. Alternatively, there are three main approaches to NAT traversal frequently used in peer-to-peer systems. UPnP is a protocol that requires software support from the router and essentially automates the port forwarding configuration process\cite{lee2007upnp}. However, this protocol is not supported by all routers and is often disabled by default for security concerns\cite{kayas2020upnp}. Another approach is STUN, which requires a publicly available server that detects the presence of NAT and attempts to determine the local IP address of the machine behind the router\cite{rosenberg2008stun}. The final technique is Hole punching which requires a third public computer to communicate between the two peers behind NAT\cite{maier2011holePunching}. Hole punching uses a server to create a communication route between peer.
+
+It is important to note that certain firewalls may prevent the technologies from working so some peer-to-peer systems, such as \verb+libp2p+ or BitTorrent attempt various techniques simultaneously depending on what works and is available in the specific instance of the communication between peers.
+
+\subsubsection{Internet discovery}
+
+% DHT
+Internet discovery can be approached in several ways depending on the architecture of the peer-to-peer system. In structured peer-to-peer network discovery comes about by providing bootstrapping to the network, i.e.\ joining the network and enabling the network to restructure itself with the existence of the newly joined node. \verb+libp2p+ achieves this in its \verb+kad-dht+ module, where once a node is bootstrapped it can be found according the protocols of the Kadmilia distributed hash table\cite{maymounkov2002kadmilia}.
+
+% Randezvous
+In unstructured peer-to-peer networks the problem is significantly harder to solve. Gnutella achieves internet discovery by providing a list of well known highly available nodes which can act as rendezvous servers and enable peers to discover others across subnetworks. While this technique works, it not fully decentralised and hence can be prone to failure.
+
+\subsection{Design \& implementation}
+
+\subsubsection{NAT traversal}
+
+Butter does not implement a solution to NAT traversal yet. Instead, users are expected to port forward to make themselves publicly visible to others. While this is not an ideal solution and requires users to have a certain level of technical literacy to manually configure their router, it does mitigate the need for NAT traversal. As discussed in the related work, there are several other possible techniques all of which have their drawbacks.
+
+A possible implementation using UPnP was considered, however, the protocol is unsupported by some routers and disabled by default on most. In addition, it is a difficult protocol to work with and Go currently does not provide libraries to handle the complexity, resulting in the feature being disregarded.
+
+\subsubsection{Internet discovery}
+
+For internet discovery, Butter introduces Ambassadors which are similar to rendezvous servers but community driven. Essentially, they are peers like any other with appended functionality which enables them to act as meeting points between peers. They can introduce peers to each other, and hence help to propagate connections between subnetworks. As a user, when spawning a Butter node, you can specify if you want your node to be an Ambassador, on the condition it is accessible publicly. As an Ambassador, a node appends a flag to its host quality metric metadata. This enables its peers to know it is an Ambassador.
+
+% Inbuilt behaviour to maintain a public index table of publicly available nodes that could bridge subnetworks
+
+\subsection{Evaluation}
+
+Port forwarding in an imperfect solution that relies on users having to configure their routers to make themselves publicly available. This is far from an ideal solution as it introduces a certain level of required technical literacy to participating in the network. Other techniques exist but they also have their flaws. A better approached could be achieved with IPv6, however for the moment we are dependent on Internet Service Providers enabling IPv6 support on their networks.
+
+Testing was difficult for this module as it would have required simulating subnetworks and routers. In the future, further testing will be needed to better evaluate the solution to Internet discovery. It may be interesting to explore simulating subnetworks as an extension to the Butter testbed.
+
+Ambassadors are probably one of the weakest parts of the framework's design as they introduce some form of centralisation. There is going to be a need for at least one known endpoint for two subnetworks to be bridged by an Ambassador. Once a single bridge is made, then other nodes can learn about and communicate with other publicly available nodes, however, a first bridge still needs to be made. Future version of Butter will seek to provide a more decentralised approach.
+
+

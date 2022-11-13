@@ -1,0 +1,55 @@
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+
+\section{Summary}
+\label{sec:summary}
+
+This report has introduced some core concepts in distributed architectures and how they can give rise to decentralised systems. We have described two common types of peer-to-peer architectures: unstructured and structured, and discussed their benefits and limitations. Furthermore, we introduced the motivations and major contributions of this work. In Chapter~\ref{ch:relatedProjects} we gave an overview of several significant projects both past and present focused on building peer-to-peer systems. Aspects of the project's management were discussed in the ensuing chapter where we briefly justify the decision to gravitate towards an incremental development model and present some turning points in the project's development.
+
+The technical detail for the project is contained within Chapter~\ref{ch:buildingButter}. There, each module of the framework was described and evaluated in detail. The core problems presented are: local peer discovery, NAT traversal and internet discovery, peer selection, persistent information storage and information retrieval. Each module of the framework attempts to provide a decentralised solution to one or more of these problems. The report finishes by discussing some case studies that present interesting arguments and open a debate about decentralised systems and the resulting autonomy of the services they provide.
+
+
+\section{Butter vs. libp2p}
+
+It may be interesting to briefly look at how Butter compares to its closest neighbour: \verb+libp2p+.
+
+Having initially been sceptical of \verb+libp2p+, I have a much better appreciation for its design having built a peer-to-peer framework myself. The concept of multiadddresses is a particularly ingenious way of creating generalised nodes which are capable of providing infrastructure to deliver many types of services. In addition, \verb+libp2p+'s focus on modular design enables developers to use it for specific problems they encounter without needing to convert their entire existing system to the framework. \verb+libp2p+'s specification is implemented in JavaScript, Go and Rust with future plans for Python, Java and Haskell which should help make it a ubiquitous solution to designing peer-to-peer systems regardless of the language of choice\cite{protocollabs2022implementations}.
+
+Furthermore, another particularly good feature of \verb+libp2p+, is that it is independent of any specific transport layer, making it more flexible and adaptable to different use cases. In addition, the project's focus on high quality documentation and promoting research into p2p system has been a valuable contribution the field.
+
+% As Butter evolved elements started to feel more and more like \verb+libp2p+. The philosophy of modular design is definitely inspired by \verb+libp2p+. In future, it would be good to generalise Butter so that it is not restrict to a TCP transport protocol like libp2p.
+
+
+\section{Future work}
+
+While we have mentioned possible improvements to the individual Butter modules in their respective sections we have not yet discussed broader future directions for the project. It is my full intention to continue to research and improve the Butter framework.
+
+Since the project's first open source publication, several developers have been in contact discussing possibilities to collaborate and exchange ideas. This is tremendously exciting and there is a lot of work to be done as the problem of scalable decentralised systems has yet to be solved. In addition, I have been in contact with the developers at Protocol labs (libp2p) and the Maidsafe project (SAFE network) discussing future roles and possibilities for contribution.
+
+One of the first improvements to make would be to develop a significantly more robust testbed. One of the main limiting factors in progress and research for the project was testing, so improved testing utilities would be beneficial. It would be particularly interesting to expand on the work of Zeinalipour on PeerWare\cite{zeinalipour2005peerware}. PeerWare is a testbed for information retrieval on peer-to-peer networks that enables specific instances of network topologies. Adding this functionality to the Butter testbed would enable better exploration of edge cases particularly for the Known host management module.
+
+Another interesting direction for the project would be to integrate a Butter node with a browser; similar to what is being done by the Beaker Browser project\cite{dat2022beaker}. This has been an initial long-term goal for the project as it provides an elegant means of inciting contribution to the network. This design would support a future Internet consumption model where users are expected to contribute resources as they consume services available on the Internet. The effect would be similar to that of the `tit-for-tat' BitTorrent protocol were once you download a file you are expected to host it for others (seeding).
+
+Throughout the project, Adam Chester and I have discussed the possibility of collaborating on a paper. The intention would be to provide a summative review of the various problems and protocols present in unstructured peer-to-peer architectures. Furthermore, some more work needs to be carried out on the Peer selection problem which is not widely been researched thus far as most research is focused on structured approaches to generate network topologies. In addition, further extensions to the PCG mechanisms will be required before the network could be widely deployed (see section~\ref{legalSocialEthical}).
+
+
+\section{Legal, social and ethical considerations}
+\label{legalSocialEthical}
+
+Peer-to-peer systems are both a technical and social phenomenon\cite{glorioso2010social}. As Gnutella has shown, they can be associated with a host of legal and ethical considerations. Notably, peer-to-peer systems have been notoriously used to share information protected by copyright law. This was both the case on the Gnutella network and on some BitTorrent networks.
+
+Allusions have already been made in Section~\ref{sec:caseStudies} to the limitations of decentralised and autonomous networks in regard to information management. Focusing specifically on Butter, there is currently no option to update or remove information from the network. The PCG mechanism can, in its current form, only store information, and thus far has been entirely focused on information persistence.
+
+The `right to be forgotten'\cite{globocnjik2020right} and the right to update and correct information cannot be met in the current implementation of Butter. It will be necessary, before Butter can be put into practical use, to extend PCG to enable $update$ and $delete$ operations as we have a legal and ethical responsibility to design systems that allow incorrect information to be modified and comply with the `right to be forgotten'.
+
+
+\section{Author's assessment of the project}
+
+This project has been fascinating, and I am pleased with my new-found knowledge and proud of the resulting work. I distinctly remember how it exciting it was when the peer discovery mechanisms first started working, being able to see two entirely independent computers become aware of each other's existence. I am particularly pleased with the work on the persistent information storage mechanisms and find the idea of autonomous networks enticing.
+
+This project has allowed me to gain a significant level of expertise in the field of decentralised peer-to-peer systems, and it has without doubt become one of my passions. The framework is open source and is my first project to gain traction in the open-source community. I have had several individuals approach me with a desire for collaboration and have even received a job offer based on the work carried out for the project.
+
+%Finally, it is a matter of personal satisfaction that a version of this report is now hosted on a Butter network.
+
+% Culmination of a year work - I'm quite proud of it, and I have fallen in love with distributed and decentralised systems

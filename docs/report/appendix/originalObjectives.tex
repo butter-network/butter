@@ -1,0 +1,38 @@
+\chapter{Original objectives}
+\label{objectives}
+
+For the readers convenience, here bellow lies the objectives from original project specification.
+
+\section{Functional objective}
+\begin{enumerate}
+    \item Design and implement a decentralised application platform.
+          \begin{enumerate}
+              \item Implement rudimentary TCP communication between peers
+              \item Implement peer discovery mechanism
+              \item Implement data structure commonly understood by the peer-to-peer network nodes (most likely a decentralised hashtable)
+              \item Implement an addressing mechanism, possibly content-based addressing
+              \item Implement mechanism in which network data consistency is managed with node exit
+              \item Implement agent nodes that help maintain data consistency even with node failure % this was not implemented as PCG the functionality was provided by PCGs
+          \end{enumerate}
+    \item Build a knowledge base/encyclopedia Wikipedia style application on top as a case study.
+          \begin{enumerate}
+              \item Use decentralised platform API to store encyclopedia content
+              \item Design a method of accessing and visualising the content
+          \end{enumerate}
+\end{enumerate}
+
+\section{Non-functional objectives}
+\begin{enumerate}
+    \item Learn Rust/Go/JS
+    \item Lean about decentralised networks
+    \item Learn about historic and new approaches to the decentralisation problem
+    \item Propose a use case where users contribute as peers whilst navigating the application on the decentralised platform
+    \item Discuss the legal, ethical and social impacts of a decentralised knowledge base
+    \item Contribute a valuable learning resource to newcomers (such as myself) getting started with decentralised systems
+\end{enumerate}
+
+\section{Possible extensions}
+A possible extension would be to achieve a use case, where a user using a decentralised application, in exchange, contributes resources to the decentralised network similar to how 'torrenting' or the Beaker Browser work. As a user views and downloads files, they also host them for others on the network.
+
+\section{Out of scope}
+Enabling the network to connect to peers over the Internet, while being exciting, is out of scope for the project. The Internet adds a layer of complexity as peer discovery is problematic on a network as extensive as the Internet. Discovering peers would require Network Address Translation, moving from one sub-network to another, which is challenging to do in a decentralised way.

@@ -1,0 +1,65 @@
+\documentclass[a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{import}
+\usepackage{titlesec}
+\usepackage{pgfgantt}
+\usepackage{geometry}
+\usepackage{changepage}
+\usepackage{tocbibind} % adds bibliography to table of contents
+\usepackage[most]{tcolorbox}
+\usepackage{lmodern}
+\usepackage{lipsum}
+\usepackage{tikz-qtree}
+\usepackage{tikz}
+\usepackage{algorithm2e}
+\usepackage{listings}
+\usepackage{booktabs}
+%\usepackage{parskip}
+
+
+\SetKw{Continue}{continue}
+\SetKw{Break}{break}
+
+\titleformat{\chapter}{\normalfont\huge\bfseries}{\thechapter}{1em}{}
+
+
+\title{Butter - a decentralised application framework}
+\date{\today}
+
+\begin{document}
+    \maketitle
+
+    \begin{abstract}
+        Peer-to-peer (p2p) systems have some interesting properties in regard to scalability and dependability, due to their decentralised nature. They address many of the pitfalls of centralised architectures such as cost of infrastructure and single points of failure, resulting in fault-tolerant networks that can behave autonomously. Many of the current efforts to design peer-to-peer systems use structured elements which improve the performance but re-introduce some of the precariousness present in centralised systems. Butter is a peer-to-peer framework loosely inspired by other project such as Gnutella, JXTA and libp2p, its goal is to explore what is achievable in unstructured p2p networks. Each of the problems in building a p2p middleware corresponds to a module of the framework. Peer discovery is handled using a multicast protocol, we introduce a unique approach to known host management optimising for diversity and describe the design of the Network Address Translation (NAT) traversal and internet discovery module. Finally, we present the overlay design that enables persistent information and information retrieval by introducing Peer Content Groups (PCG) and Random Breadth-first search mechanisms respectively. An analysis of different decentralised application services is provided arguing the benefits and shortfalls of decentralised architectures. The work provides a complete overview of the project, covering all aspects including background information, related projects, management challenges, design, testing and evaluation of Butter. We describe the technical achievements, give direction as to the next stage of the development and conclude that peer-to-peer architectures are particularly well suited for public information and communication services but designing these systems can be more complex than their centralised counterparts.\\
+
+        \noindent\textbf{Keywords:} Networks, Distributed systems, Decentralisation, Peer-to-peer (p2p), Dependability, Availability, Middleware, Framework
+    \end{abstract}
+
+    \tableofcontents
+
+    \input{content/introduction}
+    \input{content/relatedProjects}
+    \input{content/buildingButter}
+    \input{content/testbed}
+    \input{content/discovery}
+    \input{content/knownHostManagement}
+    \input{content/widerDiscovery}
+    \input{content/persistentInformationStorage}
+    \input{content/persistentInformationRetrieval}
+    \input{content/caseStudies}
+    \input{content/conclusion}
+
+    \bibliographystyle{ieeetr}
+    \bibliography{citations}
+
+    \appendix
+
+    \input{appendix/originalObjectives}
+    \input{appendix/originalTimeline}
+    \input{appendix/revisedTimeline}
+    \input{appendix/jxtaProtocolList}
+
+\end{document}

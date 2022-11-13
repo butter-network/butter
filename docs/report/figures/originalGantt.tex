@@ -1,0 +1,35 @@
+\begin{ganttchart}[x unit  = 0.2cm]{1}{32}
+    \gantttitle{Term 1}{10}
+    \gantttitle{Christmas break}{5}
+    \gantttitle{Term 2}{10}
+    \gantttitle{Easter break}{5}
+    \gantttitle{Term 3}{2}\\
+    \gantttitlelist{1,...,10}{1}
+    \gantttitlelist{1,...,5}{1}
+    \gantttitlelist{1,...,10}{1}
+    \gantttitlelist{1,...,5}{1}
+    \gantttitlelist{1,...,2}{1}\\
+    % Elems
+    \ganttbar{Preparing specification}{1}{2}\\
+    \ganttmilestone{Specification due}{2}\\
+    \ganttbar{F.O. 1.(a)}{2}{2}\\
+    \ganttlinkedbar{F.O. 1.(b)}{3}{4}\\
+    \ganttlinkedbar{F.O. 1.(c)}{5}{6}\\
+    \ganttlinkedbar{F.O. 1.(d)}{7}{7}\\
+    \ganttlinkedbar{F.O. 1.(e)}{8}{8}\\
+    \ganttlinkedbar{F.O. 1.(f)}{11}{13}\\
+    \ganttbar{Progress report write-up}{8}{9}\\
+    \ganttmilestone{Progress report due}{9}\\
+    \ganttbar{F.O. 2.(a)}{14}{14}\\
+    \ganttlinkedbar{F.O. 2.(b)}{15}{15}\\
+    \ganttbar{Non-functional objectives}{1}{23}\\
+    \ganttbar{Prepare presentation}{23}{23}\\
+    \ganttmilestone{Presentation}{24}\\
+    \ganttbar{Report write-up}{3}{30}\\
+    \ganttmilestone{Final report submission}{31}\\
+    \ganttlink{elem0}{elem1}
+    \ganttlink{elem8}{elem9}
+    \ganttlink{elem7}{elem10}
+    \ganttlink{elem13}{elem14}
+    \ganttlink{elem15}{elem16}
+\end{ganttchart}

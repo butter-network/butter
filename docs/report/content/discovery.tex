@@ -1,0 +1,85 @@
+\newpage
+
+
+\section{Discovery}
+\label{sec:discovery}
+
+% \subsection{Problem statement}
+
+Before any service can be delivered by a node, it needs to be known by other nodes, i.e., a node cannot benefit from or provide a service to the network if it is unknown by the network. In an effort to remove any form of centralisation, nodes cannot communicate with a known endpoint at spawn because there is no known endpoint. In other words, when the node is first spawned, it is not aware of any other nodes and hence cannot participate in the network, so the problem can be thought of as: how does a node get known by other nodes and conversely how do other nodes get to know the newly spawned node?
+
+Note that this version of the peer discovery problem is only relevant in local area networks (LAN). Local area networks generally provide highly reliable communication facilities based on broadcasting, making it much easier to develop distributed discovery systems\cite{tanenbaum2007distributed}. Please refer to the Wider discovery section to see how nodes discover each other across subnetworks.
+
+\subsection{Related work}
+Here we will discuss some notable mechanisms and technologies used to enable communication between initially unknown nodes on LAN.
+
+\subsubsection{Broadcasting}
+
+There are two types of network links: point-to-point links and broadcast links. A point-to-point link consists of a single `sender' process communicating with a single `receiving' process (often referred to as a listening process). Broadcast links, on the other hand, can have multiple sending and receiving nodes, all connected to the same shared broadcast channel\cite{kurose2010computer}. In essence, broadcasting allows all host connected to a network, to share the same communication channel and so a packet sent by a host is received by all the other hosts on the network.
+
+In broadcasting, we often specify the address of the intended recipient in the address field of the packet. While the packet is sent to all others on the network, only the recipient host processes it. However, there is also a possibility to address a packet to all hosts on the network by specifying a special code in the address field of the packet. When the packet is transmitted, it is received and processed by all the host in the network.\cite{tenanbaum2012networks}
+
+One of the main limitations of broadcast is that it has no mechanism to limit the recipients of a broadcast and so sends packets to all devices on a local area network. This is not of much importance on small local networks but can introduce significant bandwidth usage on larger LANs.
+
+% Various methods have been proposed for Broadcasting. One such method that requires no special features from the network is for the source to send a distinct packet to each destination. Not only is the method wasteful of bandwidth and slow, but it also requires the source to have a complete list of all destinations. This method is not desirable in practice, even though it is widely applicable.\cite{tenanbaum2012}
+
+% Another more elegant solution to broadcasting is the method of reverse path forwarding\cite{dalal1978reverse}. When a broadcast packet arrives at a router, the router checks to see if the packet arrived on the link that is normally used for sending packets toward the source of the broadcast. If so, there is an excellent chance that the broadcast packet itself followed the best route from the router and is therefore the first copy to arrive at the router. This being the case, the router forwards copies of it onto all links except the one it arrived on. If, however, the broadcast packet arrived on a link other than the preferred one for reaching the source, the packet is discarded as a likely duplicate.\cite{tenanbaum2012}
+
+\subsubsection{Multicasting}
+
+Multicasting is a transmission method in which copies of a packet are transmitted to a group of the hosts in the network interested in receiving the packet. The relationship between source and destination is one-to-many, as apposed to one-to-all for broadcasting. In multicasting, destination address is specified as a group address.
+
+Multicast group membership is configured when devices send `join' packets to an upstream router. The routers and switches keep track of this membership; so when multicast packets arrive at a switch, they are only sent to devices that want them.
+
+\subsubsection{Multicast DNS}
+
+Multicast DNS (mDNS) is a technology originally developed at Apple under the name Bonjour and has since been adopted as an internet standard\cite{cheshire2013mdns}. It is used to locate a device or service by name on a small local network without using a pre-configured name sever, i.e, a DNS. While the protocol uses the same packet structure and commands as DNS, it does not rely on a DNS server, instead computers on a network create their own local DNS records and store them in memory. When a host on the network requires the IP address of another host, it sent a DNS query using a multicast UDP message. All mDNS hosts see this query and the host storing the IP address responds. Because messages are exchanged using multicast, all other mDNS hosts see this exchange and can make a note of the network name and IP address. They can then update their local cache.
+
+\subsection{Design \& implementation}
+
+The Butter Peer discovery mechanism is loosely inspired by the mDNS protocol. Multicast was preferred over broadcast in an effort to minimise wasted bandwidth usage. With multicast only devices running Butter node processes, receive and interpret packages.
+
+As a node spawns, it initially has no known hosts. When a node's list of known hosts is empty, the node goes into discovery mode. In discovery mode, the node, at regular intervals, sends a $PING$ packet containing its listening address along a UDP multicast channel. All peers have a background procedure that listens out for incoming $PING$ packets. If a $PING$ packet is received by a remote host, it attempts to append the new host to its list of known hosts (given enough available memory) and responds with a $PONG$ packet containing its own listening address. If a discovering node receives no response, a 10-second timeout occurs before trying again.
+
+Please see Algorithms~\ref{alg:ping} and~\ref{alg:pong} to view the pseudocode for the discovery mechanism.
+
+\begin{algorithm}
+    \While{no known hosts}{
+        Send ping message long a UDP multicast channel\;
+        Wait up to 10 seconds for a response\;
+        \eIf{$response \neq \emptyset$}{
+            Append payload (remote node's listening address) to local list of known hosts\;
+            \Break\;
+        }{
+            Timeout for 10 seconds\;
+        }
+    }
+    \caption{Procedure for pinging out to other nodes}
+    \label{alg:ping}
+\end{algorithm}
+
+\begin{algorithm}
+    \While{}{
+        Listen for broadcast packets in the multicast channel\;
+        \If {$packet \neq \emptyset \And packetType = PING$} {
+            Try to append to local list of known hosts\;
+            Send a response containing address\;
+        }
+    }
+    \caption{Procedure for listening out to ping requests to join the network}
+    \label{alg:pong}
+\end{algorithm}
+
+%In Algorithm~\reg{algo:ping}, we are forced to have an upper bound timout while waiting for a response as we are operating under an asynchronous network model. That is, there is no upper bound on the amount of a time a message might take to be transmitted on the network
+
+This implementation uses Go routines, which are lightweight threads to run the asynchronous procedures. In addition, Go provides in its default \verb+net+ packages an implementation of a UDP multicasting server and client which is used to initialise the UDP multicast channel.
+
+Once an initial connection is made, the $PING$ procedure stops and will only restart if the node detects it no longer has any known hosts. Nodes will always be listening out for incoming $PING$ packets. Once connected a node can learn about other peers on the network by querying its newly known host about the other remote hosts.
+
+\subsection{Testing \& Evaluation}
+
+The approach taken by Butter is similar to that of \verb+libp2p+ when discovering local peers. While it is effective, and uses significantly less bandwidth than broadcasting, there are some limitations. Firstly, the ping timeout interval affects the speed at which a new node can be discovered by the network. In worst case, discovery can be as long as the peer timeout interval plus any latency.
+
+In a simulated testing environment, using the Butter testbed, a slow ping rate affected network functionality as nodes programmatically attempted to retrieve information before having any known hosts. In a practical environment this should not pose an issue but the module does provide a user parameter to change the default 10 second interval, so it can be best set to suit the operating environment. In most practical cases, a 10 second interval should suffice.
+
+Finally, as discussed previously, the main limitation of this method is that it is restricted to LAN discovery. In addition, on certain LAN networks with extra security protocols, UPD multicasting to certain reserved groups may fail and hence nodes will be unable to discover each other. A solution to this may be to implement several fall-back discovery protocols like in \verb+libp2p+, this could be developed in later version of the project.

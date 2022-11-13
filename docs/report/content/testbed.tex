@@ -1,0 +1,17 @@
+\newpage
+\section{Testbed}
+\label{sec:testbed}
+
+Butter provides a testbed that enables stress testing and experimenting with Butter peer-to-peer networks. The tool can be used to spawn $n$ nodes on a single machine (using go-routines), it can artificially introduce churn and add random data to the network. These steps can be carried out in various user defined sequences with timeouts allowing network recovery. Specific features of the tested can be extended based on the testing requirements of the module.
+
+\subsection{Limitations \& challenges}
+
+Firstly, it is important to note how difficult it is to accurately test peer-to-peer networks in simulation\cite{almeida2008framework}. The systems are designed to connect different remote devices and hence without access to large amounts of network testing hardware, it can be difficult to run accurate simulations. Simulating nodes on a single system will often be limited, despite efforts to add randomised latency and introduce node and link failure. While the simulation might not present a realistic environment it does give an opportunity to create extreme scenarios to test edge cases.
+
+% In the simulated environment links are significantly faster and more stable than on a `real world' network. A representative test rig is difficult to achieve and the simulated environment is unlikely to reflect how nodes may behave on the wider internet.
+
+In addition, there are hardware constraints to testing on a single system. Generating a large simulated network across many threads, introducing churn, and opening and closing ports in rapid succession locally on the system can cause the testbed to behave unpredictably. Hence, we are bounded on the amount of nodes that can be spawned by the test device's resources.
+
+Nodes behave asynchronously so can take unpredictable amounts of time to spawn (e.g. blocking while OS allocates port or as thread gets created), and it is difficult to determine how long a spawned node will take to discover other nodes on the network. This means it is difficult to create and destroy nodes in rapid succession. We are forced to include timeouts to give nodes sufficient time to start up and connect to the network (i.e. discover other nodes). This results in unpredictable success of test runs and/or very long test runs (up to several hours).
+
+An interesting future improvement to the testbed would be to allow the generation of specified network topologies\cite{zeinalipour2005peerware}. This would enable controlled tests of very specific edge cases.

@@ -12,6 +12,12 @@ import (
 
 const EOF byte = 26 // EOF code
 
+type Listener interface {
+	Accept() (Conn, error)
+	Close() error
+	Addr() Addr
+}
+
 type Conn interface {
 	read()
 	write()

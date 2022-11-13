@@ -1,0 +1,237 @@
+\newpage
+
+
+\section{Persistent storage}
+\label{sec:persistentStorage}
+
+% Problem statement
+A fault-tolerant decentralised design can be beneficial with regards to data availability in a service where information needs to be stored. By introducing data maintenance mechanisms we can make information persist beyond an instance of a specific node. Trivially, if there is no possibility of node or link failure, a node can simply transfer the information it hosts to another node before gracefully exiting the network. However, if we introduce the possibility of failure, maintaining a high probability of data retention becomes significantly more challenging.\cite{shinebourne2022availability}
+
+% Without data replication, information availability is dependent on the availability of any given node.
+An obvious solution to making data persist despite failure is to introduce a certain level of information redundancy on the network. However, efficiently managing redundant copies of information is a non-trivial challenge. If the network has a high churn rate, i.e.\ a high turnover of nodes either gracefully or ungracefully (by failure) leaving the network, this problem becomes highly relevant\cite{duarte2014reliable, ranganathan2002replication}.
+
+% Contribution
+In this module of Butter, an overlay network was designed based on the premise of Peer Content Groups (PCGs)\cite{duarte2014reliable}. The original design was first modified to remove reliance on structured network elements\cite{shinebourne2022availability, duarte2014reliable}, and here we suggest further extensions to the protocols, improving the performance of the data retention mechanism while maintaining a decentralised design and usable levels of efficiency.
+
+\subsection{Related work}
+
+In this section we will explore some of the existing approaches and technologies that enable persistent storage of information on a peer-to-peer network.
+
+\subsubsection{Peer Content Groups (PCGs)}
+\label{sssec:pcgAvailability}
+
+Peer Content Groups provide an intuitive framework for reasoning about persistent information on a network. Instead of thinking about data in terms of individual nodes, we think about data being hosted by logical entities known as PCGs. The original premise for PCGs was to allow for transparent interaction with the network. So, if a peer fulfilling a request fails, the request can still be handled by other members of its group. This puts the responsibility of the quality of service on the peer-to-peer network, rather than on the peer making the request\cite{shinebourne2022availability}.
+
+The protocol is as follows: when information is added to the network, a group is created, hence, each group maintains one data block on the network, replicating it across its members\cite{shinebourne2022availability}. A node can be a member of as many groups as it has the memory capacity to store. The network of groups is `overlayed' on the network of Butter nodes. Members of the same group are not necessarily known hosts to each other, so, the PCG network may have different edges to the underlying known host network (see Figure~\ref{fig:overlayPCG}). Groups recruit new members through the use of advertisements, and a node may join a group by responding to an advertisement. Advertisements introduce the main limitation of the original PCG implementation\cite{duarte2014reliable}. In the original PCG protocol there is the notion of super-peers which work as rendezvous points where group advertisements are publicised. This enables efficient communication across the network. However, this reliance on super-peers, re-introduces elements of centralisation.
+
+Groups know to advertise for new members based on their Group status. Each node maintains its own group status by the using heartbeat pings. The heartbeat pings are used as eventually perfect peer failure detectors, i.e.\ oracles that eventually output an accurate representation of what nodes have failed in the group. When a heartbeat message is received from a node, it updates its $localGroupView$, i.e.\ what each group member node believes to be the group’s state. If a node does not receive a heartbeat ping within a given timeout period, the peer is removed from the node’s view of the group members. This process allows the group status to tend towards consensus.\cite{shinebourne2022availability}
+
+If the group is in an arbitrarily defined `unsafe' state, i.e.\ if the group is too low on members and hence the information it is responsible for is at relatively high risk of loss, a leader is elected to publish an advertisement at the rendezvous point. If available, a new node will join the group.
+
+\subsubsection{The group membership problem}
+
+As seen in Section~\ref{sssec:pcgAvailability}, it is required that PCGs maintain some consensus on the group status, i.e.\ what group members are still alive and hosting the group information. This allows the data to remain highly available despite node failure. The generalisation of this problem is introduced in Riccardi’s paper\cite{ricciardi1992gmp} as the Group Membership Problem (GMP). The GMP consists of two ideas: eventually perfect failure detection\cite{mostefaoui2003failure} and consensus\cite{barborak1993consensus} between non-faulty group members on current group member status\cite{bracha1985asynchronous}.
+
+% Methods for achieving group membership
+There are several methods that can be employed to achieve consensus between group members and hence have an accurate group status. Here we discuss two possible approaches: Heartbeat protocols and Randomised gossiping protocols.
+
+\begin{itemize}
+    \item \textbf{Heartbeat protocols}\\
+    Heartbeat protocols are conceptually simple and hence a popular way of dealing with the GMP. Each node sends a message to the other group members at repeated intervals to maintain its view of the group. While heartbeats work, they are associated with high message complexity. The message complexity for a group of size $n$ is $O(n^2)$ as each group member is having to send a message to all of the other members.
+
+    Heartbeat protocols perform as eventually perfect failure detectors by, at regular intervals updating their knowledge of other nodes in the group. This enables the convergence towards consensus on group status. The length of the interval can be changed affecting the mean time to detection (MTTD) which impacts the performance of the protocols.
+
+    % Many of the other probabilistic or randomised approaches to achieving group membership consensus only converge on an acceptable mean time till detection, whereas the heartbeat protocols provide an upper bound guarantee on the maximum time till detection (the length of the timeout).
+
+    \item \textbf{Gossip protocols}\\
+    An interesting alternative to heartbeat protocols is gossip-based protocols\cite{lindeberg2020scamp}. In a gossip approach, a peer selects uniformly at random another peer with which to share its knowledge. The information is then loosely disseminated through the system, eventually converging to a consensus. Gossip-based approaches are randomised and hence probabilistic.
+
+    The Scalable Weakly-consistent Infection-style Process Group Membership (SWIM) protocol~\cite{das2002swim} is a good example of a gossip-based approach. SWIM addresses the group membership problem in two parts. Firstly, failure detection is achieved through a randomised probing algorithm. With this approach, the expected mean time to first detection is impartial to group size, and the message complexity grows only linearly with group size. Secondly, the information obtained through randomised probing is disseminated through the gossiping protocol, providing a solution to the GMP\cite{shinebourne2022availability}.
+
+        % One of the limitations of gossip-based solutions to the Group Membership Problem is the requirement for full knowledge of global group membership, thus limiting its ability to scale for large groups. The Scalable Membership Protocol (SCAMP)\cite{SCAMP_subs} provides a system in which peers have only a partial view of the group, whilst maintaining comparable reliability to SWIM. This is achieved through a subscription model, in which peers create, forward and store subscriptions to produce randomised partial views. The size of this partial view is proportional to $log(n)$ where $n$ is the number of nodes in the group, and some design parameter $c$ is selected to optimise availability with memory and network usage.
+\end{itemize}
+
+%\subsubsection{Group participant selection}
+%
+%When the group status is determined to be unsafe, i.e.\ with a high probability of data being forever lost, we should add a new peer to the group and hence replicate the data. To maximise availability, the elected leader should choose to add a peer that is unlikely to fail. This minimises the likelihood of any peer maintaining data $D$ to fail, thus minimising the collective likelihood that all peers maintaining $D$ should fail within a time period $t$. In the scenario where all peers fail either simultaneously or the last remaining node is unable to add a new group participant, in time, before failing, the data will become forever lost as the group is unable to recover.
+%
+%A function $f$ given a peer $p$ is required to evaluate the potential for failure of $p$ such that it can be compared against that of other peers. $f$ provides a means of evaluating peers in such a way as to maximise availability\cite{shinebourne2022availability}. The factor that primarily influences the evaluation of replicating a file $F$ stored at peer $p$ to any given peer $p'$ is the historic peer failure rate of $p'$\cite{ranganathan2002replication}.
+%
+%Factors, other than the historic peer failure rate, could be included into the evaluation which could help improve both availability and information retrieval performance:
+%
+%\begin{itemize}
+%    \item The transfer time of file $F$ from $p$ to $p'$
+%    \item The available storage of $p'$ for $F$
+%    \item The geographical location of $p'$
+%\end{itemize}
+
+\subsection{Design \& implementation}
+
+Here we will discuss the design and implementation of Butter's persistent information storage module based on PCG. Note that throughout this section we assume the use of reliable and ordered links as the implementation is built on top of the TCP protocol.
+
+\subsubsection{PCG}
+
+The Butter Persistent information storage module implements a modified version of the PCG protocol\cite{duarte2014reliable}. This enables the persistence of information beyond specific node instances resulting in transparent content delivery despite high network churn\cite{baldoni2005churn}.
+
+PCGs are groups of network nodes, i.e.\ peers, that contain a copy of a piece of data. Groups improve the dependability of the system by maintaining data availability as long as at least one peer in the group remains fault-free. The group members are responsible for maintaining the integrity of the group. The integrity metric is defined as the number of non-faulty peers $n$ over the desired replication constant $r$, i.e.\ how many nodes are hosting a replicated piece of information over how many nodes are expected to be hosting a replicated piece of information. Should $n < r$, then the elected leader will attempt to rectify the fault by recruiting new peers from its known hosts.\cite{shinebourne2022availability}
+
+\subsubsection{Group membership}
+
+As introduced in the GMP, maintaining consensus between peers in a group so that they collaborate to maintain information is one of the core problems to solve. The problem is particularly difficult to solve efficiently in unstructured networks.
+
+Butter's implementation uses a heartbeat protocol as it provides a simple solution to the two sub-problems in the Group Membership Problem, i.e.\ failure detection and consensus. However, heartbeat protocols have the primary disadvantage of producing message complexities of $O(n^2)$ which makes them unsuitable for large group sizes. With Butter's PCG implementation, however, the default group size is relatively small ($r=3$), reducing the issue of exponential message complexity.
+
+As the primary focus of this design is to maximise availability, a probabilistic approach, such as using Gossip-based algorithms is less suitable (at least until further quantitative testing is carried out). The primary benefits of gossip-based approaches, over heartbeats, can be seen when group sizes are much larger making the cost of maintaining consensus between group members impractical. But gossip-based approaches introduce non-optimal probabilistic confidence of consensus which leads to higher risk of information loss.
+
+Another advantage of heartbeats is that they can be modified to provide faster detection of peer failure by changing the heartbeat interval. By changing the heartbeat interval and desired replication constant parameters, the Butter network can be adjusted to better reflect the operating environment. For example, on lower churn networks, it may be suitable to reduce the heartbeat interval and replication constant to decrease message complexity. So a heartbeat design can be adapted to better suit the specifics of the network by tuning the parameters. Each parameter can affect system performance on multiple metrics such as probability of information retention, mean time to detection and network usage.
+
+If heartbeats, by chance, are synchronised, there can exist long periods of unknown where no members have an accurate representation of the group status. Butter mitigates this by introducing randomised `palpitations'. While the heartbeat interval is generally regular for all group members, occasionally a random extra heartbeat by a node is introduced resetting its start interval. This reduces the probability that all the heartbeats are synchronised, allowing a more continuous polling of the group status as the heartbeats are offset.
+
+% A drawback of heartbeat PCG is that network message complexity scales with the number of groups. If groups only store small pieces of information, on a network storing lots of information, hence with many groups, network traffic can become busy. To limit this, improvements to the heartbeat algorithm can be made. Using multi-casts, for example, could in theory make network traffic scale with the number of peers, rather than with the number of groups\cite{}. Another optimisation would be to pool data into groups so that each group maintains more information reduce the overall number of groups however this will decrease the networks information availability as it more precarious to have large amounts of information being maintained by fewer groups.
+
+\noindent Groups can be in one of three states:
+\begin{itemize}
+    \item \textbf{Cold} ($n<c$) - Not sufficient group members relative to the desired data replication count resulting in a higher probability of information loss
+    \item \textbf{Goldilocks} ($n=c$) - Exactly the right amount of group members and hence duplicated data on the network maintaining a desirable level of information availability
+    \item \textbf{Hot} ($n>c$) - Too many members in a group, and hence too many redundant information copies (often as a result of two large subnetworks being bridged). This state does not influence the probability of information loss but has an impact on the efficiency of redundant information management. If there are too many members in a group network traffic is high due to the message complexity of heartbeats in order to maintain status consensus on group membership.
+\end{itemize}
+
+% Should a group member fail, the group enters a
+% cold state, meaning that the number of members n
+% is less than the optimal number of members r. A
+% group can also be in a hot state should the number of
+% members be too large, this can occur when a peer has
+% been incorrectly identified as failed instead of slow, or
+% when two pre-existing sub-networks become bridged.
+% The final state of the group is the Goldilocks state
+% where n = r. The group must always work to be in
+% the Goldilocks state as it is deemed to be the opti-
+% mal balance between redundancy and network traffic.
+
+% When the group is in a cold state, the leader of
+% the group (election described later on) will work
+% to recruit members. To do this, it will consult it’s
+% butter knownhostlist and request an availability
+% metric from some (or all) of it’s peers. Given this, it
+% will then respond to the best peer and request that
+% it joins the group. Once a peer has joined the group,
+% this information will be disseminated as part of the
+% heartbeat ping. The leader as described earlier must
+% also be elected to perform this operation; luckily
+% leader election becomes trivial under consensus of
+% group membership so an algorithm such as highest
+% ID is sufficient.
+
+\subsubsection{An illustrated example}
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/pcgExample}
+    \caption{Example overlay structure with PCG}
+    \label{fig:overlayPCG}
+\end{figure}
+
+% This is a illustrated example
+Figure~\ref{fig:overlayPCG} illustrates an instance of a Butter network with a PCG overlay. In this example we see an underlying LAN network where the edges represent physical or local WIFI connections. The directed edges at the Butter level represent a node's known hosts and the edges in PCG layer represent group members.
+
+The group of $P_1$, $P_2$ and $P_3$ are responsible for maintaining the information for the ``Orange" webpage. In the case that $r=3$ they are a complete group. The group $P_2$ and $P_4$ is responsible for ``Strawberry" but is in a cold state. In a cold state, a leader is elected amongst the two nodes and his responsibility is to find a node in his known hosts that is able to participate in the group. In this case, say that $P_4$ is elected leader, he interacts with the underlying butter node $B_4$ and sees that he has available known hosts $B_2$ and $B_5$. Say $B_5$ is asked to join the group, if it has the available storage, it will join and complete the group.
+
+%\subsubsection{Request handler}
+%
+%A key feature of the original PCG implementation is that it allows for transparent content delivery despite high churn\cite{shinebourne2022availability}. All group members are responsible for responding to a request for information, and hence the burden does not fall on a specific node. This allows a request to be fulfilled despite the failure of the initial node responding to the request as if the initial peer fails, another peer will fulfil it. This has benefits for ease of implementation on the client side as there is no need to handle re-attempting to query the network for information if a request is unfinished, but has major drawbacks with network utilisation and implementation complexity. Therefore, Butter does not include this transparent interface and puts the responsibility of fulfilling a request on the client asking for the information. In other words, it is the client's responsibility to work to retrieve data, not that of the network.
+
+\subsubsection{Extra optimisation}
+
+% Geographic distribution
+A $geo$ tag can be appended to each node's known host quality metric so when a leader is elected to find a new peer to join the group (if the group is deemed to be in an unsafe state) it will favour picking nodes with different $geo$ tags. This attempts to maximise the probability of redundant copies of information being distributed geographically, resulting in less shared infrastructure and improved information retrieval by reducing the average latency and steps taken to discover data.
+
+\subsection{Testing \& evaluation}
+
+In this section we will discuss how the design was tested as well as the different relationships between parameters such as heartbeat intervals and replication count. Based on the tests we evaluate the design and discuss some of the benefits and shortfalls of the implementation as well as what could be improved in future iterations.
+
+\subsubsection{Methodology}
+\label{sec:churnTesting}
+
+The testing process is carries out as follows:
+
+\begin{enumerate}
+    \item The testbed generates $n$ nodes on different ports, each tasked with storing a random string of data.
+    \item Test waits for nodes to spawn and form a network
+    \item $chanceToDie$ and $churnTime$ parameters are specified. The $chanceToDie$ determines the probability that a node is terminated during the $churnTime$.
+    \item Testbed churns the network and so simulates nodes failing over time. During churn new nodes are created to maintain the network node count at $n$.
+    \item The network is left a moment to recover, allowing the remaining nodes to re-create and update their list of known hosts. New nodes are created to replace failed nodes, in order to maintain the number of nodes on the network.
+    \item After a given period of time has passed, a new querying node is created with a list of all of the identifiers for information initially added to the network. The querying node attempts to retrieve all of the data that was initially stored in the network during initialisation. This node takes count of the number of successful and failed information queries, and so can provide a metric of the proportion of data that persisted on the network `post-churn'. The information retrieval algorithm used by the querying node is BFS (more on this in Section~\ref{sec:ir}). BFS allows for thorough exploration of the network so that we can be certain that the information is no present.
+\end{enumerate}
+
+% In addition, there is a centralised logging node used in development logging mode where peers frequently publish their stats to a centralised server which updates a database of nodes, their edges, properties and information they contaain - this allows for a visualisation of the current state of the network. It is important to note that this centralised server does not carry out any functionality and is simply used for logging the network. If nodes are unable to publish to the server they simply try again - publishing to the server cannot cause failure meaning that sometimes the loging can be incorrect.
+
+\subsubsection{Results \& evaluation}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        Heartbeat interval (s) & Nb. messages sent & (\%) Success rate \\
+        \hline
+        10                     & 600               & 58.00             \\
+        5                      & 1200              & 60.00             \\
+        2                      & 3000              & 72.00             \\
+        1                      & 6000              & 74.00             \\
+        \hline
+    \end{tabular}
+    \caption{Experimental data from test rig. Tested on 100 simulated nodes, repeated 5 times at each heartbeat interval setting. \textbf{Note}: Messages sent is the cumulative amount of heartbeat messages sent between group participants over a 60s churn time, $chanceToDie$ was set to 1 in 50 across all heartbeat intervals.}
+    \label{tab:heartbeatSuccess}
+\end{table}
+
+There were some initial issues with testing due to the speed of churn in simulation relative to the speed at which the nodes were carrying out heartbeats, i.e.\ the simulated churn rate was extremely high and heartbeat intervals too far apart. This was resolved by changing the heartbeat interval from 10s to 2s. This does increase the message complexity of the network greatly and so in practice the parameter should be considered carefully, based on the specifics of the network.
+
+To demonstrate how message complexity scales with different heartbeat intervals and how heartbeat intervals influence information retention we can observe the data in Table~\ref{tab:heartbeatSuccess}. For a short interval $t_h$ (e.g.\ 1 or 2 seconds), the probability of all peers maintaining some data $X$ failing in between $t_h+t_r$ where $t_r$ is the time to recover to $n=r$, is very low. However, this requires the node to constantly flood the group with heartbeat queries and hence scales poorly.
+
+%In the testing environment, we found 2 second heartbeat intervals to be a good compromise between maintaining groups effectively while reducing the heartbeat messages sent by a factor of 2 from a 1s heartbeat interval. This is an appropriate setting in the testing environment, however, in reality a greater heartbeat interval may be preferred as the churn rate may be less high in other practical instances of Butter networks.
+
+When the initial tests were carried out\cite{shinebourne2022availability}, success rate was lower than expected. This turned out to be because heartbeat intervals were all in sync and hence inspired the design for heartbeat palpitations. Once palpitations were introduced and hence the intervals offset, success rate improved greatly.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        $chanceToDie$ & Nb. failed to retrieve & (\%) Success rate \\
+        \hline
+        1 in 50       & 63                     & 74.80             \\
+        1 in 100      & 29                     & 88.40             \\
+        1 in 1000     & 4                      & 98.40             \\
+        1 in 10,000   & 0                      & 100.00            \\
+        \hline
+    \end{tabular}
+    \caption{Experimental data collected from testbed. Tested on 250 simulated nodes, repeated 5 times at each $chanceToDie$; average is rounded to the closest node. \textbf{Note}: the $chanceToDie$ is per second, the network churn time was 30s and the heartbeats were set to every 2s.}
+    \label{tab:chanceToDieResults}
+\end{table}
+
+In an effort to help interpret the data in Table~\ref{tab:chanceToDieResults}, think about the probability of an initially spawned node surviving churn when the $chanceToDie$ is 1 in 50. In that case, every second, for 30 seconds, each of the 250 nodes has a 1 in 50 chance of dying. In other words, for every second there is a $49/50$ chance of survival to the next second. The probability, therefore, of an initially spawned node surviving the churn stage of the testing process is $(\frac{49}{50})^{30}=0.545$. So, with a 1 in 50 $chanceToDie$, we can expect just above half the network to have failed over the course of the churn. With the persistent storage mechanism we have managed to retain on average 74.80\% of the original information. While this is not a perfect solution, it shows a significant improvement in terms of availability. The tests stressed the importance of choosing an appropriate heartbeat interval.
+
+%\begin{table}[ht]
+%    \centering
+%    \begin{tabular}{|l|l|l|}
+%        \hline
+%        Group size & Nb. messages sent & (\%) Success rate \\
+%        \hline
+%        3          & 3000                & 74.80             \\
+%        5          & 29                & 88.40             \\
+%        10         & 4                 & 98.40             \\
+%        \hline
+%    \end{tabular}
+%    \caption{Experimental data collected from test rig. Tested on 100 simulated nodes. \textbf{Note}: Chance to die was set to 1 in 100 and the heartbeat interval was set to 2s.}
+%    \label{tab:group_size_results}
+%\end{table}
+%
+%
+%Finally, a last set of tests were carried out to provide insights into optimal group size. The group size can be user specified, and should be set cautiously, much like the heartbeat interval. Groups need to be sufficiently large so as to increase the probability of data retention but also small enough to make group maintenance efficient. As Table~\ref{tab:group_size_results} shows, group size will has a substantial effect on the amount of messages sent. Heartbeat may work for small group sizes but will not be suitable for larger groups.
+
+Having carried out testing we can consider that the implemented solution has succeeded in providing a certain level of data persistence across a decentralised peer-to-peer network. Despite the limitations of the testbed, Table~\ref{tab:chanceToDieResults} shows that a significant amount of information that would otherwise have been lost, if no mechanisms for data persistence existed, was still present in the network after a period of relatively high simulated network churn.
+
+An interesting future development might be to introduce dynamic group sizes\cite{ramaswamy2005clustering}. The groups and hence redundant copies of the data could dynamically grow with the popularity, i.e.\ frequency of access of a piece of information. This may improve availability for popular information, but more importantly, it would spread the load of information requests ensuring that average file download latency does not increase significantly for highly desired information. In addition it could increase the probability of $QUERYHIT$s in information retrieval. This will be further discussed in Section~\ref{sec:ir}.
+
+Finally, PCG provides an elegant way of reasoning about persistent information on the network. The extension of PCG developed here improves the fault-tolerance and scalability of the original design by taking away some of the aspects that introduce centralisation, i.e.\ the publishing rendezvous super-peers. However, there is still a significant drawback in message complexity that will need to be addressed for networks at scale. A better future implementation may involve implementing randomised gossiping to solve the GMP, however, more testing will be needed.
+
+
+

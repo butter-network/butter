@@ -1,0 +1,43 @@
+\chapter{List of JXTA protocols}
+\label{jxtaProtocols}
+
+Project JXTA has defined six protocols so far.
+\begin{itemize}
+    \item Peer Discovery Protocol—enables a peer to find advertisements on
+other peers and can be used to find any of the peer, peer group, or adver-
+tisements.This protocol is the default discovery protocol for all peer groups,
+including theWorld Peer Group. It is conceivable that someone might want
+to develop a premium discovery mechanism that might or might not choose
+to leverage this default protocol, but the inclusion of this default protocol
+means that all JXTA peers can understand each other at the very basic level.
+Peer discovery can be done with or without specifying a name for
+either the peer to be located or the group to which peers belong.When
+no name is specified, all advertisements are returned.
+\item Peer Resolver Protocol—enables a peer to send and receive gener-
+ic queries to search for peers, peer groups, pipes, and other informa-
+tion.Typically, this protocol is implemented only by those peers that
+have access to data repositories and offer advanced search capabilities.
+\item Peer Information Protocol—allows a peer to learn about the capabil-
+ities and status of other peers. For example, a ping message can be sent to
+see if a peer is alive. A query can also be sent regarding a peer’s proper-
+ties where each property has a name and a value string.
+\item Peer Membership Protocol—allows a peer to obtain group member-
+ship requirements, to apply for membership and receive a membership cre-
+dential along with a full group advertisement, to update an existing mem-
+bership or application credential, and to cancel a membership or an
+application credential. Authenticators and security credentials are used to
+provide the desired level of protection.
+\item Pipe Binding Protocol—allows a peer to bind a pipe advertisement to
+a pipe endpoint, thus indicating where messages actually go over the pipe.
+In some sense, a pipe can be viewed as an abstract, named message queue
+that supports a number of abstract operations such as create, open, close,
+delete, send, and receive. Bind occurs during the open operation, whereas
+unbind occurs during the close operation.
+\item Endpoint Routing Protocol—allows a peer to ask a peer router for available
+routes for sending a message to a destination peer. For example, when two
+communicating peers are not directly connected to each other, such as when
+they are not using the same network transport protocol or when they are sep-
+arated by firewalls or NATs, peer routers respond to queries with available
+route information—that is, a list of gateways along the route.Any peer can
+decide to become a peer router by implementing the Peer Endpoint Protocol.
+\end{itemize}
