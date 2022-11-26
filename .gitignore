@@ -23,6 +23,7 @@
 *.toc
 *.fdb_latexmk
 *.fls
+out/
 
 # Default ignored files
 /shelf/
