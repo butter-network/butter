@@ -1,4 +1,4 @@
-FROM golang
+FROM golang:1.19.4-windowsservercore-ltsc2022
 
 WORKDIR /butter
 EXPOSE 0-9999

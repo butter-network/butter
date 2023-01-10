@@ -1,6 +1,6 @@
-// Package persist is one of the Butter persist overlay implementations. Other are available on the butter-network
+// Package storageOverlay is one of the Butter storageOverlay overlay implementations. Other are available on the butter-network
 // GitHub repository.
-package persist
+package storageOverlay
 
 import (
 	"crypto/sha256"
@@ -13,7 +13,7 @@ import (
 	"github.com/butter-network/butter/node"
 )
 
-// Overlay that complies with the Butter persist interface
+// Overlay that complies with the Butter storageOverlay interface
 type Overlay struct {
 	node       *node.Node
 	storageCap uint64
@@ -86,7 +86,7 @@ func (o *Overlay) AddInformation(keywords []string, data []byte) string {
 	for i, chunk := range chunks {
 		part := i + 1
 		id := Id{hash, part}
-		o.addBlock(id, keywordsFormatted, chunk, len(chunks)) // distribute the blocks across nodes - don't naiveStore the entirety of a piece of data on one node but spread it out (like what Adam was saying similar to RAID)
+		o.addBlock(id, keywordsFormatted, chunk, len(chunks)) // distribute the blocks across nodes - don't naivePersist the entirety of a piece of data on one node but spread it out (like what Adam was saying similar to RAID)
 	}
 	return fmt.Sprintf("%x", hash) // encode the hash as hex string
 }

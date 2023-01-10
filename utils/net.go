@@ -3,7 +3,6 @@ package utils
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	mock_conn "github.com/jordwest/mock-conn"
 	"log"
 	"net"
@@ -19,9 +18,7 @@ func GetOutboundIP() string {
 	}
 	defer conn.Close()
 
-	localAddr := conn.LocalAddr().String()
-
-	fmt.Println(localAddr)
+	localAddr := conn.LocalAddr().(*net.UDPAddr).IP.String()
 
 	return localAddr
 }

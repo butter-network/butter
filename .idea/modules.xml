@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/butter.iml" filepath="$PROJECT_DIR$/.idea/butter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../butter-tracker/.idea/butter-tracker.iml" filepath="$PROJECT_DIR$/../butter-tracker/.idea/butter-tracker.iml" />
-    </modules>
-  </component>
-</project>

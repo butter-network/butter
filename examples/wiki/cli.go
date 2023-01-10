@@ -10,10 +10,10 @@ import (
 
 	"github.com/butter-network/butter"
 	"github.com/butter-network/butter/node"
-	"github.com/butter-network/butter/store/pcg"
+	"github.com/butter-network/butter/persist/pcg"
 )
 
-// store information in the network
+// persist information in the network
 func add(overlay *pcg.Peer) {
 	fmt.Println("Input information:")
 	in := bufio.NewReader(os.Stdin)

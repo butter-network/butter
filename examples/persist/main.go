@@ -15,7 +15,7 @@ import (
 
 	"github.com/butter-network/butter"
 	"github.com/butter-network/butter/node"
-	"github.com/butter-network/butter/store/pcg"
+	"github.com/butter-network/butter/persist/pcg"
 )
 
 // clear the terminal so that the interface is clean and easier to read

@@ -8,7 +8,7 @@ import (
 
 	"github.com/butter-network/butter"
 	"github.com/butter-network/butter/node"
-	"github.com/butter-network/butter/store/pcg"
+	"github.com/butter-network/butter/persist/pcg"
 )
 
 // WikiUser enables access to the pcg overlay API across different http request methods

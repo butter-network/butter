@@ -3,7 +3,7 @@ package butter
 import (
 	"fmt"
 	"github.com/butter-network/butter/node"
-	"github.com/butter-network/butter/store/pcg"
+	"github.com/butter-network/butter/persist/pcg"
 	"math/rand"
 	"testing"
 	"time"
@@ -25,7 +25,7 @@ const settleTime = 90   // Amount of time you wish to give the network to settle
 // const dataGenInterval = 10 //seconds
 // const dataSize = 100
 
-// Global variables to store test data
+// Global variables to persist test data
 var activeStorers = 0
 var requests = 0
 var successRequests = 0

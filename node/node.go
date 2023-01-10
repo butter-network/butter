@@ -127,7 +127,7 @@ func NewNode(port uint16, maxMemoryMb uint64) (*Node, error) {
 	// Determine the upper limit of storage in bytes (so that the overlay network has an idea of how much memory it can use)
 	maxStorage := maxMemory - knownHostsMemory // remaining memory is used for the storage
 
-	ip, _ := utils.GetLocalIp()
+	ip := utils.GetOutboundIP()
 
 	var socketAddr utils.SocketAddr
 	socketAddr.Ip = ip
