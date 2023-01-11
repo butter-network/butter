@@ -24,17 +24,23 @@ A Butter node exhibits behaviours to discover new peers and manage known peers w
 management optimising for diversity. Extra application specific functionality can be appended to peers by defining
 server and client behaviours which are then registered to Butter nodes.
 
+Butter differentiating factors
+
+- Attempts to maintain data (despite node failure and high churn) while trying to minimise data redundancy (low degree
+  of duplicate data). With many other decentralised networks and blockchains, every node hosts a full copy of the data
+  on the network. While this creates a robust network where data is unlikely to be lost, it would not scale to handle
+  large volumes of data and requires significant time and message complexity for all nodes to maintain a consensus
+  (specially as many of these networks typically operate in a Byzantine model). Butter trivialises consensus by
+  maintaining redundant copies in small groups of specially selected 'diverse' nodes while attempting to robustly
+  maintain data.
+- Diversity is a core concept of the design. The idea is premised on the fact that 'diverse' nodes are likely to be less
+  reliant on common infrastructure and more likely to have different knowledge of the network (e.g. other nodes or 
+  information stored). The diversity metric is hence relative to each node and each node, based on its knowledge, 
+  decides which nodes are more diverse than others. The metric is then used to determine which nodes to enter into PCGs
+  with, which nodes to query for information and which nodes to maintain relationships with.
+
 This project should facilitate the development of decentralised applications by abstracting away the distributed
 behaviour from the developers and accommodate nodes with a whole variety of hardware.
-
-- `butter` is *efficient* in the sense that it
-    - maintains persistent data consistently (despite node failure and high churn) while trying to minimise data
-      redundancy (low degree of duplicate data) - this makes concensus less of an issues than on other decentralised
-      network designs
-    - takes a space-efficient approach to creating and maintaining the list known hosts per node (by determining who are
-      the 'best' remote hosts to know are on a node-by-node basis)
-- `butter` is a *framework* in the sense that it provides tooling and utilities (in the form of a library packages and a
-  standard atomic node) as well as documentation and examples for developing dapps
 
 ## Getting Started
 
@@ -114,10 +120,12 @@ Making a peer-to-peer system can be broken down into several sub-problems which 
 - Peer discovery on the local network is implemented in the `discover/` package
 - NAT traversal and peer discovery on the wider Internet is implemented in the `wider/` package
 - A default overlay network for managing data on the Butter network is defined in the `dataOverlay/` package
-  - Information persistence strategies are stored in the `persist/` directory (which contains an implementation of Peer 
-    Content Groups which is a fault-tolerant (churn resilient) approach to information retention
-  - Information retrieval strategies are stored in the `retrieve/` directory (which contains an implementation of Random
-    Breadth-first search which is an efficient approach to information retrieval
+    - Information persistence strategies are stored in the `persist/` directory (which contains an implementation of
+      Peer
+      Content Groups which is a fault-tolerant (churn resilient) approach to information retention
+    - Information retrieval strategies are stored in the `retrieve/` directory (which contains an implementation of
+      Random
+      Breadth-first search which is an efficient approach to information retrieval
 - The `utils/` package contains some useful utilities for the project
 
 ### Testing
