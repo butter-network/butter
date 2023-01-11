@@ -2,10 +2,10 @@ package butter
 
 import (
 	"fmt"
+	"github.com/butter-network/butter/dataOverlay"
 	"github.com/butter-network/butter/discover"
 	"github.com/butter-network/butter/node"
 	"github.com/butter-network/butter/retrieve"
-	"github.com/butter-network/butter/storageOverlay"
 	"github.com/butter-network/butter/tracker"
 	"github.com/butter-network/butter/wider"
 	"os"
@@ -30,7 +30,7 @@ func Spawn(overlay node.Overlay, public bool, track bool) {
 }
 
 func SpawnDefaultOverlay(node *node.Node, public bool, track bool) {
-	overlay := storageOverlay.NewOverlay(node) // Creates a new overlay network
+	overlay := dataOverlay.NewOverlay(node) // Creates a new overlay network
 	retrieve.AppendRetrieveBehaviour(overlay.Node())
 	Spawn(&overlay, public, track)
 }
@@ -53,7 +53,7 @@ func setupLeaveHandler(node *node.Node) {
 // forward either manually or via UPNP and have a public IP address). The added ambassadorial behaviours allows the node
 // to share the public addresses of other traversed (i.e. public) nodes between each other.
 func SpawnAmbassador(node *node.Node, public bool, track bool) {
-	overlay := storageOverlay.NewOverlay(node)              // Creates a new overlay network
+	overlay := dataOverlay.NewOverlay(node)                 // Creates a new overlay network
 	go wider.StartAmbassador(int16(node.SocketAddr().Port)) // the node keeps track of ambassador so if someone needs an ambassador they can find them dynamically (improvement on bootstrapping)
 	go discover.Discover(&overlay)
 	go wider.Traverse(node)

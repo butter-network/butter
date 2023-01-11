@@ -1,4 +1,4 @@
-package betternode
+package betterNode
 
 import (
 	"bufio"

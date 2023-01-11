@@ -2,7 +2,7 @@
 // communicate with varying communication protocols. This will be particularly important to improve the testbed so that
 // pipes can be created for node communication instead of TCP connections. Implementation currently incomplete.
 
-package betternode
+package betterNode
 
 import (
 	"github.com/butter-network/butter/node"

@@ -1,4 +1,4 @@
-package betternode
+package betterNode
 
 // TODO: complete the test node (pipe) - server/client behaviour
 

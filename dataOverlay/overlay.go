@@ -1,6 +1,6 @@
-// Package storageOverlay is one of the Butter storageOverlay overlay implementations. Other are available on the butter-network
+// Package dataOverlay is one of the Butter dataOverlay overlay implementations. Other are available on the butter-network
 // GitHub repository.
-package storageOverlay
+package dataOverlay
 
 import (
 	"crypto/sha256"
@@ -13,7 +13,7 @@ import (
 	"github.com/butter-network/butter/node"
 )
 
-// Overlay that complies with the Butter storageOverlay interface
+// Overlay that complies with the Butter dataOverlay interface
 type Overlay struct {
 	node       *node.Node
 	storageCap uint64
