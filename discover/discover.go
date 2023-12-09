@@ -6,6 +6,7 @@ package discover
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/butter-network/butter/node"
 	"github.com/butter-network/butter/utils"
 	"log"
@@ -112,6 +113,9 @@ func ListenForMulticasts(overlay node.Overlay) {
 		log.Fatal(err)
 	}
 	l, err := net.ListenMulticastUDP("udp", nil, addr)
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer l.Close()
 	l.SetReadBuffer(maxDatagramSize)
 	for {

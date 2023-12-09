@@ -1,70 +1,29 @@
 package betterNode
 
-// TODO: complete the test node (pipe) - server/client behaviour
+import "net"
 
-import (
-	"bufio"
-	"bytes"
-	mock_conn "github.com/jordwest/mock-conn"
-	"net"
-)
+type PipeCommunication struct{}
 
-type Pipe struct {
-	//conn mock_conn.Conn
+func NewPipeCommunication() (*PipeCommunication, error) {
+	return &PipeCommunication{}, nil
 }
 
-func (p *Pipe) Listen() {
-	listener := bufio.NewReader(p.conn.Server)
-	for {
-		var buffer bytes.Buffer
-		for {
-			b, err := listener.ReadByte()
-			if err != nil {
-				break
-			}
-			if b == EOF {
-				break
-			}
-			buffer.WriteByte(b)
-		}
-		// Handle connection
-	}
-}
-
-func (p *Pipe) Request(commInterface CommunicationInterface, route []byte, payload []byte) ([]byte, error) {
-	//pipeInterface := commInterface.(*Pipe)
-	// create a new conn
-	conn := mock_conn.NewConn()
-	conn.
-	return nil, nil
-}
-
-func Read(conn *net.Conn) ([]byte, error) {
-	reader := bufio.NewReader(*conn)
-	var buffer bytes.Buffer
-	for {
-		b, err := reader.ReadByte()
-		if err != nil {
-			return nil, err
-		}
-		if b == EOF {
-			break
-		}
-		buffer.WriteByte(b)
-	}
-	return buffer.Bytes(), nil
-}
-
-func Write(conn *net.Conn, packet []byte) error {
-	writer := bufio.NewWriter(*conn)
-	appended := append(packet, EOF)
-	_, err := writer.Write(appended)
+func (pc *PipeCommunication) Listen() (net.Listener, error) {
+	listener, err := net.Listen("unix", "/tmp/pipe.sock")
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = writer.Flush()
+
+	defer listener.Close()
+
+	return listener, nil
+}
+
+func (pc *PipeCommunication) Connect(addr string) (net.Conn, error) {
+	conn, err := net.Dial("unix", addr)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	return conn, nil
 }

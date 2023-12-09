@@ -12,7 +12,8 @@ decentralised nature. They address many of the pitfalls of centralised architect
 single points of failure, resulting in fault-tolerant networks that can behave autonomously. Many of the current efforts
 to design peer-to-peer systems use structured elements which improve the performance but re-introduce precariousness
 present in centralised systems. Butter is a peer-to-peer (p2p) framework loosely inspired by other project such as
-Gnutella, JXTA and libp2p, its goal is to explore what is achievable in unstructured p2p networks.
+[Gnutella](https://www.gnu.org/philosophy/gnutella.en.html), [JXTA](https://en.wikipedia.org/wiki/JXTA) and 
+[libp2p](https://libp2p.io/), its goal is to explore what is achievable in unstructured p2p networks.
 
 Each of the problems in building a p2p middleware corresponds to a module of the framework. Peer discovery is handled
 by the `discover` package using a multicast protocol, the NAT traversal and wider internet peer discovery strategy is
@@ -34,8 +35,8 @@ Butter differentiating factors
   maintaining redundant copies in small groups of specially selected 'diverse' nodes while attempting to robustly
   maintain data.
 - Diversity is a core concept of the design. The idea is premised on the fact that 'diverse' nodes are likely to be less
-  reliant on common infrastructure and more likely to have different knowledge of the network (e.g. other nodes or 
-  information stored). The diversity metric is hence relative to each node and each node, based on its knowledge, 
+  reliant on common infrastructure and more likely to have different knowledge of the network (e.g. other nodes or
+  information stored). The diversity metric is hence relative to each node and each node, based on its knowledge,
   decides which nodes are more diverse than others. The metric is then used to determine which nodes to enter into PCGs
   with, which nodes to query for information and which nodes to maintain relationships with.
 
